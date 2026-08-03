@@ -10,6 +10,8 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as BlogRouteImport } from './routes/blog'
 import { Route as ChiSiamoRouteImport } from './routes/chi-siamo'
 import { Route as ContattiRouteImport } from './routes/contatti'
@@ -18,10 +20,21 @@ import { Route as GiftCardRouteImport } from './routes/gift-card'
 import { Route as PrenotaRouteImport } from './routes/prenota'
 import { Route as ServiziRouteImport } from './routes/servizi'
 import { Route as TeamRouteImport } from './routes/team'
+import { Route as AuthenticatedGestionaleRouteImport } from './routes/_authenticated/gestionale'
+import { Route as AuthenticatedGestionaleIndexRouteImport } from './routes/_authenticated/gestionale.index'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BlogRoute = BlogRouteImport.update({
@@ -64,9 +77,21 @@ const TeamRoute = TeamRouteImport.update({
   path: '/team',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedGestionaleRoute = AuthenticatedGestionaleRouteImport.update({
+  id: '/gestionale',
+  path: '/gestionale',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedGestionaleIndexRoute =
+  AuthenticatedGestionaleIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedGestionaleRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
   '/blog': typeof BlogRoute
   '/chi-siamo': typeof ChiSiamoRoute
   '/contatti': typeof ContattiRoute
@@ -75,9 +100,12 @@ export interface FileRoutesByFullPath {
   '/prenota': typeof PrenotaRoute
   '/servizi': typeof ServiziRoute
   '/team': typeof TeamRoute
+  '/gestionale': typeof AuthenticatedGestionaleRouteWithChildren
+  '/gestionale/': typeof AuthenticatedGestionaleIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
   '/blog': typeof BlogRoute
   '/chi-siamo': typeof ChiSiamoRoute
   '/contatti': typeof ContattiRoute
@@ -86,10 +114,13 @@ export interface FileRoutesByTo {
   '/prenota': typeof PrenotaRoute
   '/servizi': typeof ServiziRoute
   '/team': typeof TeamRoute
+  '/gestionale': typeof AuthenticatedGestionaleIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/auth': typeof AuthRoute
   '/blog': typeof BlogRoute
   '/chi-siamo': typeof ChiSiamoRoute
   '/contatti': typeof ContattiRoute
@@ -98,11 +129,14 @@ export interface FileRoutesById {
   '/prenota': typeof PrenotaRoute
   '/servizi': typeof ServiziRoute
   '/team': typeof TeamRoute
+  '/_authenticated/gestionale': typeof AuthenticatedGestionaleRouteWithChildren
+  '/_authenticated/gestionale/': typeof AuthenticatedGestionaleIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/auth'
     | '/blog'
     | '/chi-siamo'
     | '/contatti'
@@ -111,9 +145,12 @@ export interface FileRouteTypes {
     | '/prenota'
     | '/servizi'
     | '/team'
+    | '/gestionale'
+    | '/gestionale/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/auth'
     | '/blog'
     | '/chi-siamo'
     | '/contatti'
@@ -122,9 +159,12 @@ export interface FileRouteTypes {
     | '/prenota'
     | '/servizi'
     | '/team'
+    | '/gestionale'
   id:
     | '__root__'
     | '/'
+    | '/_authenticated'
+    | '/auth'
     | '/blog'
     | '/chi-siamo'
     | '/contatti'
@@ -133,10 +173,14 @@ export interface FileRouteTypes {
     | '/prenota'
     | '/servizi'
     | '/team'
+    | '/_authenticated/gestionale'
+    | '/_authenticated/gestionale/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AuthRoute: typeof AuthRoute
   BlogRoute: typeof BlogRoute
   ChiSiamoRoute: typeof ChiSiamoRoute
   ContattiRoute: typeof ContattiRoute
@@ -154,6 +198,20 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/blog': {
@@ -212,11 +270,52 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TeamRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/gestionale': {
+      id: '/_authenticated/gestionale'
+      path: '/gestionale'
+      fullPath: '/gestionale'
+      preLoaderRoute: typeof AuthenticatedGestionaleRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/gestionale/': {
+      id: '/_authenticated/gestionale/'
+      path: '/'
+      fullPath: '/gestionale/'
+      preLoaderRoute: typeof AuthenticatedGestionaleIndexRouteImport
+      parentRoute: typeof AuthenticatedGestionaleRoute
+    }
   }
 }
 
+interface AuthenticatedGestionaleRouteChildren {
+  AuthenticatedGestionaleIndexRoute: typeof AuthenticatedGestionaleIndexRoute
+}
+
+const AuthenticatedGestionaleRouteChildren: AuthenticatedGestionaleRouteChildren =
+  {
+    AuthenticatedGestionaleIndexRoute: AuthenticatedGestionaleIndexRoute,
+  }
+
+const AuthenticatedGestionaleRouteWithChildren =
+  AuthenticatedGestionaleRoute._addFileChildren(
+    AuthenticatedGestionaleRouteChildren,
+  )
+
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedGestionaleRoute: typeof AuthenticatedGestionaleRouteWithChildren
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedGestionaleRoute: AuthenticatedGestionaleRouteWithChildren,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AuthRoute: AuthRoute,
   BlogRoute: BlogRoute,
   ChiSiamoRoute: ChiSiamoRoute,
   ContattiRoute: ContattiRoute,
