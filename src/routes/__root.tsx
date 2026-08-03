@@ -133,12 +133,21 @@ function SiteChrome() {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  // Le aree riservate (accesso e gestionale) hanno una loro interfaccia.
+  const bare = pathname.startsWith("/gestionale") || pathname.startsWith("/auth");
 
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="flex min-h-dvh flex-col">
-        <SiteChrome />
-      </div>
+      {bare ? (
+        <main id="contenuto">
+          <Outlet />
+        </main>
+      ) : (
+        <div className="flex min-h-dvh flex-col">
+          <SiteChrome />
+        </div>
+      )}
       <Toaster position="top-center" />
     </QueryClientProvider>
   );
