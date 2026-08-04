@@ -23,6 +23,7 @@ import { Route as TeamRouteImport } from './routes/team'
 import { Route as AuthenticatedGestionaleRouteImport } from './routes/_authenticated/gestionale'
 import { Route as AuthenticatedGestionaleIndexRouteImport } from './routes/_authenticated/gestionale.index'
 import { Route as AuthenticatedGestionaleAgendaRouteImport } from './routes/_authenticated/gestionale.agenda'
+import { Route as AuthenticatedGestionaleClientiRouteImport } from './routes/_authenticated/gestionale.clienti'
 import { Route as AuthenticatedGestionalePrenotazioniRouteImport } from './routes/_authenticated/gestionale.prenotazioni'
 
 const IndexRoute = IndexRouteImport.update({
@@ -96,6 +97,12 @@ const AuthenticatedGestionaleAgendaRoute =
     path: '/agenda',
     getParentRoute: () => AuthenticatedGestionaleRoute,
   } as any)
+const AuthenticatedGestionaleClientiRoute =
+  AuthenticatedGestionaleClientiRouteImport.update({
+    id: '/clienti',
+    path: '/clienti',
+    getParentRoute: () => AuthenticatedGestionaleRoute,
+  } as any)
 const AuthenticatedGestionalePrenotazioniRoute =
   AuthenticatedGestionalePrenotazioniRouteImport.update({
     id: '/prenotazioni',
@@ -116,6 +123,7 @@ export interface FileRoutesByFullPath {
   '/team': typeof TeamRoute
   '/gestionale': typeof AuthenticatedGestionaleRouteWithChildren
   '/gestionale/agenda': typeof AuthenticatedGestionaleAgendaRoute
+  '/gestionale/clienti': typeof AuthenticatedGestionaleClientiRoute
   '/gestionale/prenotazioni': typeof AuthenticatedGestionalePrenotazioniRoute
   '/gestionale/': typeof AuthenticatedGestionaleIndexRoute
 }
@@ -131,6 +139,7 @@ export interface FileRoutesByTo {
   '/servizi': typeof ServiziRoute
   '/team': typeof TeamRoute
   '/gestionale/agenda': typeof AuthenticatedGestionaleAgendaRoute
+  '/gestionale/clienti': typeof AuthenticatedGestionaleClientiRoute
   '/gestionale/prenotazioni': typeof AuthenticatedGestionalePrenotazioniRoute
   '/gestionale': typeof AuthenticatedGestionaleIndexRoute
 }
@@ -149,6 +158,7 @@ export interface FileRoutesById {
   '/team': typeof TeamRoute
   '/_authenticated/gestionale': typeof AuthenticatedGestionaleRouteWithChildren
   '/_authenticated/gestionale/agenda': typeof AuthenticatedGestionaleAgendaRoute
+  '/_authenticated/gestionale/clienti': typeof AuthenticatedGestionaleClientiRoute
   '/_authenticated/gestionale/prenotazioni': typeof AuthenticatedGestionalePrenotazioniRoute
   '/_authenticated/gestionale/': typeof AuthenticatedGestionaleIndexRoute
 }
@@ -167,6 +177,7 @@ export interface FileRouteTypes {
     | '/team'
     | '/gestionale'
     | '/gestionale/agenda'
+    | '/gestionale/clienti'
     | '/gestionale/prenotazioni'
     | '/gestionale/'
   fileRoutesByTo: FileRoutesByTo
@@ -182,6 +193,7 @@ export interface FileRouteTypes {
     | '/servizi'
     | '/team'
     | '/gestionale/agenda'
+    | '/gestionale/clienti'
     | '/gestionale/prenotazioni'
     | '/gestionale'
   id:
@@ -199,6 +211,7 @@ export interface FileRouteTypes {
     | '/team'
     | '/_authenticated/gestionale'
     | '/_authenticated/gestionale/agenda'
+    | '/_authenticated/gestionale/clienti'
     | '/_authenticated/gestionale/prenotazioni'
     | '/_authenticated/gestionale/'
   fileRoutesById: FileRoutesById
@@ -317,6 +330,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedGestionaleAgendaRouteImport
       parentRoute: typeof AuthenticatedGestionaleRoute
     }
+    '/_authenticated/gestionale/clienti': {
+      id: '/_authenticated/gestionale/clienti'
+      path: '/clienti'
+      fullPath: '/gestionale/clienti'
+      preLoaderRoute: typeof AuthenticatedGestionaleClientiRouteImport
+      parentRoute: typeof AuthenticatedGestionaleRoute
+    }
     '/_authenticated/gestionale/prenotazioni': {
       id: '/_authenticated/gestionale/prenotazioni'
       path: '/prenotazioni'
@@ -329,6 +349,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedGestionaleRouteChildren {
   AuthenticatedGestionaleAgendaRoute: typeof AuthenticatedGestionaleAgendaRoute
+  AuthenticatedGestionaleClientiRoute: typeof AuthenticatedGestionaleClientiRoute
   AuthenticatedGestionalePrenotazioniRoute: typeof AuthenticatedGestionalePrenotazioniRoute
   AuthenticatedGestionaleIndexRoute: typeof AuthenticatedGestionaleIndexRoute
 }
@@ -336,6 +357,7 @@ interface AuthenticatedGestionaleRouteChildren {
 const AuthenticatedGestionaleRouteChildren: AuthenticatedGestionaleRouteChildren =
   {
     AuthenticatedGestionaleAgendaRoute: AuthenticatedGestionaleAgendaRoute,
+    AuthenticatedGestionaleClientiRoute: AuthenticatedGestionaleClientiRoute,
     AuthenticatedGestionalePrenotazioniRoute:
       AuthenticatedGestionalePrenotazioniRoute,
     AuthenticatedGestionaleIndexRoute: AuthenticatedGestionaleIndexRoute,
