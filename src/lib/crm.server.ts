@@ -1,28 +1,21 @@
 import { z } from "zod";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Database } from "@/integrations/supabase/types";
 
 const DEFAULT_TENANT = "atelier-lumen";
 
-type MinimalClient = {
-  from: (table: "tenants") => {
-    select: (columns: string) => {
-      eq: (
-        column: string,
-        value: string,
-      ) => { maybeSingle: () => Promise<{ data: { id: string } | null }> };
-    };
-  };
-};
-
 /** Risolve il centro dell'utente autenticato (demo: tenant unico). */
-export async function resolveTenantId(supabase: unknown): Promise<string | null> {
-  const client = supabase as MinimalClient;
-  const { data } = await client
+export async function resolveTenantId(
+  supabase: SupabaseClient<Database>,
+): Promise<string | null> {
+  const { data } = await supabase
     .from("tenants")
     .select("id")
     .eq("slug", DEFAULT_TENANT)
     .maybeSingle();
   return data?.id ?? null;
 }
+
 
 export const customerInputSchema = z.object({
   id: z.string().uuid().optional(),
