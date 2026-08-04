@@ -18,6 +18,7 @@ export type Database = {
         Row: {
           created_at: string
           customer_email: string
+          customer_id: string | null
           customer_name: string
           customer_phone: string | null
           duration_minutes: number
@@ -34,6 +35,7 @@ export type Database = {
         Insert: {
           created_at?: string
           customer_email: string
+          customer_id?: string | null
           customer_name: string
           customer_phone?: string | null
           duration_minutes?: number
@@ -50,6 +52,7 @@ export type Database = {
         Update: {
           created_at?: string
           customer_email?: string
+          customer_id?: string | null
           customer_name?: string
           customer_phone?: string | null
           duration_minutes?: number
@@ -64,6 +67,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "bookings_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "bookings_location_id_fkey"
             columns: ["location_id"]
@@ -87,6 +97,107 @@ export type Database = {
           },
           {
             foreignKeyName: "bookings_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      customer_notes: {
+        Row: {
+          author_id: string | null
+          author_name: string | null
+          body: string
+          created_at: string
+          customer_id: string
+          id: string
+          tenant_id: string
+        }
+        Insert: {
+          author_id?: string | null
+          author_name?: string | null
+          body: string
+          created_at?: string
+          customer_id: string
+          id?: string
+          tenant_id: string
+        }
+        Update: {
+          author_id?: string | null
+          author_name?: string | null
+          body?: string
+          created_at?: string
+          customer_id?: string
+          id?: string
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customer_notes_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "customer_notes_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      customers: {
+        Row: {
+          birth_date: string | null
+          consent_updated_at: string | null
+          created_at: string
+          email: string | null
+          full_name: string
+          id: string
+          marketing_consent: boolean
+          notes: string | null
+          phone: string | null
+          privacy_consent: boolean
+          tags: string[]
+          tenant_id: string
+          updated_at: string
+        }
+        Insert: {
+          birth_date?: string | null
+          consent_updated_at?: string | null
+          created_at?: string
+          email?: string | null
+          full_name: string
+          id?: string
+          marketing_consent?: boolean
+          notes?: string | null
+          phone?: string | null
+          privacy_consent?: boolean
+          tags?: string[]
+          tenant_id: string
+          updated_at?: string
+        }
+        Update: {
+          birth_date?: string | null
+          consent_updated_at?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string
+          id?: string
+          marketing_consent?: boolean
+          notes?: string | null
+          phone?: string | null
+          privacy_consent?: boolean
+          tags?: string[]
+          tenant_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customers_tenant_id_fkey"
             columns: ["tenant_id"]
             isOneToOne: false
             referencedRelation: "tenants"
