@@ -1,6 +1,6 @@
 import { createFileRoute, Link, Outlet, useNavigate } from "@tanstack/react-router";
 import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
-import { CalendarDays, LayoutDashboard, ListChecks, LogOut } from "lucide-react";
+import { CalendarDays, LayoutDashboard, ListChecks, LogOut, Users } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { workspaceQuery } from "@/lib/admin-query";
 
@@ -15,7 +15,9 @@ const NAV = [
   { to: "/gestionale", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { to: "/gestionale/agenda", label: "Agenda", icon: CalendarDays, exact: false },
   { to: "/gestionale/prenotazioni", label: "Prenotazioni", icon: ListChecks, exact: false },
+  { to: "/gestionale/clienti", label: "Clienti", icon: Users, exact: false },
 ] as const;
+
 
 function BackOfficeLayout() {
   const { data } = useSuspenseQuery(workspaceQuery);
