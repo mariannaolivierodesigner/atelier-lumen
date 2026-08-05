@@ -434,6 +434,7 @@ export type Database = {
           id: string
           image_url: string | null
           is_active: boolean
+          is_bookable: boolean
           is_featured: boolean
           name: string
           price_cents: number
@@ -450,6 +451,7 @@ export type Database = {
           id?: string
           image_url?: string | null
           is_active?: boolean
+          is_bookable?: boolean
           is_featured?: boolean
           name: string
           price_cents?: number
@@ -466,6 +468,7 @@ export type Database = {
           id?: string
           image_url?: string | null
           is_active?: boolean
+          is_bookable?: boolean
           is_featured?: boolean
           name?: string
           price_cents?: number

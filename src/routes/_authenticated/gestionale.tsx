@@ -1,6 +1,6 @@
 import { createFileRoute, Link, Outlet, useNavigate } from "@tanstack/react-router";
 import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
-import { CalendarDays, LayoutDashboard, ListChecks, LogOut, Users } from "lucide-react";
+import { CalendarDays, LayoutDashboard, ListChecks, LogOut, Sparkles, Users } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { workspaceQuery } from "@/lib/admin-query";
 
@@ -16,6 +16,7 @@ const NAV = [
   { to: "/gestionale/agenda", label: "Agenda", icon: CalendarDays, exact: false },
   { to: "/gestionale/prenotazioni", label: "Prenotazioni", icon: ListChecks, exact: false },
   { to: "/gestionale/clienti", label: "Clienti", icon: Users, exact: false },
+  { to: "/gestionale/listino", label: "Listino", icon: Sparkles, exact: false },
 ] as const;
 
 

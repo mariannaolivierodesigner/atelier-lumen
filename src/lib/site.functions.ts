@@ -57,7 +57,7 @@ export const getSite = createServerFn({ method: "GET" }).handler(async () => {
       supabase
         .from("services")
         .select(
-          "id, slug, name, description, duration_minutes, price_cents, image_url, is_featured, category_id",
+          "id, slug, name, description, duration_minutes, price_cents, image_url, is_featured, is_bookable, category_id",
         )
         .eq("tenant_id", tenantId)
         .order("sort_order"),
