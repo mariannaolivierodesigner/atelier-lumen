@@ -41,8 +41,8 @@ export const createBooking = createServerFn({ method: "POST" })
       _starts_at: data.startsAt,
       _customer_name: data.customerName,
       _customer_email: data.customerEmail,
-      _customer_phone: data.customerPhone || undefined,
-      _notes: data.notes || undefined,
+      ...(data.customerPhone ? { _customer_phone: data.customerPhone } : {}),
+      ...(data.notes ? { _notes: data.notes } : {}),
     });
     if (error) {
       console.error("[booking] request_booking failed", error);
