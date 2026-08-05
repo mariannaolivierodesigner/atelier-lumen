@@ -37,12 +37,12 @@ export const createBooking = createServerFn({ method: "POST" })
       _tenant_slug: "atelier-lumen",
       _location_id: data.locationId,
       _service_id: data.serviceId,
-      _staff_id: data.staffId,
+      _staff_id: data.staffId ?? undefined,
       _starts_at: data.startsAt,
       _customer_name: data.customerName,
       _customer_email: data.customerEmail,
-      _customer_phone: data.customerPhone || null,
-      _notes: data.notes || null,
+      _customer_phone: data.customerPhone || undefined,
+      _notes: data.notes || undefined,
     });
     if (error) {
       console.error("[booking] request_booking failed", error);
