@@ -18,7 +18,7 @@ export const serviceInputSchema = z.object({
   description: z.string().max(2000).optional(),
   durationMinutes: z.number().int().min(5).max(600),
   priceCents: z.number().int().min(0).max(10_000_00),
-  imageUrl: z.string().url().max(500).or(z.literal("")).optional(),
+  imageUrl: z.string().max(500).optional(),
   sortOrder: z.number().int().min(0).max(999).default(0),
   isActive: z.boolean().default(true),
   isBookable: z.boolean().default(true),
