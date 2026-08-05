@@ -385,7 +385,7 @@ function Listino() {
               <label className="text-sm">
                 Immagine (URL)
                 <input
-                  type="url"
+                  type="text"
                   maxLength={500}
                   value={form.imageUrl}
                   onChange={(e) => setForm({ ...form, imageUrl: e.target.value })}
