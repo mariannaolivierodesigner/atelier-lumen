@@ -31,10 +31,10 @@ export const getCatalog = createServerFn({ method: "GET" })
     ]);
 
     if (categories.error || services.error) {
-      throw new Error(
-        `[catalog] t=${tenantId} c=${categories.error?.message} s=${services.error?.message}`,
-      );
+      console.error("[catalog]", categories.error, services.error);
+      throw new Error("Non siamo riusciti a caricare il listino.");
     }
+
     return { categories: categories.data ?? [], services: services.data ?? [] };
   });
 
