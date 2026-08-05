@@ -701,6 +701,20 @@ export type Database = {
         Returns: boolean
       }
       is_tenant_member: { Args: { _tenant_id: string }; Returns: boolean }
+      request_booking: {
+        Args: {
+          _customer_email: string
+          _customer_name: string
+          _customer_phone?: string
+          _location_id: string
+          _notes?: string
+          _service_id: string
+          _staff_id: string
+          _starts_at: string
+          _tenant_slug: string
+        }
+        Returns: string
+      }
     }
     Enums: {
       app_role: "owner" | "manager" | "staff"
