@@ -33,27 +33,21 @@ export const createBooking = createServerFn({ method: "POST" })
       },
     });
 
-    const { data: tenant } = await supabase
-      .from("tenants")
-      .select("id")
-      .eq("slug", "atelier-lumen")
-      .maybeSingle();
-    if (!tenant) throw new Error("Tenant non trovato");
-
-    const { error } = await supabase.from("bookings").insert({
-      tenant_id: tenant.id,
-      location_id: data.locationId,
-      service_id: data.serviceId,
-      staff_id: data.staffId,
-      starts_at: data.startsAt,
-      duration_minutes: data.durationMinutes,
-      customer_name: data.customerName,
-      customer_email: data.customerEmail,
-      customer_phone: data.customerPhone || null,
-      notes: data.notes || null,
-      status: "pending",
+    const { error } = await supabase.rpc("request_booking", {
+      _tenant_slug: "atelier-lumen",
+      _location_id: data.locationId,
+      _service_id: data.serviceId,
+      _staff_id: data.staffId,
+      _starts_at: data.startsAt,
+      _customer_name: data.customerName,
+      _customer_email: data.customerEmail,
+      _customer_phone: data.customerPhone || null,
+      _notes: data.notes || null,
     });
-    if (error) throw error;
+    if (error) {
+      console.error("[booking] request_booking failed", error);
+      throw new Error("Non siamo riusciti a registrare la richiesta.");
+    }
 
     return { ok: true as const };
   });
