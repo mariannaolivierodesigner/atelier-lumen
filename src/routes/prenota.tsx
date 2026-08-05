@@ -56,6 +56,10 @@ function Prenota() {
   const [done, setDone] = useState(false);
 
   const days = useMemo(() => nextDays(8), []);
+  const bookableServices = useMemo(
+    () => data.services.filter((s) => s.is_bookable),
+    [data.services],
+  );
   const service = data.services.find((s) => s.id === serviceId) ?? null;
   const location = data.locations.find((l) => l.id === locationId) ?? null;
   const staff = data.staff.find((p) => p.id === staffId) ?? null;
@@ -149,7 +153,7 @@ function Prenota() {
               <fieldset>
                 <legend className="mb-5 text-2xl">Scegli il trattamento</legend>
                 <div className="space-y-3">
-                  {data.services.map((s) => (
+                  {bookableServices.map((s) => (
                     <button
                       key={s.id}
                       type="button"

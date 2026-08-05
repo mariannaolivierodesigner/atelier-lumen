@@ -24,6 +24,7 @@ import { Route as AuthenticatedGestionaleRouteImport } from './routes/_authentic
 import { Route as AuthenticatedGestionaleIndexRouteImport } from './routes/_authenticated/gestionale.index'
 import { Route as AuthenticatedGestionaleAgendaRouteImport } from './routes/_authenticated/gestionale.agenda'
 import { Route as AuthenticatedGestionaleClientiRouteImport } from './routes/_authenticated/gestionale.clienti'
+import { Route as AuthenticatedGestionaleListinoRouteImport } from './routes/_authenticated/gestionale.listino'
 import { Route as AuthenticatedGestionalePrenotazioniRouteImport } from './routes/_authenticated/gestionale.prenotazioni'
 
 const IndexRoute = IndexRouteImport.update({
@@ -103,6 +104,12 @@ const AuthenticatedGestionaleClientiRoute =
     path: '/clienti',
     getParentRoute: () => AuthenticatedGestionaleRoute,
   } as any)
+const AuthenticatedGestionaleListinoRoute =
+  AuthenticatedGestionaleListinoRouteImport.update({
+    id: '/listino',
+    path: '/listino',
+    getParentRoute: () => AuthenticatedGestionaleRoute,
+  } as any)
 const AuthenticatedGestionalePrenotazioniRoute =
   AuthenticatedGestionalePrenotazioniRouteImport.update({
     id: '/prenotazioni',
@@ -124,6 +131,7 @@ export interface FileRoutesByFullPath {
   '/gestionale': typeof AuthenticatedGestionaleRouteWithChildren
   '/gestionale/agenda': typeof AuthenticatedGestionaleAgendaRoute
   '/gestionale/clienti': typeof AuthenticatedGestionaleClientiRoute
+  '/gestionale/listino': typeof AuthenticatedGestionaleListinoRoute
   '/gestionale/prenotazioni': typeof AuthenticatedGestionalePrenotazioniRoute
   '/gestionale/': typeof AuthenticatedGestionaleIndexRoute
 }
@@ -140,6 +148,7 @@ export interface FileRoutesByTo {
   '/team': typeof TeamRoute
   '/gestionale/agenda': typeof AuthenticatedGestionaleAgendaRoute
   '/gestionale/clienti': typeof AuthenticatedGestionaleClientiRoute
+  '/gestionale/listino': typeof AuthenticatedGestionaleListinoRoute
   '/gestionale/prenotazioni': typeof AuthenticatedGestionalePrenotazioniRoute
   '/gestionale': typeof AuthenticatedGestionaleIndexRoute
 }
@@ -159,6 +168,7 @@ export interface FileRoutesById {
   '/_authenticated/gestionale': typeof AuthenticatedGestionaleRouteWithChildren
   '/_authenticated/gestionale/agenda': typeof AuthenticatedGestionaleAgendaRoute
   '/_authenticated/gestionale/clienti': typeof AuthenticatedGestionaleClientiRoute
+  '/_authenticated/gestionale/listino': typeof AuthenticatedGestionaleListinoRoute
   '/_authenticated/gestionale/prenotazioni': typeof AuthenticatedGestionalePrenotazioniRoute
   '/_authenticated/gestionale/': typeof AuthenticatedGestionaleIndexRoute
 }
@@ -178,6 +188,7 @@ export interface FileRouteTypes {
     | '/gestionale'
     | '/gestionale/agenda'
     | '/gestionale/clienti'
+    | '/gestionale/listino'
     | '/gestionale/prenotazioni'
     | '/gestionale/'
   fileRoutesByTo: FileRoutesByTo
@@ -194,6 +205,7 @@ export interface FileRouteTypes {
     | '/team'
     | '/gestionale/agenda'
     | '/gestionale/clienti'
+    | '/gestionale/listino'
     | '/gestionale/prenotazioni'
     | '/gestionale'
   id:
@@ -212,6 +224,7 @@ export interface FileRouteTypes {
     | '/_authenticated/gestionale'
     | '/_authenticated/gestionale/agenda'
     | '/_authenticated/gestionale/clienti'
+    | '/_authenticated/gestionale/listino'
     | '/_authenticated/gestionale/prenotazioni'
     | '/_authenticated/gestionale/'
   fileRoutesById: FileRoutesById
@@ -337,6 +350,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedGestionaleClientiRouteImport
       parentRoute: typeof AuthenticatedGestionaleRoute
     }
+    '/_authenticated/gestionale/listino': {
+      id: '/_authenticated/gestionale/listino'
+      path: '/listino'
+      fullPath: '/gestionale/listino'
+      preLoaderRoute: typeof AuthenticatedGestionaleListinoRouteImport
+      parentRoute: typeof AuthenticatedGestionaleRoute
+    }
     '/_authenticated/gestionale/prenotazioni': {
       id: '/_authenticated/gestionale/prenotazioni'
       path: '/prenotazioni'
@@ -350,6 +370,7 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedGestionaleRouteChildren {
   AuthenticatedGestionaleAgendaRoute: typeof AuthenticatedGestionaleAgendaRoute
   AuthenticatedGestionaleClientiRoute: typeof AuthenticatedGestionaleClientiRoute
+  AuthenticatedGestionaleListinoRoute: typeof AuthenticatedGestionaleListinoRoute
   AuthenticatedGestionalePrenotazioniRoute: typeof AuthenticatedGestionalePrenotazioniRoute
   AuthenticatedGestionaleIndexRoute: typeof AuthenticatedGestionaleIndexRoute
 }
@@ -358,6 +379,7 @@ const AuthenticatedGestionaleRouteChildren: AuthenticatedGestionaleRouteChildren
   {
     AuthenticatedGestionaleAgendaRoute: AuthenticatedGestionaleAgendaRoute,
     AuthenticatedGestionaleClientiRoute: AuthenticatedGestionaleClientiRoute,
+    AuthenticatedGestionaleListinoRoute: AuthenticatedGestionaleListinoRoute,
     AuthenticatedGestionalePrenotazioniRoute:
       AuthenticatedGestionalePrenotazioniRoute,
     AuthenticatedGestionaleIndexRoute: AuthenticatedGestionaleIndexRoute,
@@ -395,13 +417,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
