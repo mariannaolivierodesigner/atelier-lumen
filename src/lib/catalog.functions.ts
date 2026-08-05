@@ -13,7 +13,7 @@ export const getCatalog = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const tenantId = await resolveTenantId(context.supabase);
-    if (!tenantId) throw new Error("[catalog] tenant non risolto");
+    if (!tenantId) return { categories: [], services: [] };
 
     const [categories, services] = await Promise.all([
       context.supabase
