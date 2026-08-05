@@ -1,0 +1,1 @@
+REVOKE ALL ON FUNCTION public.prevent_tenant_role_self_escalation() FROM PUBLIC, anon, authenticated;
