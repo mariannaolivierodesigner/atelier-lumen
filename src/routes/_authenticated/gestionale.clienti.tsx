@@ -3,11 +3,13 @@ import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-q
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Plus, RefreshCw, Trash2 } from "lucide-react";
+import { Download, Plus, RefreshCw, ShieldOff, Trash2 } from "lucide-react";
 import { customersQuery, formatDate } from "@/lib/crm-query";
 import {
   addCustomerNote,
   deleteCustomer,
+  eraseCustomerData,
+  exportCustomerData,
   importCustomersFromBookings,
   saveCustomer,
 } from "@/lib/crm.functions";
@@ -58,11 +60,43 @@ function Crm() {
   const remove = useServerFn(deleteCustomer);
   const addNote = useServerFn(addCustomerNote);
   const importFromBookings = useServerFn(importCustomersFromBookings);
+  const exportData = useServerFn(exportCustomerData);
+  const eraseData = useServerFn(eraseCustomerData);
 
   const refresh = () => {
     queryClient.invalidateQueries({ queryKey: ["crm", "customers"] });
     queryClient.invalidateQueries({ queryKey: ["workspace"] });
   };
+
+  const exportMutation = useMutation({
+    mutationFn: exportData,
+    onSuccess: (res) => {
+      const blob = new Blob([JSON.stringify(res, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      const slug = (res.customer.full_name ?? "cliente")
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-|-$/g, "");
+      link.download = `gdpr-${slug || "cliente"}.json`;
+      link.click();
+      URL.revokeObjectURL(url);
+      toast.success("Export GDPR scaricato");
+    },
+    onError: () => toast.error("Export non riuscito"),
+  });
+
+  const eraseMutation = useMutation({
+    mutationFn: eraseData,
+    onSuccess: () => {
+      refresh();
+      setSelectedId(null);
+      toast.success("Dati personali cancellati e prenotazioni anonimizzate");
+    },
+    onError: () => toast.error("Cancellazione non riuscita"),
+  });
+
 
   const saveMutation = useMutation({
     mutationFn: save,
@@ -372,6 +406,43 @@ function Crm() {
               {selected.notes && (
                 <p className="rounded-md bg-secondary/60 p-4 text-sm">{selected.notes}</p>
               )}
+
+              <section className="space-y-3 rounded-md border border-border p-4">
+                <h3 className="text-xs tracking-wide text-muted-foreground uppercase">
+                  Privacy e GDPR
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  Gestisci le richieste di accesso, portabilità e cancellazione dei dati. Le
+                  prenotazioni non vengono eliminate ma anonimizzate per obblighi contabili.
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    onClick={() => exportMutation.mutate({ data: { id: selected.id } })}
+                    disabled={exportMutation.isPending}
+                    className="inline-flex items-center gap-2 rounded-md border border-border px-4 py-2.5 text-sm disabled:opacity-60"
+                  >
+                    <Download className="size-4" aria-hidden="true" />
+                    Esporta dati (JSON)
+                  </button>
+                  <button
+                    onClick={() => {
+                      if (
+                        window.confirm(
+                          `Cancellare definitivamente i dati personali di ${selected.full_name}? L'operazione è irreversibile.`,
+                        )
+                      ) {
+                        eraseMutation.mutate({ data: { id: selected.id } });
+                      }
+                    }}
+                    disabled={eraseMutation.isPending}
+                    className="inline-flex items-center gap-2 rounded-md border border-destructive/40 px-4 py-2.5 text-sm text-destructive disabled:opacity-60"
+                  >
+                    <ShieldOff className="size-4" aria-hidden="true" />
+                    Cancella dati (diritto all'oblio)
+                  </button>
+                </div>
+              </section>
+
 
               <section className="space-y-3">
                 <h3 className="text-xs tracking-wide text-muted-foreground uppercase">
