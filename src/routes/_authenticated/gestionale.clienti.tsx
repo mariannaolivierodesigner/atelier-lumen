@@ -60,11 +60,43 @@ function Crm() {
   const remove = useServerFn(deleteCustomer);
   const addNote = useServerFn(addCustomerNote);
   const importFromBookings = useServerFn(importCustomersFromBookings);
+  const exportData = useServerFn(exportCustomerData);
+  const eraseData = useServerFn(eraseCustomerData);
 
   const refresh = () => {
     queryClient.invalidateQueries({ queryKey: ["crm", "customers"] });
     queryClient.invalidateQueries({ queryKey: ["workspace"] });
   };
+
+  const exportMutation = useMutation({
+    mutationFn: exportData,
+    onSuccess: (res) => {
+      const blob = new Blob([JSON.stringify(res, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      const slug = (res.customer.full_name ?? "cliente")
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-|-$/g, "");
+      link.download = `gdpr-${slug || "cliente"}.json`;
+      link.click();
+      URL.revokeObjectURL(url);
+      toast.success("Export GDPR scaricato");
+    },
+    onError: () => toast.error("Export non riuscito"),
+  });
+
+  const eraseMutation = useMutation({
+    mutationFn: eraseData,
+    onSuccess: () => {
+      refresh();
+      setSelectedId(null);
+      toast.success("Dati personali cancellati e prenotazioni anonimizzate");
+    },
+    onError: () => toast.error("Cancellazione non riuscita"),
+  });
+
 
   const saveMutation = useMutation({
     mutationFn: save,
