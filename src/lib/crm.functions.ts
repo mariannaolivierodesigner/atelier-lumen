@@ -164,3 +164,104 @@ export const importCustomersFromBookings = createServerFn({ method: "POST" })
 
     return { created };
   });
+
+/** GDPR — Esporta tutti i dati collegati a un cliente (diritto di accesso/portabilità). */
+export const exportCustomerData = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => customerIdSchema.parse(input))
+  .handler(async ({ data, context }) => {
+    const tenantId = await resolveTenantId(context.supabase);
+    if (!tenantId) throw new Error("Centro non trovato");
+
+    const { data: customer, error } = await context.supabase
+      .from("customers")
+      .select("*")
+      .eq("id", data.id)
+      .eq("tenant_id", tenantId)
+      .maybeSingle();
+    if (error) throw error;
+    if (!customer) throw new Error("Cliente non trovato");
+
+    const [notes, bookings] = await Promise.all([
+      context.supabase
+        .from("customer_notes")
+        .select("body, author_name, created_at")
+        .eq("tenant_id", tenantId)
+        .eq("customer_id", data.id)
+        .order("created_at", { ascending: false }),
+      context.supabase
+        .from("bookings")
+        .select(
+          "id, starts_at, duration_minutes, status, notes, customer_name, customer_email, customer_phone, service_id, staff_id, location_id, created_at",
+        )
+        .eq("tenant_id", tenantId)
+        .or(
+          customer.email
+            ? `customer_id.eq.${data.id},customer_email.eq.${customer.email}`
+            : `customer_id.eq.${data.id}`,
+        )
+        .order("starts_at", { ascending: false }),
+    ]);
+
+    return {
+      exportedAt: new Date().toISOString(),
+      customer,
+      notes: notes.data ?? [],
+      bookings: bookings.data ?? [],
+    };
+  });
+
+/** GDPR — Cancella i dati personali di un cliente (diritto all'oblio). */
+export const eraseCustomerData = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => customerIdSchema.parse(input))
+  .handler(async ({ data, context }) => {
+    const tenantId = await resolveTenantId(context.supabase);
+    if (!tenantId) throw new Error("Centro non trovato");
+
+    const { data: customer } = await context.supabase
+      .from("customers")
+      .select("id, email")
+      .eq("id", data.id)
+      .eq("tenant_id", tenantId)
+      .maybeSingle();
+    if (!customer) throw new Error("Cliente non trovato");
+
+    // Le prenotazioni restano per contabilità ma vengono anonimizzate.
+    const anonymize = {
+      customer_id: null,
+      customer_name: "Cliente anonimizzato",
+      customer_email: `anon+${data.id}@gdpr.local`,
+      customer_phone: null,
+      notes: null,
+    };
+    await context.supabase
+      .from("bookings")
+      .update(anonymize)
+      .eq("tenant_id", tenantId)
+      .eq("customer_id", data.id);
+    if (customer.email) {
+      await context.supabase
+        .from("bookings")
+        .update(anonymize)
+        .eq("tenant_id", tenantId)
+        .eq("customer_email", customer.email);
+    }
+
+    const { error: notesError } = await context.supabase
+      .from("customer_notes")
+      .delete()
+      .eq("tenant_id", tenantId)
+      .eq("customer_id", data.id);
+    if (notesError) throw notesError;
+
+    const { error } = await context.supabase
+      .from("customers")
+      .delete()
+      .eq("id", data.id)
+      .eq("tenant_id", tenantId);
+    if (error) throw error;
+
+    return { ok: true as const };
+  });
+
