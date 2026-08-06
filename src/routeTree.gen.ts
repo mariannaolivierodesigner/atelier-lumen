@@ -21,6 +21,7 @@ import { Route as PrenotaRouteImport } from './routes/prenota'
 import { Route as ServiziRouteImport } from './routes/servizi'
 import { Route as TeamRouteImport } from './routes/team'
 import { Route as AuthenticatedGestionaleRouteImport } from './routes/_authenticated/gestionale'
+import { Route as ServiziSlugRouteImport } from './routes/servizi.$slug'
 import { Route as AuthenticatedGestionaleIndexRouteImport } from './routes/_authenticated/gestionale.index'
 import { Route as AuthenticatedGestionaleAgendaRouteImport } from './routes/_authenticated/gestionale.agenda'
 import { Route as AuthenticatedGestionaleClientiRouteImport } from './routes/_authenticated/gestionale.clienti'
@@ -86,6 +87,11 @@ const AuthenticatedGestionaleRoute = AuthenticatedGestionaleRouteImport.update({
   path: '/gestionale',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const ServiziSlugRoute = ServiziSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => ServiziRoute,
+} as any)
 const AuthenticatedGestionaleIndexRoute =
   AuthenticatedGestionaleIndexRouteImport.update({
     id: '/',
@@ -126,9 +132,10 @@ export interface FileRoutesByFullPath {
   '/faq': typeof FaqRoute
   '/gift-card': typeof GiftCardRoute
   '/prenota': typeof PrenotaRoute
-  '/servizi': typeof ServiziRoute
+  '/servizi': typeof ServiziRouteWithChildren
   '/team': typeof TeamRoute
   '/gestionale': typeof AuthenticatedGestionaleRouteWithChildren
+  '/servizi/$slug': typeof ServiziSlugRoute
   '/gestionale/agenda': typeof AuthenticatedGestionaleAgendaRoute
   '/gestionale/clienti': typeof AuthenticatedGestionaleClientiRoute
   '/gestionale/listino': typeof AuthenticatedGestionaleListinoRoute
@@ -144,8 +151,9 @@ export interface FileRoutesByTo {
   '/faq': typeof FaqRoute
   '/gift-card': typeof GiftCardRoute
   '/prenota': typeof PrenotaRoute
-  '/servizi': typeof ServiziRoute
+  '/servizi': typeof ServiziRouteWithChildren
   '/team': typeof TeamRoute
+  '/servizi/$slug': typeof ServiziSlugRoute
   '/gestionale/agenda': typeof AuthenticatedGestionaleAgendaRoute
   '/gestionale/clienti': typeof AuthenticatedGestionaleClientiRoute
   '/gestionale/listino': typeof AuthenticatedGestionaleListinoRoute
@@ -163,9 +171,10 @@ export interface FileRoutesById {
   '/faq': typeof FaqRoute
   '/gift-card': typeof GiftCardRoute
   '/prenota': typeof PrenotaRoute
-  '/servizi': typeof ServiziRoute
+  '/servizi': typeof ServiziRouteWithChildren
   '/team': typeof TeamRoute
   '/_authenticated/gestionale': typeof AuthenticatedGestionaleRouteWithChildren
+  '/servizi/$slug': typeof ServiziSlugRoute
   '/_authenticated/gestionale/agenda': typeof AuthenticatedGestionaleAgendaRoute
   '/_authenticated/gestionale/clienti': typeof AuthenticatedGestionaleClientiRoute
   '/_authenticated/gestionale/listino': typeof AuthenticatedGestionaleListinoRoute
@@ -186,6 +195,7 @@ export interface FileRouteTypes {
     | '/servizi'
     | '/team'
     | '/gestionale'
+    | '/servizi/$slug'
     | '/gestionale/agenda'
     | '/gestionale/clienti'
     | '/gestionale/listino'
@@ -203,6 +213,7 @@ export interface FileRouteTypes {
     | '/prenota'
     | '/servizi'
     | '/team'
+    | '/servizi/$slug'
     | '/gestionale/agenda'
     | '/gestionale/clienti'
     | '/gestionale/listino'
@@ -222,6 +233,7 @@ export interface FileRouteTypes {
     | '/servizi'
     | '/team'
     | '/_authenticated/gestionale'
+    | '/servizi/$slug'
     | '/_authenticated/gestionale/agenda'
     | '/_authenticated/gestionale/clienti'
     | '/_authenticated/gestionale/listino'
@@ -239,7 +251,7 @@ export interface RootRouteChildren {
   FaqRoute: typeof FaqRoute
   GiftCardRoute: typeof GiftCardRoute
   PrenotaRoute: typeof PrenotaRoute
-  ServiziRoute: typeof ServiziRoute
+  ServiziRoute: typeof ServiziRouteWithChildren
   TeamRoute: typeof TeamRoute
 }
 
@@ -329,6 +341,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedGestionaleRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/servizi/$slug': {
+      id: '/servizi/$slug'
+      path: '/$slug'
+      fullPath: '/servizi/$slug'
+      preLoaderRoute: typeof ServiziSlugRouteImport
+      parentRoute: typeof ServiziRoute
+    }
     '/_authenticated/gestionale/': {
       id: '/_authenticated/gestionale/'
       path: '/'
@@ -401,6 +420,17 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
+interface ServiziRouteChildren {
+  ServiziSlugRoute: typeof ServiziSlugRoute
+}
+
+const ServiziRouteChildren: ServiziRouteChildren = {
+  ServiziSlugRoute: ServiziSlugRoute,
+}
+
+const ServiziRouteWithChildren =
+  ServiziRoute._addFileChildren(ServiziRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
@@ -411,9 +441,19 @@ const rootRouteChildren: RootRouteChildren = {
   FaqRoute: FaqRoute,
   GiftCardRoute: GiftCardRoute,
   PrenotaRoute: PrenotaRoute,
-  ServiziRoute: ServiziRoute,
+  ServiziRoute: ServiziRouteWithChildren,
   TeamRoute: TeamRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

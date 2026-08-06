@@ -4,7 +4,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { siteQuery, formatPrice } from "@/lib/site-query";
 import { PageHeader } from "@/components/site/Section";
 
-export const Route = createFileRoute("/servizi")({
+export const Route = createFileRoute("/servizi/")({
   head: () => ({
     meta: [
       { title: "Trattamenti viso, corpo e spa — Atelier Lumen" },
