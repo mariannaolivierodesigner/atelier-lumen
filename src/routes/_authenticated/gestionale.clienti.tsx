@@ -407,6 +407,43 @@ function Crm() {
                 <p className="rounded-md bg-secondary/60 p-4 text-sm">{selected.notes}</p>
               )}
 
+              <section className="space-y-3 rounded-md border border-border p-4">
+                <h3 className="text-xs tracking-wide text-muted-foreground uppercase">
+                  Privacy e GDPR
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  Gestisci le richieste di accesso, portabilità e cancellazione dei dati. Le
+                  prenotazioni non vengono eliminate ma anonimizzate per obblighi contabili.
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    onClick={() => exportMutation.mutate({ data: { id: selected.id } })}
+                    disabled={exportMutation.isPending}
+                    className="inline-flex items-center gap-2 rounded-md border border-border px-4 py-2.5 text-sm disabled:opacity-60"
+                  >
+                    <Download className="size-4" aria-hidden="true" />
+                    Esporta dati (JSON)
+                  </button>
+                  <button
+                    onClick={() => {
+                      if (
+                        window.confirm(
+                          `Cancellare definitivamente i dati personali di ${selected.full_name}? L'operazione è irreversibile.`,
+                        )
+                      ) {
+                        eraseMutation.mutate({ data: { id: selected.id } });
+                      }
+                    }}
+                    disabled={eraseMutation.isPending}
+                    className="inline-flex items-center gap-2 rounded-md border border-destructive/40 px-4 py-2.5 text-sm text-destructive disabled:opacity-60"
+                  >
+                    <ShieldOff className="size-4" aria-hidden="true" />
+                    Cancella dati (diritto all'oblio)
+                  </button>
+                </div>
+              </section>
+
+
               <section className="space-y-3">
                 <h3 className="text-xs tracking-wide text-muted-foreground uppercase">
                   Storico trattamenti
