@@ -174,7 +174,6 @@ function DettaglioTrattamento() {
           {service.is_bookable ? (
             <Link
               to="/prenota"
-              search={{ servizio: service.slug }}
               className="mt-7 inline-flex w-full justify-center rounded-md bg-primary px-6 py-3 text-sm text-primary-foreground"
             >
               Prenota ora
