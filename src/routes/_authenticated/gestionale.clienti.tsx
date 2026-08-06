@@ -3,11 +3,13 @@ import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-q
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Plus, RefreshCw, Trash2 } from "lucide-react";
+import { Download, Plus, RefreshCw, ShieldOff, Trash2 } from "lucide-react";
 import { customersQuery, formatDate } from "@/lib/crm-query";
 import {
   addCustomerNote,
   deleteCustomer,
+  eraseCustomerData,
+  exportCustomerData,
   importCustomersFromBookings,
   saveCustomer,
 } from "@/lib/crm.functions";
