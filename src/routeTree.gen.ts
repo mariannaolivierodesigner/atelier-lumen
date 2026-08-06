@@ -18,9 +18,10 @@ import { Route as ContattiRouteImport } from './routes/contatti'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as GiftCardRouteImport } from './routes/gift-card'
 import { Route as PrenotaRouteImport } from './routes/prenota'
-import { Route as ServiziRouteImport } from './routes/servizi'
 import { Route as TeamRouteImport } from './routes/team'
 import { Route as AuthenticatedGestionaleRouteImport } from './routes/_authenticated/gestionale'
+import { Route as ServiziIndexRouteImport } from './routes/servizi.index'
+import { Route as ServiziSlugRouteImport } from './routes/servizi.$slug'
 import { Route as AuthenticatedGestionaleIndexRouteImport } from './routes/_authenticated/gestionale.index'
 import { Route as AuthenticatedGestionaleAgendaRouteImport } from './routes/_authenticated/gestionale.agenda'
 import { Route as AuthenticatedGestionaleClientiRouteImport } from './routes/_authenticated/gestionale.clienti'
@@ -71,11 +72,6 @@ const PrenotaRoute = PrenotaRouteImport.update({
   path: '/prenota',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ServiziRoute = ServiziRouteImport.update({
-  id: '/servizi',
-  path: '/servizi',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const TeamRoute = TeamRouteImport.update({
   id: '/team',
   path: '/team',
@@ -85,6 +81,16 @@ const AuthenticatedGestionaleRoute = AuthenticatedGestionaleRouteImport.update({
   id: '/gestionale',
   path: '/gestionale',
   getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const ServiziIndexRoute = ServiziIndexRouteImport.update({
+  id: '/servizi/',
+  path: '/servizi/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ServiziSlugRoute = ServiziSlugRouteImport.update({
+  id: '/servizi/$slug',
+  path: '/servizi/$slug',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedGestionaleIndexRoute =
   AuthenticatedGestionaleIndexRouteImport.update({
@@ -126,9 +132,10 @@ export interface FileRoutesByFullPath {
   '/faq': typeof FaqRoute
   '/gift-card': typeof GiftCardRoute
   '/prenota': typeof PrenotaRoute
-  '/servizi': typeof ServiziRoute
   '/team': typeof TeamRoute
   '/gestionale': typeof AuthenticatedGestionaleRouteWithChildren
+  '/servizi/$slug': typeof ServiziSlugRoute
+  '/servizi/': typeof ServiziIndexRoute
   '/gestionale/agenda': typeof AuthenticatedGestionaleAgendaRoute
   '/gestionale/clienti': typeof AuthenticatedGestionaleClientiRoute
   '/gestionale/listino': typeof AuthenticatedGestionaleListinoRoute
@@ -144,8 +151,9 @@ export interface FileRoutesByTo {
   '/faq': typeof FaqRoute
   '/gift-card': typeof GiftCardRoute
   '/prenota': typeof PrenotaRoute
-  '/servizi': typeof ServiziRoute
   '/team': typeof TeamRoute
+  '/servizi/$slug': typeof ServiziSlugRoute
+  '/servizi': typeof ServiziIndexRoute
   '/gestionale/agenda': typeof AuthenticatedGestionaleAgendaRoute
   '/gestionale/clienti': typeof AuthenticatedGestionaleClientiRoute
   '/gestionale/listino': typeof AuthenticatedGestionaleListinoRoute
@@ -163,9 +171,10 @@ export interface FileRoutesById {
   '/faq': typeof FaqRoute
   '/gift-card': typeof GiftCardRoute
   '/prenota': typeof PrenotaRoute
-  '/servizi': typeof ServiziRoute
   '/team': typeof TeamRoute
   '/_authenticated/gestionale': typeof AuthenticatedGestionaleRouteWithChildren
+  '/servizi/$slug': typeof ServiziSlugRoute
+  '/servizi/': typeof ServiziIndexRoute
   '/_authenticated/gestionale/agenda': typeof AuthenticatedGestionaleAgendaRoute
   '/_authenticated/gestionale/clienti': typeof AuthenticatedGestionaleClientiRoute
   '/_authenticated/gestionale/listino': typeof AuthenticatedGestionaleListinoRoute
@@ -183,9 +192,10 @@ export interface FileRouteTypes {
     | '/faq'
     | '/gift-card'
     | '/prenota'
-    | '/servizi'
     | '/team'
     | '/gestionale'
+    | '/servizi/$slug'
+    | '/servizi/'
     | '/gestionale/agenda'
     | '/gestionale/clienti'
     | '/gestionale/listino'
@@ -201,8 +211,9 @@ export interface FileRouteTypes {
     | '/faq'
     | '/gift-card'
     | '/prenota'
-    | '/servizi'
     | '/team'
+    | '/servizi/$slug'
+    | '/servizi'
     | '/gestionale/agenda'
     | '/gestionale/clienti'
     | '/gestionale/listino'
@@ -219,9 +230,10 @@ export interface FileRouteTypes {
     | '/faq'
     | '/gift-card'
     | '/prenota'
-    | '/servizi'
     | '/team'
     | '/_authenticated/gestionale'
+    | '/servizi/$slug'
+    | '/servizi/'
     | '/_authenticated/gestionale/agenda'
     | '/_authenticated/gestionale/clienti'
     | '/_authenticated/gestionale/listino'
@@ -239,8 +251,9 @@ export interface RootRouteChildren {
   FaqRoute: typeof FaqRoute
   GiftCardRoute: typeof GiftCardRoute
   PrenotaRoute: typeof PrenotaRoute
-  ServiziRoute: typeof ServiziRoute
   TeamRoute: typeof TeamRoute
+  ServiziSlugRoute: typeof ServiziSlugRoute
+  ServiziIndexRoute: typeof ServiziIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -308,13 +321,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrenotaRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/servizi': {
-      id: '/servizi'
-      path: '/servizi'
-      fullPath: '/servizi'
-      preLoaderRoute: typeof ServiziRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/team': {
       id: '/team'
       path: '/team'
@@ -328,6 +334,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/gestionale'
       preLoaderRoute: typeof AuthenticatedGestionaleRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/servizi/': {
+      id: '/servizi/'
+      path: '/servizi'
+      fullPath: '/servizi/'
+      preLoaderRoute: typeof ServiziIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/servizi/$slug': {
+      id: '/servizi/$slug'
+      path: '/servizi/$slug'
+      fullPath: '/servizi/$slug'
+      preLoaderRoute: typeof ServiziSlugRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_authenticated/gestionale/': {
       id: '/_authenticated/gestionale/'
@@ -411,8 +431,9 @@ const rootRouteChildren: RootRouteChildren = {
   FaqRoute: FaqRoute,
   GiftCardRoute: GiftCardRoute,
   PrenotaRoute: PrenotaRoute,
-  ServiziRoute: ServiziRoute,
   TeamRoute: TeamRoute,
+  ServiziSlugRoute: ServiziSlugRoute,
+  ServiziIndexRoute: ServiziIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -4,7 +4,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { siteQuery, formatPrice } from "@/lib/site-query";
 import { PageHeader } from "@/components/site/Section";
 
-export const Route = createFileRoute("/servizi")({
+export const Route = createFileRoute("/servizi/")({
   head: () => ({
     meta: [
       { title: "Trattamenti viso, corpo e spa — Atelier Lumen" },
@@ -50,7 +50,11 @@ function Servizi() {
                   {items.map((s) => (
                     <li key={s.id} className="flex flex-wrap items-baseline justify-between gap-4">
                       <div className="max-w-xl">
-                        <h3 className="text-xl">{s.name}</h3>
+                        <h3 className="text-xl">
+                          <Link to="/servizi/$slug" params={{ slug: s.slug }} className="hover:underline">
+                            {s.name}
+                          </Link>
+                        </h3>
                         <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
                           {s.description}
                         </p>
