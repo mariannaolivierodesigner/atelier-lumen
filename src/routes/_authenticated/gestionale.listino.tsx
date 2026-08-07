@@ -14,6 +14,7 @@ import {
 } from "@/lib/catalog.functions";
 import { workspaceQuery } from "@/lib/admin-query";
 import { formatPrice } from "@/lib/site-query";
+import { AvailabilityEditor } from "@/components/gestionale/AvailabilityEditor";
 
 export const Route = createFileRoute("/_authenticated/gestionale/listino")({
   loader: ({ context }) => {
