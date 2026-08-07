@@ -267,13 +267,24 @@ function Prenota() {
                       </button>
                     );
                   })}
+                  {days.length === 0 && (
+                    <p className="text-sm text-muted-foreground">
+                      Nessun giorno disponibile per questo trattamento nelle prossime settimane.
+                      Contattaci per un appuntamento su misura.
+                    </p>
+                  )}
                 </div>
+                {rules.length > 0 && days.length > 0 && (
+                  <p className="mt-3 text-sm text-muted-foreground">
+                    Mostriamo solo i giorni in cui il trattamento è erogabile.
+                  </p>
+                )}
               </fieldset>
 
               <fieldset>
                 <legend className="mb-5 text-2xl">Scegli l'orario</legend>
                 <div className="flex flex-wrap gap-2">
-                  {SLOTS.map((s) => (
+                  {slots.map((s) => (
                     <button
                       key={s}
                       type="button"
@@ -283,6 +294,11 @@ function Prenota() {
                       {s}
                     </button>
                   ))}
+                  {day && slots.length === 0 && (
+                    <p className="text-sm text-muted-foreground">
+                      Nessun orario disponibile in questa giornata: scegli un altro giorno.
+                    </p>
+                  )}
                 </div>
               </fieldset>
             </div>
