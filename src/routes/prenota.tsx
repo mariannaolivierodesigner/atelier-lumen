@@ -229,7 +229,7 @@ function Prenota() {
                   >
                     Nessuna preferenza
                   </button>
-                  {data.staff.map((p) => (
+                  {allowedStaff.map((p) => (
                     <button
                       key={p.id}
                       type="button"
@@ -240,6 +240,11 @@ function Prenota() {
                     </button>
                   ))}
                 </div>
+                {serviceId && allowedStaff.length < data.staff.length && (
+                  <p className="mt-3 text-sm text-muted-foreground">
+                    Solo questi operatori sono abilitati al trattamento scelto.
+                  </p>
+                )}
               </fieldset>
             </div>
           )}
