@@ -463,6 +463,18 @@ function Listino() {
           </form>
         </section>
       )}
+
+      {form?.id && (
+        <AvailabilityEditor
+          key={form.id}
+          serviceId={form.id}
+          rules={data.availability.filter((a) => a.service_id === form.id)}
+          staff={data.staff}
+          enabledStaffIds={data.serviceStaff
+            .filter((x) => x.service_id === form.id)
+            .map((x) => x.staff_id)}
+        />
+      )}
     </div>
   );
 }
