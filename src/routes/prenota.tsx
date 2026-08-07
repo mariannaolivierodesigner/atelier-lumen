@@ -260,7 +260,10 @@ function Prenota() {
                       <button
                         key={value}
                         type="button"
-                        onClick={() => setDay(value)}
+                        onClick={() => {
+                          setDay(value);
+                          setSlot(null);
+                        }}
                         className={`min-h-11 rounded-md border px-4 py-2 text-sm ${day === value ? "border-accent bg-accent/10" : "border-border"}`}
                       >
                         {d.toLocaleDateString("it-IT", { weekday: "short", day: "numeric", month: "short" })}
