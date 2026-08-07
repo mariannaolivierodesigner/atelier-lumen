@@ -55,14 +55,58 @@ function Prenota() {
   const [sending, setSending] = useState(false);
   const [done, setDone] = useState(false);
 
-  const days = useMemo(() => nextDays(8), []);
+  const allDays = useMemo(() => nextDays(21), []);
   const bookableServices = useMemo(
     () => data.services.filter((s) => s.is_bookable),
     [data.services],
   );
   const service = data.services.find((s) => s.id === serviceId) ?? null;
   const location = data.locations.find((l) => l.id === locationId) ?? null;
-  const staff = data.staff.find((p) => p.id === staffId) ?? null;
+
+  /** Regole giorno/orario del trattamento scelto. Nessuna regola = sempre disponibile. */
+  const rules = useMemo(
+    () => data.availability.filter((a) => a.service_id === serviceId),
+    [data.availability, serviceId],
+  );
+
+  /** Operatori abilitati al trattamento. Nessuna abilitazione = tutti. */
+  const allowedStaff = useMemo(() => {
+    if (!serviceId) return data.staff;
+    const ids = data.serviceStaff
+      .filter((x) => x.service_id === serviceId)
+      .map((x) => x.staff_id);
+    return ids.length ? data.staff.filter((p) => ids.includes(p.id)) : data.staff;
+  }, [data.staff, data.serviceStaff, serviceId]);
+
+  const staff = allowedStaff.find((p) => p.id === staffId) ?? null;
+
+  const days = useMemo(() => {
+    const filtered = rules.length
+      ? allDays.filter((d) => rules.some((r) => r.weekday === d.getDay()))
+      : allDays;
+    return filtered.slice(0, 8);
+  }, [allDays, rules]);
+
+  const slots = useMemo(() => {
+    if (!day || !service) return SLOTS;
+    if (!rules.length) return SLOTS;
+    const weekday = new Date(`${day}T00:00:00`).getDay();
+    const dayRules = rules.filter((r) => r.weekday === weekday);
+    return SLOTS.filter((s) => {
+      const start = toMinutes(s);
+      const end = start + service.duration_minutes;
+      return dayRules.some(
+        (r) => toMinutes(r.start_time) <= start && toMinutes(r.end_time) >= end,
+      );
+    });
+  }, [day, rules, service]);
+
+  function chooseService(id: string) {
+    setServiceId(id);
+    setDay(null);
+    setSlot(null);
+    setStaffId(null);
+  }
 
   const canContinue = [!!locationId, !!serviceId, !!day && !!slot, true][step];
 
