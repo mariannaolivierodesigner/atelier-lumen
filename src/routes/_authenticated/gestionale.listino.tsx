@@ -302,6 +302,12 @@ function Listino() {
                   label={s.is_bookable ? "Prenotabile" : "Non prenotabile"}
                 />
                 {s.is_featured && <Badge on label="In evidenza" />}
+                {data.availability.some((a) => a.service_id === s.id) && (
+                  <Badge on label="Giorni limitati" />
+                )}
+                {data.serviceStaff.some((x) => x.service_id === s.id) && (
+                  <Badge on label="Operatori dedicati" />
+                )}
               </span>
               {canDelete && (
                 <button
