@@ -29,6 +29,12 @@ export const Route = createFileRoute("/prenota")({
 const STEPS = ["Sede", "Trattamento", "Data e ora", "Conferma"] as const;
 const SLOTS = ["09:00", "10:30", "12:00", "14:30", "16:00", "17:30", "19:00"];
 
+/** Converte "HH:MM" o "HH:MM:SS" in minuti dalla mezzanotte. */
+function toMinutes(value: string) {
+  const [h = "0", m = "0"] = value.split(":");
+  return Number(h) * 60 + Number(m);
+}
+
 function nextDays(count: number) {
   const out: Date[] = [];
   const d = new Date();
