@@ -42,8 +42,18 @@ export const getSite = createServerFn({ method: "GET" }).handler(async () => {
 
   const tenantId = tenant.id;
 
-  const [locations, categories, services, staff, sections, posts, faqs, reviews] =
-    await Promise.all([
+  const [
+    locations,
+    categories,
+    services,
+    staff,
+    sections,
+    posts,
+    faqs,
+    reviews,
+    availability,
+    serviceStaff,
+  ] = await Promise.all([
       supabase
         .from("locations")
         .select("id, name, address, city, postal_code, phone, email, opening_hours")
@@ -86,6 +96,15 @@ export const getSite = createServerFn({ method: "GET" }).handler(async () => {
         .select("id, author_name, rating, body, source")
         .eq("tenant_id", tenantId)
         .order("created_at", { ascending: false }),
+      supabase
+        .from("service_availability")
+        .select("service_id, weekday, start_time, end_time")
+        .eq("tenant_id", tenantId)
+        .order("weekday"),
+      supabase
+        .from("service_staff")
+        .select("service_id, staff_id")
+        .eq("tenant_id", tenantId),
     ]);
 
   return {
@@ -101,5 +120,7 @@ export const getSite = createServerFn({ method: "GET" }).handler(async () => {
     posts: posts.data ?? [],
     faqs: faqs.data ?? [],
     reviews: reviews.data ?? [],
+    availability: availability.data ?? [],
+    serviceStaff: serviceStaff.data ?? [],
   };
 });

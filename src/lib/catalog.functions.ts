@@ -2,20 +2,22 @@ import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { resolveTenantId } from "./crm.server";
 import {
+  availabilityInputSchema,
   categoryInputSchema,
   idSchema,
   serviceInputSchema,
   slugify,
 } from "./catalog.server";
 
-/** Listino completo del centro: categorie e trattamenti, anche non pubblicati. */
+/** Listino completo del centro: categorie, trattamenti e regole di disponibilità. */
 export const getCatalog = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const tenantId = await resolveTenantId(context.supabase);
-    if (!tenantId) return { categories: [], services: [] };
+    if (!tenantId)
+      return { categories: [], services: [], staff: [], availability: [], serviceStaff: [] };
 
-    const [categories, services] = await Promise.all([
+    const [categories, services, staff, availability, serviceStaff] = await Promise.all([
       context.supabase
         .from("service_categories")
         .select("id, name, slug, description, sort_order, is_active")
@@ -28,6 +30,20 @@ export const getCatalog = createServerFn({ method: "GET" })
         )
         .eq("tenant_id", tenantId)
         .order("sort_order"),
+      context.supabase
+        .from("staff")
+        .select("id, full_name, role_title")
+        .eq("tenant_id", tenantId)
+        .order("sort_order"),
+      context.supabase
+        .from("service_availability")
+        .select("id, service_id, weekday, start_time, end_time")
+        .eq("tenant_id", tenantId)
+        .order("weekday"),
+      context.supabase
+        .from("service_staff")
+        .select("service_id, staff_id")
+        .eq("tenant_id", tenantId),
     ]);
 
     if (categories.error || services.error) {
@@ -35,7 +51,71 @@ export const getCatalog = createServerFn({ method: "GET" })
       throw new Error("Non siamo riusciti a caricare il listino.");
     }
 
-    return { categories: categories.data ?? [], services: services.data ?? [] };
+    return {
+      categories: categories.data ?? [],
+      services: services.data ?? [],
+      staff: staff.data ?? [],
+      availability: availability.data ?? [],
+      serviceStaff: serviceStaff.data ?? [],
+    };
+  });
+
+/** Sostituisce le regole di disponibilità e gli operatori abilitati di un trattamento. */
+export const saveServiceAvailability = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => availabilityInputSchema.parse(input))
+  .handler(async ({ data, context }) => {
+    const tenantId = await resolveTenantId(context.supabase);
+    if (!tenantId) throw new Error("Centro non trovato");
+
+    const owned = await context.supabase
+      .from("services")
+      .select("id")
+      .eq("id", data.serviceId)
+      .eq("tenant_id", tenantId)
+      .maybeSingle();
+    if (owned.error) throw owned.error;
+    if (!owned.data) throw new Error("Trattamento non trovato");
+
+    const wipeRules = await context.supabase
+      .from("service_availability")
+      .delete()
+      .eq("tenant_id", tenantId)
+      .eq("service_id", data.serviceId);
+    if (wipeRules.error) throw wipeRules.error;
+
+    if (data.rules.length) {
+      const { error } = await context.supabase.from("service_availability").insert(
+        data.rules.map((r) => ({
+          tenant_id: tenantId,
+          service_id: data.serviceId,
+          weekday: r.weekday,
+          start_time: r.startTime,
+          end_time: r.endTime,
+        })),
+      );
+      if (error) throw error;
+    }
+
+    const wipeStaff = await context.supabase
+      .from("service_staff")
+      .delete()
+      .eq("tenant_id", tenantId)
+      .eq("service_id", data.serviceId);
+    if (wipeStaff.error) throw wipeStaff.error;
+
+    if (data.staffIds.length) {
+      const { error } = await context.supabase.from("service_staff").insert(
+        data.staffIds.map((staffId) => ({
+          tenant_id: tenantId,
+          service_id: data.serviceId,
+          staff_id: staffId,
+        })),
+      );
+      if (error) throw error;
+    }
+
+    return { ok: true as const };
   });
 
 /** Crea o aggiorna un trattamento del listino. */

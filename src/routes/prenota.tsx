@@ -29,6 +29,12 @@ export const Route = createFileRoute("/prenota")({
 const STEPS = ["Sede", "Trattamento", "Data e ora", "Conferma"] as const;
 const SLOTS = ["09:00", "10:30", "12:00", "14:30", "16:00", "17:30", "19:00"];
 
+/** Converte "HH:MM" o "HH:MM:SS" in minuti dalla mezzanotte. */
+function toMinutes(value: string) {
+  const [h = "0", m = "0"] = value.split(":");
+  return Number(h) * 60 + Number(m);
+}
+
 function nextDays(count: number) {
   const out: Date[] = [];
   const d = new Date();
@@ -55,14 +61,58 @@ function Prenota() {
   const [sending, setSending] = useState(false);
   const [done, setDone] = useState(false);
 
-  const days = useMemo(() => nextDays(8), []);
+  const allDays = useMemo(() => nextDays(21), []);
   const bookableServices = useMemo(
     () => data.services.filter((s) => s.is_bookable),
     [data.services],
   );
   const service = data.services.find((s) => s.id === serviceId) ?? null;
   const location = data.locations.find((l) => l.id === locationId) ?? null;
-  const staff = data.staff.find((p) => p.id === staffId) ?? null;
+
+  /** Regole giorno/orario del trattamento scelto. Nessuna regola = sempre disponibile. */
+  const rules = useMemo(
+    () => data.availability.filter((a) => a.service_id === serviceId),
+    [data.availability, serviceId],
+  );
+
+  /** Operatori abilitati al trattamento. Nessuna abilitazione = tutti. */
+  const allowedStaff = useMemo(() => {
+    if (!serviceId) return data.staff;
+    const ids = data.serviceStaff
+      .filter((x) => x.service_id === serviceId)
+      .map((x) => x.staff_id);
+    return ids.length ? data.staff.filter((p) => ids.includes(p.id)) : data.staff;
+  }, [data.staff, data.serviceStaff, serviceId]);
+
+  const staff = allowedStaff.find((p) => p.id === staffId) ?? null;
+
+  const days = useMemo(() => {
+    const filtered = rules.length
+      ? allDays.filter((d) => rules.some((r) => r.weekday === d.getDay()))
+      : allDays;
+    return filtered.slice(0, 8);
+  }, [allDays, rules]);
+
+  const slots = useMemo(() => {
+    if (!day || !service) return SLOTS;
+    if (!rules.length) return SLOTS;
+    const weekday = new Date(`${day}T00:00:00`).getDay();
+    const dayRules = rules.filter((r) => r.weekday === weekday);
+    return SLOTS.filter((s) => {
+      const start = toMinutes(s);
+      const end = start + service.duration_minutes;
+      return dayRules.some(
+        (r) => toMinutes(r.start_time) <= start && toMinutes(r.end_time) >= end,
+      );
+    });
+  }, [day, rules, service]);
+
+  function chooseService(id: string) {
+    setServiceId(id);
+    setDay(null);
+    setSlot(null);
+    setStaffId(null);
+  }
 
   const canContinue = [!!locationId, !!serviceId, !!day && !!slot, true][step];
 
@@ -157,7 +207,7 @@ function Prenota() {
                     <button
                       key={s.id}
                       type="button"
-                      onClick={() => setServiceId(s.id)}
+                      onClick={() => chooseService(s.id)}
                       className={`flex w-full flex-wrap items-baseline justify-between gap-3 rounded-lg border p-5 text-left transition-colors ${serviceId === s.id ? "border-accent bg-accent/10" : "border-border hover:border-foreground/30"}`}
                     >
                       <span className="text-lg">{s.name}</span>
@@ -179,7 +229,7 @@ function Prenota() {
                   >
                     Nessuna preferenza
                   </button>
-                  {data.staff.map((p) => (
+                  {allowedStaff.map((p) => (
                     <button
                       key={p.id}
                       type="button"
@@ -190,6 +240,11 @@ function Prenota() {
                     </button>
                   ))}
                 </div>
+                {serviceId && allowedStaff.length < data.staff.length && (
+                  <p className="mt-3 text-sm text-muted-foreground">
+                    Solo questi operatori sono abilitati al trattamento scelto.
+                  </p>
+                )}
               </fieldset>
             </div>
           )}
@@ -205,20 +260,34 @@ function Prenota() {
                       <button
                         key={value}
                         type="button"
-                        onClick={() => setDay(value)}
+                        onClick={() => {
+                          setDay(value);
+                          setSlot(null);
+                        }}
                         className={`min-h-11 rounded-md border px-4 py-2 text-sm ${day === value ? "border-accent bg-accent/10" : "border-border"}`}
                       >
                         {d.toLocaleDateString("it-IT", { weekday: "short", day: "numeric", month: "short" })}
                       </button>
                     );
                   })}
+                  {days.length === 0 && (
+                    <p className="text-sm text-muted-foreground">
+                      Nessun giorno disponibile per questo trattamento nelle prossime settimane.
+                      Contattaci per un appuntamento su misura.
+                    </p>
+                  )}
                 </div>
+                {rules.length > 0 && days.length > 0 && (
+                  <p className="mt-3 text-sm text-muted-foreground">
+                    Mostriamo solo i giorni in cui il trattamento è erogabile.
+                  </p>
+                )}
               </fieldset>
 
               <fieldset>
                 <legend className="mb-5 text-2xl">Scegli l'orario</legend>
                 <div className="flex flex-wrap gap-2">
-                  {SLOTS.map((s) => (
+                  {slots.map((s) => (
                     <button
                       key={s}
                       type="button"
@@ -228,6 +297,11 @@ function Prenota() {
                       {s}
                     </button>
                   ))}
+                  {day && slots.length === 0 && (
+                    <p className="text-sm text-muted-foreground">
+                      Nessun orario disponibile in questa giornata: scegli un altro giorno.
+                    </p>
+                  )}
                 </div>
               </fieldset>
             </div>

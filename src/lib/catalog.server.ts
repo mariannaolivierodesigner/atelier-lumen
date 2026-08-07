@@ -34,3 +34,22 @@ export const categoryInputSchema = z.object({
 });
 
 export const idSchema = z.object({ id: z.string().uuid() });
+
+const timeSchema = z.string().regex(/^\d{2}:\d{2}$/, "Orario non valido");
+
+export const availabilityInputSchema = z.object({
+  serviceId: z.string().uuid(),
+  rules: z
+    .array(
+      z.object({
+        weekday: z.number().int().min(0).max(6),
+        startTime: timeSchema,
+        endTime: timeSchema,
+      }),
+    )
+    .max(7)
+    .refine((rules) => rules.every((r) => r.endTime > r.startTime), {
+      message: "L'orario di fine deve seguire quello di inizio",
+    }),
+  staffIds: z.array(z.string().uuid()).max(50),
+});

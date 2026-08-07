@@ -14,6 +14,7 @@ import {
 } from "@/lib/catalog.functions";
 import { workspaceQuery } from "@/lib/admin-query";
 import { formatPrice } from "@/lib/site-query";
+import { AvailabilityEditor } from "@/components/gestionale/AvailabilityEditor";
 
 export const Route = createFileRoute("/_authenticated/gestionale/listino")({
   loader: ({ context }) => {
@@ -301,6 +302,12 @@ function Listino() {
                   label={s.is_bookable ? "Prenotabile" : "Non prenotabile"}
                 />
                 {s.is_featured && <Badge on label="In evidenza" />}
+                {data.availability.some((a) => a.service_id === s.id) && (
+                  <Badge on label="Giorni limitati" />
+                )}
+                {data.serviceStaff.some((x) => x.service_id === s.id) && (
+                  <Badge on label="Operatori dedicati" />
+                )}
               </span>
               {canDelete && (
                 <button
@@ -455,6 +462,18 @@ function Listino() {
             </div>
           </form>
         </section>
+      )}
+
+      {form?.id && (
+        <AvailabilityEditor
+          key={form.id}
+          serviceId={form.id}
+          rules={data.availability.filter((a) => a.service_id === form.id)}
+          staff={data.staff}
+          enabledStaffIds={data.serviceStaff
+            .filter((x) => x.service_id === form.id)
+            .map((x) => x.staff_id)}
+        />
       )}
     </div>
   );
