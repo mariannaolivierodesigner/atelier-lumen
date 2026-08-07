@@ -207,7 +207,7 @@ function Prenota() {
                     <button
                       key={s.id}
                       type="button"
-                      onClick={() => setServiceId(s.id)}
+                      onClick={() => chooseService(s.id)}
                       className={`flex w-full flex-wrap items-baseline justify-between gap-3 rounded-lg border p-5 text-left transition-colors ${serviceId === s.id ? "border-accent bg-accent/10" : "border-border hover:border-foreground/30"}`}
                     >
                       <span className="text-lg">{s.name}</span>
