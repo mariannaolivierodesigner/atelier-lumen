@@ -3,6 +3,7 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { resolveTenantId } from "./crm.server";
 import {
   availabilityInputSchema,
+  catalogImportSchema,
   categoryInputSchema,
   idSchema,
   serviceInputSchema,
@@ -239,4 +240,114 @@ export const getCatalogAuditLog = createServerFn({ method: "GET" })
       throw new Error("Non siamo riusciti a caricare lo storico modifiche.");
     }
     return { entries: data ?? [] };
+  });
+
+/** Importa o aggiorna in blocco i trattamenti del listino da un file CSV. */
+export const importCatalog = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => catalogImportSchema.parse(input))
+  .handler(async ({ data, context }) => {
+    const tenantId = await resolveTenantId(context.supabase);
+    if (!tenantId) throw new Error("Centro non trovato");
+
+    const [existingServices, existingCategories] = await Promise.all([
+      context.supabase.from("services").select("id, name").eq("tenant_id", tenantId),
+      context.supabase.from("service_categories").select("id, name").eq("tenant_id", tenantId),
+    ]);
+    if (existingServices.error) throw existingServices.error;
+    if (existingCategories.error) throw existingCategories.error;
+
+    const key = (value: string) => value.trim().toLowerCase();
+    const serviceByName = new Map(
+      (existingServices.data ?? []).map((s) => [key(s.name), s.id] as const),
+    );
+    const categoryByName = new Map(
+      (existingCategories.data ?? []).map((c) => [key(c.name), c.id] as const),
+    );
+
+    let created = 0;
+    let updated = 0;
+    let categoriesCreated = 0;
+    const errors: string[] = [];
+
+    for (const row of data.rows) {
+      try {
+        let categoryId: string | null | undefined;
+        if (row.categoryName && row.categoryName.trim()) {
+          const name = row.categoryName.trim();
+          categoryId = categoryByName.get(key(name)) ?? null;
+          if (!categoryId) {
+            const inserted = await context.supabase
+              .from("service_categories")
+              .insert({
+                tenant_id: tenantId,
+                name,
+                slug: `${slugify(name)}-${Math.random().toString(36).slice(2, 6)}`,
+                sort_order: 0,
+                is_active: true,
+              })
+              .select("id")
+              .single();
+            if (inserted.error) throw inserted.error;
+            categoryId = inserted.data.id;
+            categoryByName.set(key(name), categoryId);
+            categoriesCreated += 1;
+          }
+        }
+
+        const existingId = serviceByName.get(key(row.name));
+        const fields: Record<string, unknown> = {};
+        if (categoryId !== undefined) fields["category_id"] = categoryId;
+        if (row.description !== undefined) fields["description"] = row.description || null;
+        if (row.durationMinutes !== undefined) fields["duration_minutes"] = row.durationMinutes;
+        if (row.priceCents !== undefined) fields["price_cents"] = row.priceCents;
+        if (row.sortOrder !== undefined) fields["sort_order"] = row.sortOrder;
+        if (row.isActive !== undefined) fields["is_active"] = row.isActive;
+        if (row.isBookable !== undefined) fields["is_bookable"] = row.isBookable;
+        if (row.isFeatured !== undefined) fields["is_featured"] = row.isFeatured;
+
+        if (existingId) {
+          if (Object.keys(fields).length === 0) continue;
+          const { error } = await context.supabase
+            .from("services")
+            .update(fields)
+            .eq("id", existingId)
+            .eq("tenant_id", tenantId);
+          if (error) throw error;
+          updated += 1;
+          continue;
+        }
+
+        if (!data.createMissing) {
+          errors.push(`${row.name}: trattamento non presente a listino`);
+          continue;
+        }
+
+        const inserted = await context.supabase
+          .from("services")
+          .insert({
+            tenant_id: tenantId,
+            name: row.name,
+            slug: `${slugify(row.name)}-${Math.random().toString(36).slice(2, 6)}`,
+            category_id: (categoryId ?? null) as string | null,
+            description: row.description || null,
+            duration_minutes: row.durationMinutes ?? 60,
+            price_cents: row.priceCents ?? 0,
+            sort_order: row.sortOrder ?? 0,
+            is_active: row.isActive ?? true,
+            is_bookable: row.isBookable ?? true,
+            is_featured: row.isFeatured ?? false,
+          })
+          .select("id")
+          .single();
+        if (inserted.error) throw inserted.error;
+        serviceByName.set(key(row.name), inserted.data.id);
+        created += 1;
+      } catch (error) {
+        console.error("[catalog-import]", error);
+        errors.push(`${row.name}: riga non importata`);
+      }
+    }
+
+    return { created, updated, categoriesCreated, errors };
   });
