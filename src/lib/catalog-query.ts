@@ -1,5 +1,5 @@
 import { queryOptions } from "@tanstack/react-query";
-import { getCatalog } from "./catalog.functions";
+import { getCatalog, getCatalogAuditLog } from "./catalog.functions";
 
 export const catalogQuery = queryOptions({
   queryKey: ["catalog"],
@@ -13,3 +13,9 @@ export function formatDuration(minutes: number) {
   const m = minutes % 60;
   return m ? `${h}h ${m}′` : `${h}h`;
 }
+
+export const catalogAuditQuery = queryOptions({
+  queryKey: ["catalog", "audit"],
+  queryFn: () => getCatalogAuditLog(),
+  staleTime: 15 * 1000,
+});

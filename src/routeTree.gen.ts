@@ -27,6 +27,7 @@ import { Route as AuthenticatedGestionaleAgendaRouteImport } from './routes/_aut
 import { Route as AuthenticatedGestionaleClientiRouteImport } from './routes/_authenticated/gestionale.clienti'
 import { Route as AuthenticatedGestionaleListinoRouteImport } from './routes/_authenticated/gestionale.listino'
 import { Route as AuthenticatedGestionalePrenotazioniRouteImport } from './routes/_authenticated/gestionale.prenotazioni'
+import { Route as AuthenticatedGestionaleStoricoRouteImport } from './routes/_authenticated/gestionale.storico'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -122,6 +123,12 @@ const AuthenticatedGestionalePrenotazioniRoute =
     path: '/prenotazioni',
     getParentRoute: () => AuthenticatedGestionaleRoute,
   } as any)
+const AuthenticatedGestionaleStoricoRoute =
+  AuthenticatedGestionaleStoricoRouteImport.update({
+    id: '/storico',
+    path: '/storico',
+    getParentRoute: () => AuthenticatedGestionaleRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -140,6 +147,7 @@ export interface FileRoutesByFullPath {
   '/gestionale/clienti': typeof AuthenticatedGestionaleClientiRoute
   '/gestionale/listino': typeof AuthenticatedGestionaleListinoRoute
   '/gestionale/prenotazioni': typeof AuthenticatedGestionalePrenotazioniRoute
+  '/gestionale/storico': typeof AuthenticatedGestionaleStoricoRoute
   '/gestionale/': typeof AuthenticatedGestionaleIndexRoute
 }
 export interface FileRoutesByTo {
@@ -158,6 +166,7 @@ export interface FileRoutesByTo {
   '/gestionale/clienti': typeof AuthenticatedGestionaleClientiRoute
   '/gestionale/listino': typeof AuthenticatedGestionaleListinoRoute
   '/gestionale/prenotazioni': typeof AuthenticatedGestionalePrenotazioniRoute
+  '/gestionale/storico': typeof AuthenticatedGestionaleStoricoRoute
   '/gestionale': typeof AuthenticatedGestionaleIndexRoute
 }
 export interface FileRoutesById {
@@ -179,6 +188,7 @@ export interface FileRoutesById {
   '/_authenticated/gestionale/clienti': typeof AuthenticatedGestionaleClientiRoute
   '/_authenticated/gestionale/listino': typeof AuthenticatedGestionaleListinoRoute
   '/_authenticated/gestionale/prenotazioni': typeof AuthenticatedGestionalePrenotazioniRoute
+  '/_authenticated/gestionale/storico': typeof AuthenticatedGestionaleStoricoRoute
   '/_authenticated/gestionale/': typeof AuthenticatedGestionaleIndexRoute
 }
 export interface FileRouteTypes {
@@ -200,6 +210,7 @@ export interface FileRouteTypes {
     | '/gestionale/clienti'
     | '/gestionale/listino'
     | '/gestionale/prenotazioni'
+    | '/gestionale/storico'
     | '/gestionale/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -218,6 +229,7 @@ export interface FileRouteTypes {
     | '/gestionale/clienti'
     | '/gestionale/listino'
     | '/gestionale/prenotazioni'
+    | '/gestionale/storico'
     | '/gestionale'
   id:
     | '__root__'
@@ -238,6 +250,7 @@ export interface FileRouteTypes {
     | '/_authenticated/gestionale/clienti'
     | '/_authenticated/gestionale/listino'
     | '/_authenticated/gestionale/prenotazioni'
+    | '/_authenticated/gestionale/storico'
     | '/_authenticated/gestionale/'
   fileRoutesById: FileRoutesById
 }
@@ -384,6 +397,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedGestionalePrenotazioniRouteImport
       parentRoute: typeof AuthenticatedGestionaleRoute
     }
+    '/_authenticated/gestionale/storico': {
+      id: '/_authenticated/gestionale/storico'
+      path: '/storico'
+      fullPath: '/gestionale/storico'
+      preLoaderRoute: typeof AuthenticatedGestionaleStoricoRouteImport
+      parentRoute: typeof AuthenticatedGestionaleRoute
+    }
   }
 }
 
@@ -392,6 +412,7 @@ interface AuthenticatedGestionaleRouteChildren {
   AuthenticatedGestionaleClientiRoute: typeof AuthenticatedGestionaleClientiRoute
   AuthenticatedGestionaleListinoRoute: typeof AuthenticatedGestionaleListinoRoute
   AuthenticatedGestionalePrenotazioniRoute: typeof AuthenticatedGestionalePrenotazioniRoute
+  AuthenticatedGestionaleStoricoRoute: typeof AuthenticatedGestionaleStoricoRoute
   AuthenticatedGestionaleIndexRoute: typeof AuthenticatedGestionaleIndexRoute
 }
 
@@ -402,6 +423,7 @@ const AuthenticatedGestionaleRouteChildren: AuthenticatedGestionaleRouteChildren
     AuthenticatedGestionaleListinoRoute: AuthenticatedGestionaleListinoRoute,
     AuthenticatedGestionalePrenotazioniRoute:
       AuthenticatedGestionalePrenotazioniRoute,
+    AuthenticatedGestionaleStoricoRoute: AuthenticatedGestionaleStoricoRoute,
     AuthenticatedGestionaleIndexRoute: AuthenticatedGestionaleIndexRoute,
   }
 
