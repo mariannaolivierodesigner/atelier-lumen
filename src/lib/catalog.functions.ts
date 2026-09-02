@@ -220,3 +220,23 @@ export const deleteCategory = createServerFn({ method: "POST" })
     if (error) throw error;
     return { ok: true as const };
   });
+
+/** Storico delle modifiche al listino: chi ha cambiato cosa e quando. */
+export const getCatalogAuditLog = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const tenantId = await resolveTenantId(context.supabase);
+    if (!tenantId) return { entries: [] };
+
+    const { data, error } = await context.supabase
+      .from("catalog_audit_log")
+      .select("id, entity_type, entity_id, entity_label, action, changes, actor_name, created_at")
+      .eq("tenant_id", tenantId)
+      .order("created_at", { ascending: false })
+      .limit(300);
+    if (error) {
+      console.error("[catalog-audit]", error);
+      throw new Error("Non siamo riusciti a caricare lo storico modifiche.");
+    }
+    return { entries: data ?? [] };
+  });
