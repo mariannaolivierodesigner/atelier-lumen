@@ -53,3 +53,23 @@ export const availabilityInputSchema = z.object({
     }),
   staffIds: z.array(z.string().uuid()).max(50),
 });
+
+export const catalogImportSchema = z.object({
+  createMissing: z.boolean().default(true),
+  rows: z
+    .array(
+      z.object({
+        name: z.string().min(2).max(120),
+        categoryName: z.string().max(120).optional(),
+        description: z.string().max(2000).optional(),
+        durationMinutes: z.number().int().min(5).max(600).optional(),
+        priceCents: z.number().int().min(0).max(10_000_00).optional(),
+        sortOrder: z.number().int().min(0).max(999).optional(),
+        isActive: z.boolean().optional(),
+        isBookable: z.boolean().optional(),
+        isFeatured: z.boolean().optional(),
+      }),
+    )
+    .min(1)
+    .max(500),
+});
