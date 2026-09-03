@@ -59,6 +59,7 @@ function Prenota() {
   const [slot, setSlot] = useState<string | null>(null);
   const [form, setForm] = useState({ name: "", email: "", phone: "", notes: "" });
   const [sending, setSending] = useState(false);
+  const [rejection, setRejection] = useState<{ code: string; message: string } | null>(null);
   const [done, setDone] = useState(false);
 
   const allDays = useMemo(() => nextDays(21), []);
@@ -107,7 +108,36 @@ function Prenota() {
     });
   }, [day, rules, service]);
 
+  /** Prime combinazioni giorno/orario realmente erogabili per il trattamento scelto. */
+  const alternatives = useMemo(() => {
+    if (!service) return [] as { day: string; slot: string; label: string }[];
+    const out: { day: string; slot: string; label: string }[] = [];
+    for (const d of allDays) {
+      const weekday = d.getDay();
+      const dayRules = rules.filter((r) => r.weekday === weekday);
+      if (rules.length && !dayRules.length) continue;
+      for (const s of SLOTS) {
+        const start = toMinutes(s);
+        const end = start + service.duration_minutes;
+        const ok =
+          !rules.length ||
+          dayRules.some(
+            (r) => toMinutes(r.start_time) <= start && toMinutes(r.end_time) >= end,
+          );
+        if (!ok) continue;
+        out.push({
+          day: d.toISOString().slice(0, 10),
+          slot: s,
+          label: `${d.toLocaleDateString("it-IT", { weekday: "short", day: "numeric", month: "short" })} · ${s}`,
+        });
+        if (out.length >= 6) return out;
+      }
+    }
+    return out;
+  }, [allDays, rules, service]);
+
   function chooseService(id: string) {
+    setRejection(null);
     setServiceId(id);
     setDay(null);
     setSlot(null);
@@ -120,8 +150,9 @@ function Prenota() {
     e.preventDefault();
     if (!locationId || !serviceId || !day || !slot || !service) return;
     setSending(true);
+    setRejection(null);
     try {
-      await submit({
+      const result = await submit({
         data: {
           locationId,
           serviceId,
@@ -134,8 +165,19 @@ function Prenota() {
           notes: form.notes,
         },
       });
+      if (!result.ok) {
+        setRejection({ code: result.code, message: result.message });
+        toast.error(result.message);
+        if (result.code === "availability" || result.code === "date") setStep(2);
+        if (result.code === "staff" || result.code === "service") setStep(1);
+        return;
+      }
       setDone(true);
     } catch {
+      setRejection({
+        code: "unknown",
+        message: "Non siamo riusciti a registrare la richiesta. Riprova o contattaci.",
+      });
       toast.error("Non siamo riusciti a registrare la richiesta. Riprova.");
     } finally {
       setSending(false);
@@ -177,6 +219,87 @@ function Prenota() {
             </li>
           ))}
         </ol>
+
+        {rejection && (
+          <div
+            role="alert"
+            className="mt-8 rounded-lg border border-destructive/40 bg-destructive/5 p-6"
+          >
+            <p className="text-base">Prenotazione non confermata</p>
+            <p className="mt-2 text-sm text-muted-foreground">{rejection.message}</p>
+
+            {(rejection.code === "availability" || rejection.code === "date") &&
+              (alternatives.length > 0 ? (
+                <div className="mt-4">
+                  <p className="text-sm">Prime disponibilità per {service?.name}:</p>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {alternatives.map((a) => (
+                      <button
+                        key={`${a.day}-${a.slot}`}
+                        type="button"
+                        onClick={() => {
+                          setDay(a.day);
+                          setSlot(a.slot);
+                          setRejection(null);
+                          setStep(3);
+                        }}
+                        className="min-h-11 rounded-md border border-border bg-background px-4 py-2 text-sm hover:border-foreground/40"
+                      >
+                        {a.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <p className="mt-4 text-sm text-muted-foreground">
+                  Nessuna disponibilità nelle prossime settimane:{" "}
+                  <Link to="/contatti" className="underline underline-offset-4">
+                    scrivici
+                  </Link>{" "}
+                  per un appuntamento su misura.
+                </p>
+              ))}
+
+            {rejection.code === "staff" && (
+              <div className="mt-4">
+                <p className="text-sm">Operatori abilitati a questo trattamento:</p>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setStaffId(null);
+                      setRejection(null);
+                      setStep(3);
+                    }}
+                    className="min-h-11 rounded-full border border-border bg-background px-4 py-2 text-sm"
+                  >
+                    Nessuna preferenza
+                  </button>
+                  {allowedStaff.map((p) => (
+                    <button
+                      key={p.id}
+                      type="button"
+                      onClick={() => {
+                        setStaffId(p.id);
+                        setRejection(null);
+                        setStep(3);
+                      }}
+                      className="min-h-11 rounded-full border border-border bg-background px-4 py-2 text-sm hover:border-foreground/40"
+                    >
+                      {p.full_name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {rejection.code === "service" && (
+              <p className="mt-4 text-sm text-muted-foreground">
+                Scegli un altro trattamento tra quelli prenotabili online.
+              </p>
+            )}
+          </div>
+        )}
 
         <div className="mt-10">
           {step === 0 && (
