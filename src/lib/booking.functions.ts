@@ -15,6 +15,55 @@ const bookingSchema = z.object({
   notes: z.string().trim().max(1000).optional().or(z.literal("")),
 });
 
+export type BookingRejection = {
+  code: "availability" | "staff" | "date" | "service" | "location" | "data" | "unknown";
+  message: string;
+};
+
+/** Traduce l'errore della procedura di prenotazione in un messaggio chiaro per il cliente. */
+function describeBookingError(raw: string): BookingRejection {
+  const text = raw.toLowerCase();
+  if (text.includes("non \u00e8 disponibile in questo giorno")) {
+    return {
+      code: "availability",
+      message:
+        "Questo trattamento non viene erogato nel giorno o nell'orario scelto: scegli una delle disponibilit\u00e0 qui sotto.",
+    };
+  }
+  if (text.includes("operatore non abilitato")) {
+    return {
+      code: "staff",
+      message:
+        "L'operatore selezionato non esegue questo trattamento: scegli uno dei professionisti abilitati.",
+    };
+  }
+  if (text.includes("operatore non valido")) {
+    return { code: "staff", message: "L'operatore selezionato non \u00e8 pi\u00f9 disponibile." };
+  }
+  if (text.includes("data non valida")) {
+    return {
+      code: "date",
+      message: "La data scelta non \u00e8 pi\u00f9 prenotabile: seleziona un nuovo giorno.",
+    };
+  }
+  if (text.includes("trattamento non valido")) {
+    return {
+      code: "service",
+      message: "Questo trattamento non \u00e8 pi\u00f9 prenotabile online.",
+    };
+  }
+  if (text.includes("sede non valida")) {
+    return { code: "location", message: "La sede selezionata non \u00e8 pi\u00f9 attiva." };
+  }
+  if (text.includes("nome non valido") || text.includes("email non valida") || text.includes("telefono non valido") || text.includes("note troppo lunghe")) {
+    return { code: "data", message: "Controlla i dati di contatto inseriti: alcuni non sono validi." };
+  }
+  return {
+    code: "unknown",
+    message: "Non siamo riusciti a registrare la richiesta. Riprova o contattaci.",
+  };
+}
+
 export const createBooking = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => bookingSchema.parse(input))
   .handler(async ({ data }) => {
@@ -46,7 +95,7 @@ export const createBooking = createServerFn({ method: "POST" })
     });
     if (error) {
       console.error("[booking] request_booking failed", error);
-      throw new Error("Non siamo riusciti a registrare la richiesta.");
+      return { ok: false as const, ...describeBookingError(error.message ?? "") };
     }
 
     return { ok: true as const };
