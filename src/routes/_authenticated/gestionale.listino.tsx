@@ -15,6 +15,7 @@ import {
 import { workspaceQuery } from "@/lib/admin-query";
 import { formatPrice } from "@/lib/site-query";
 import { AvailabilityEditor } from "@/components/gestionale/AvailabilityEditor";
+import { CatalogCsv } from "@/components/gestionale/CatalogCsv";
 
 export const Route = createFileRoute("/_authenticated/gestionale/listino")({
   loader: ({ context }) => {
@@ -167,6 +168,8 @@ function Listino() {
           <Plus className="size-4" aria-hidden /> Nuovo trattamento
         </button>
       </header>
+
+      <CatalogCsv services={data.services} categories={data.categories} />
 
       <section className="rounded-lg border border-border bg-background p-6">
         <div className="flex flex-wrap items-center justify-between gap-4">
