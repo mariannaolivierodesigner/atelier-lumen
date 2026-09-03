@@ -296,15 +296,24 @@ export const importCatalog = createServerFn({ method: "POST" })
         }
 
         const existingId = serviceByName.get(key(row.name));
-        const fields: Record<string, unknown> = {};
-        if (categoryId !== undefined) fields["category_id"] = categoryId;
-        if (row.description !== undefined) fields["description"] = row.description || null;
-        if (row.durationMinutes !== undefined) fields["duration_minutes"] = row.durationMinutes;
-        if (row.priceCents !== undefined) fields["price_cents"] = row.priceCents;
-        if (row.sortOrder !== undefined) fields["sort_order"] = row.sortOrder;
-        if (row.isActive !== undefined) fields["is_active"] = row.isActive;
-        if (row.isBookable !== undefined) fields["is_bookable"] = row.isBookable;
-        if (row.isFeatured !== undefined) fields["is_featured"] = row.isFeatured;
+        const fields: {
+          category_id?: string | null;
+          description?: string | null;
+          duration_minutes?: number;
+          price_cents?: number;
+          sort_order?: number;
+          is_active?: boolean;
+          is_bookable?: boolean;
+          is_featured?: boolean;
+        } = {};
+        if (categoryId !== undefined) fields.category_id = categoryId;
+        if (row.description !== undefined) fields.description = row.description || null;
+        if (row.durationMinutes !== undefined) fields.duration_minutes = row.durationMinutes;
+        if (row.priceCents !== undefined) fields.price_cents = row.priceCents;
+        if (row.sortOrder !== undefined) fields.sort_order = row.sortOrder;
+        if (row.isActive !== undefined) fields.is_active = row.isActive;
+        if (row.isBookable !== undefined) fields.is_bookable = row.isBookable;
+        if (row.isFeatured !== undefined) fields.is_featured = row.isFeatured;
 
         if (existingId) {
           if (Object.keys(fields).length === 0) continue;

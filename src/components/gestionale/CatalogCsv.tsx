@@ -84,6 +84,9 @@ function mapRows(rows: CsvRow[]): { rows: ImportRow[]; skipped: number } {
     const duration = toNumber(pick(row, "durata_minuti", "durata", "minuti", "duration"));
     const price = toNumber(pick(row, "prezzo_eur", "prezzo", "price"));
     const sort = toNumber(pick(row, "ordinamento", "ordine", "sort"));
+    const active = toBoolean(pick(row, "pubblicato", "attivo", "published"));
+    const bookable = toBoolean(pick(row, "prenotabile", "bookable"));
+    const featured = toBoolean(pick(row, "in_evidenza", "evidenza", "featured"));
 
     mapped.push({
       name,
@@ -96,15 +99,9 @@ function mapRows(rows: CsvRow[]): { rows: ImportRow[]; skipped: number } {
       ...(duration !== undefined ? { durationMinutes: Math.round(duration) } : {}),
       ...(price !== undefined ? { priceCents: Math.round(price * 100) } : {}),
       ...(sort !== undefined ? { sortOrder: Math.round(sort) } : {}),
-      ...(toBoolean(pick(row, "pubblicato", "attivo", "published")) !== undefined
-        ? { isActive: toBoolean(pick(row, "pubblicato", "attivo", "published")) }
-        : {}),
-      ...(toBoolean(pick(row, "prenotabile", "bookable")) !== undefined
-        ? { isBookable: toBoolean(pick(row, "prenotabile", "bookable")) }
-        : {}),
-      ...(toBoolean(pick(row, "in_evidenza", "evidenza", "featured")) !== undefined
-        ? { isFeatured: toBoolean(pick(row, "in_evidenza", "evidenza", "featured")) }
-        : {}),
+      ...(active !== undefined ? { isActive: active } : {}),
+      ...(bookable !== undefined ? { isBookable: bookable } : {}),
+      ...(featured !== undefined ? { isFeatured: featured } : {}),
     });
   }
 
