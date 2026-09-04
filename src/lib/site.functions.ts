@@ -53,6 +53,7 @@ export const getSite = createServerFn({ method: "GET" }).handler(async () => {
     reviews,
     availability,
     serviceStaff,
+    closures,
   ] = await Promise.all([
       supabase
         .from("locations")
@@ -105,6 +106,11 @@ export const getSite = createServerFn({ method: "GET" }).handler(async () => {
         .from("service_staff")
         .select("service_id, staff_id")
         .eq("tenant_id", tenantId),
+      supabase
+        .from("closures")
+        .select("id, location_id, start_date, end_date, reason")
+        .eq("tenant_id", tenantId)
+        .order("start_date"),
     ]);
 
   return {
@@ -122,5 +128,6 @@ export const getSite = createServerFn({ method: "GET" }).handler(async () => {
     reviews: reviews.data ?? [],
     availability: availability.data ?? [],
     serviceStaff: serviceStaff.data ?? [],
+    closures: closures.data ?? [],
   };
 });
