@@ -35,6 +35,11 @@ function toMinutes(value: string) {
   return Number(h) * 60 + Number(m);
 }
 
+/** Data locale in formato ISO (YYYY-MM-DD), senza slittamenti di fuso. */
+function ymd(d: Date) {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
 function nextDays(count: number) {
   const out: Date[] = [];
   const d = new Date();
@@ -62,13 +67,36 @@ function Prenota() {
   const [rejection, setRejection] = useState<{ code: string; message: string } | null>(null);
   const [done, setDone] = useState(false);
 
-  const allDays = useMemo(() => nextDays(21), []);
+  const rawDays = useMemo(() => nextDays(21), []);
   const bookableServices = useMemo(
     () => data.services.filter((s) => s.is_bookable),
     [data.services],
   );
   const service = data.services.find((s) => s.id === serviceId) ?? null;
   const location = data.locations.find((l) => l.id === locationId) ?? null;
+
+  /** Chiusure straordinarie e ferie che riguardano la sede scelta. */
+  const closures = useMemo(
+    () =>
+      data.closures.filter((c) => !c.location_id || !locationId || c.location_id === locationId),
+    [data.closures, locationId],
+  );
+
+  const isClosed = useMemo(
+    () => (d: Date) => {
+      const value = ymd(d);
+      return closures.some((c) => value >= c.start_date && value <= c.end_date);
+    },
+    [closures],
+  );
+
+  /** Giorni prenotabili: esclude ferie e chiusure straordinarie. */
+  const allDays = useMemo(() => rawDays.filter((d) => !isClosed(d)), [rawDays, isClosed]);
+
+  const upcomingClosures = useMemo(() => {
+    const today = ymd(new Date());
+    return closures.filter((c) => c.end_date >= today).slice(0, 3);
+  }, [closures]);
 
   /** Regole giorno/orario del trattamento scelto. Nessuna regola = sempre disponibile. */
   const rules = useMemo(
@@ -126,7 +154,7 @@ function Prenota() {
           );
         if (!ok) continue;
         out.push({
-          day: d.toISOString().slice(0, 10),
+          day: ymd(d),
           slot: s,
           label: `${d.toLocaleDateString("it-IT", { weekday: "short", day: "numeric", month: "short" })} · ${s}`,
         });
@@ -378,7 +406,7 @@ function Prenota() {
                 <legend className="mb-5 text-2xl">Scegli il giorno</legend>
                 <div className="flex flex-wrap gap-2">
                   {days.map((d) => {
-                    const value = d.toISOString().slice(0, 10);
+                    const value = ymd(d);
                     return (
                       <button
                         key={value}
@@ -400,6 +428,25 @@ function Prenota() {
                     </p>
                   )}
                 </div>
+                {upcomingClosures.length > 0 && (
+                  <p className="mt-3 text-sm text-muted-foreground">
+                    Chiusure previste:{" "}
+                    {upcomingClosures
+                      .map((c) => {
+                        const from = new Date(`${c.start_date}T00:00:00`).toLocaleDateString(
+                          "it-IT",
+                          { day: "numeric", month: "short" },
+                        );
+                        const to = new Date(`${c.end_date}T00:00:00`).toLocaleDateString("it-IT", {
+                          day: "numeric",
+                          month: "short",
+                        });
+                        return `${c.reason} (${from === to ? from : `${from} – ${to}`})`;
+                      })
+                      .join(" · ")}
+                    .
+                  </p>
+                )}
                 {rules.length > 0 && days.length > 0 && (
                   <p className="mt-3 text-sm text-muted-foreground">
                     Mostriamo solo i giorni in cui il trattamento è erogabile.
