@@ -196,7 +196,8 @@ function Prenota() {
       if (!result.ok) {
         setRejection({ code: result.code, message: result.message });
         toast.error(result.message);
-        if (result.code === "availability" || result.code === "date") setStep(2);
+        if (result.code === "availability" || result.code === "date" || result.code === "closure")
+          setStep(2);
         if (result.code === "staff" || result.code === "service") setStep(1);
         return;
       }
@@ -256,7 +257,9 @@ function Prenota() {
             <p className="text-base">Prenotazione non confermata</p>
             <p className="mt-2 text-sm text-muted-foreground">{rejection.message}</p>
 
-            {(rejection.code === "availability" || rejection.code === "date") &&
+            {(rejection.code === "availability" ||
+              rejection.code === "date" ||
+              rejection.code === "closure") &&
               (alternatives.length > 0 ? (
                 <div className="mt-4">
                   <p className="text-sm">Prime disponibilità per {service?.name}:</p>
