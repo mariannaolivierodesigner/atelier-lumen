@@ -24,6 +24,7 @@ import { Route as ServiziIndexRouteImport } from './routes/servizi.index'
 import { Route as ServiziSlugRouteImport } from './routes/servizi.$slug'
 import { Route as AuthenticatedGestionaleIndexRouteImport } from './routes/_authenticated/gestionale.index'
 import { Route as AuthenticatedGestionaleAgendaRouteImport } from './routes/_authenticated/gestionale.agenda'
+import { Route as AuthenticatedGestionaleChiusureRouteImport } from './routes/_authenticated/gestionale.chiusure'
 import { Route as AuthenticatedGestionaleClientiRouteImport } from './routes/_authenticated/gestionale.clienti'
 import { Route as AuthenticatedGestionaleListinoRouteImport } from './routes/_authenticated/gestionale.listino'
 import { Route as AuthenticatedGestionalePrenotazioniRouteImport } from './routes/_authenticated/gestionale.prenotazioni'
@@ -105,6 +106,12 @@ const AuthenticatedGestionaleAgendaRoute =
     path: '/agenda',
     getParentRoute: () => AuthenticatedGestionaleRoute,
   } as any)
+const AuthenticatedGestionaleChiusureRoute =
+  AuthenticatedGestionaleChiusureRouteImport.update({
+    id: '/chiusure',
+    path: '/chiusure',
+    getParentRoute: () => AuthenticatedGestionaleRoute,
+  } as any)
 const AuthenticatedGestionaleClientiRoute =
   AuthenticatedGestionaleClientiRouteImport.update({
     id: '/clienti',
@@ -144,6 +151,7 @@ export interface FileRoutesByFullPath {
   '/servizi/$slug': typeof ServiziSlugRoute
   '/servizi/': typeof ServiziIndexRoute
   '/gestionale/agenda': typeof AuthenticatedGestionaleAgendaRoute
+  '/gestionale/chiusure': typeof AuthenticatedGestionaleChiusureRoute
   '/gestionale/clienti': typeof AuthenticatedGestionaleClientiRoute
   '/gestionale/listino': typeof AuthenticatedGestionaleListinoRoute
   '/gestionale/prenotazioni': typeof AuthenticatedGestionalePrenotazioniRoute
@@ -163,6 +171,7 @@ export interface FileRoutesByTo {
   '/servizi/$slug': typeof ServiziSlugRoute
   '/servizi': typeof ServiziIndexRoute
   '/gestionale/agenda': typeof AuthenticatedGestionaleAgendaRoute
+  '/gestionale/chiusure': typeof AuthenticatedGestionaleChiusureRoute
   '/gestionale/clienti': typeof AuthenticatedGestionaleClientiRoute
   '/gestionale/listino': typeof AuthenticatedGestionaleListinoRoute
   '/gestionale/prenotazioni': typeof AuthenticatedGestionalePrenotazioniRoute
@@ -185,6 +194,7 @@ export interface FileRoutesById {
   '/servizi/$slug': typeof ServiziSlugRoute
   '/servizi/': typeof ServiziIndexRoute
   '/_authenticated/gestionale/agenda': typeof AuthenticatedGestionaleAgendaRoute
+  '/_authenticated/gestionale/chiusure': typeof AuthenticatedGestionaleChiusureRoute
   '/_authenticated/gestionale/clienti': typeof AuthenticatedGestionaleClientiRoute
   '/_authenticated/gestionale/listino': typeof AuthenticatedGestionaleListinoRoute
   '/_authenticated/gestionale/prenotazioni': typeof AuthenticatedGestionalePrenotazioniRoute
@@ -207,6 +217,7 @@ export interface FileRouteTypes {
     | '/servizi/$slug'
     | '/servizi/'
     | '/gestionale/agenda'
+    | '/gestionale/chiusure'
     | '/gestionale/clienti'
     | '/gestionale/listino'
     | '/gestionale/prenotazioni'
@@ -226,6 +237,7 @@ export interface FileRouteTypes {
     | '/servizi/$slug'
     | '/servizi'
     | '/gestionale/agenda'
+    | '/gestionale/chiusure'
     | '/gestionale/clienti'
     | '/gestionale/listino'
     | '/gestionale/prenotazioni'
@@ -247,6 +259,7 @@ export interface FileRouteTypes {
     | '/servizi/$slug'
     | '/servizi/'
     | '/_authenticated/gestionale/agenda'
+    | '/_authenticated/gestionale/chiusure'
     | '/_authenticated/gestionale/clienti'
     | '/_authenticated/gestionale/listino'
     | '/_authenticated/gestionale/prenotazioni'
@@ -376,6 +389,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedGestionaleAgendaRouteImport
       parentRoute: typeof AuthenticatedGestionaleRoute
     }
+    '/_authenticated/gestionale/chiusure': {
+      id: '/_authenticated/gestionale/chiusure'
+      path: '/chiusure'
+      fullPath: '/gestionale/chiusure'
+      preLoaderRoute: typeof AuthenticatedGestionaleChiusureRouteImport
+      parentRoute: typeof AuthenticatedGestionaleRoute
+    }
     '/_authenticated/gestionale/clienti': {
       id: '/_authenticated/gestionale/clienti'
       path: '/clienti'
@@ -409,6 +429,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedGestionaleRouteChildren {
   AuthenticatedGestionaleAgendaRoute: typeof AuthenticatedGestionaleAgendaRoute
+  AuthenticatedGestionaleChiusureRoute: typeof AuthenticatedGestionaleChiusureRoute
   AuthenticatedGestionaleClientiRoute: typeof AuthenticatedGestionaleClientiRoute
   AuthenticatedGestionaleListinoRoute: typeof AuthenticatedGestionaleListinoRoute
   AuthenticatedGestionalePrenotazioniRoute: typeof AuthenticatedGestionalePrenotazioniRoute
@@ -419,6 +440,7 @@ interface AuthenticatedGestionaleRouteChildren {
 const AuthenticatedGestionaleRouteChildren: AuthenticatedGestionaleRouteChildren =
   {
     AuthenticatedGestionaleAgendaRoute: AuthenticatedGestionaleAgendaRoute,
+    AuthenticatedGestionaleChiusureRoute: AuthenticatedGestionaleChiusureRoute,
     AuthenticatedGestionaleClientiRoute: AuthenticatedGestionaleClientiRoute,
     AuthenticatedGestionaleListinoRoute: AuthenticatedGestionaleListinoRoute,
     AuthenticatedGestionalePrenotazioniRoute:
