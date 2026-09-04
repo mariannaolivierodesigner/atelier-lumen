@@ -73,3 +73,19 @@ export const catalogImportSchema = z.object({
     .min(1)
     .max(500),
 });
+
+const dateSchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Data non valida");
+
+export const closureInputSchema = z
+  .object({
+    id: z.string().uuid().optional(),
+    locationId: z.string().uuid().nullable().optional(),
+    startDate: dateSchema,
+    endDate: dateSchema,
+    reason: z.string().min(2).max(120),
+    notes: z.string().max(500).optional(),
+  })
+  .refine((c) => c.endDate >= c.startDate, {
+    message: "La data di fine deve seguire quella di inizio",
+    path: ["endDate"],
+  });

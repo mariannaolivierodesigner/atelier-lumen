@@ -16,14 +16,30 @@ const bookingSchema = z.object({
 });
 
 export type BookingRejection = {
-  code: "availability" | "staff" | "date" | "service" | "location" | "data" | "unknown";
+  code:
+    | "availability"
+    | "closure"
+    | "staff"
+    | "date"
+    | "service"
+    | "location"
+    | "data"
+    | "unknown";
   message: string;
 };
 
 /** Traduce l'errore della procedura di prenotazione in un messaggio chiaro per il cliente. */
 function describeBookingError(raw: string): BookingRejection {
   const text = raw.toLowerCase();
+  if (text.includes("il centro \u00e8 chiuso")) {
+    return {
+      code: "closure",
+      message:
+        "Il centro \u00e8 chiuso nella data scelta (ferie o chiusura straordinaria): scegli un altro giorno tra quelli proposti.",
+    };
+  }
   if (text.includes("non \u00e8 disponibile in questo giorno")) {
+
     return {
       code: "availability",
       message:
