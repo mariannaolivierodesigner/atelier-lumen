@@ -2,6 +2,7 @@ import { createFileRoute, Link, Outlet, useNavigate } from "@tanstack/react-rout
 import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import {
   CalendarDays,
+  CalendarOff,
   History,
   LayoutDashboard,
   ListChecks,
@@ -25,6 +26,7 @@ const NAV = [
   { to: "/gestionale/prenotazioni", label: "Prenotazioni", icon: ListChecks, exact: false },
   { to: "/gestionale/clienti", label: "Clienti", icon: Users, exact: false },
   { to: "/gestionale/listino", label: "Listino", icon: Sparkles, exact: false },
+  { to: "/gestionale/chiusure", label: "Chiusure", icon: CalendarOff, exact: false },
   { to: "/gestionale/storico", label: "Storico", icon: History, exact: false },
 ] as const;
 
