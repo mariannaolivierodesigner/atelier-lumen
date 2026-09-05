@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { hasOverlappingRules } from "@/lib/availability";
+
 /** Genera uno slug stabile a partire dal nome del trattamento o della categoria. */
 export function slugify(value: string) {
   return value
