@@ -127,7 +127,7 @@ function Prenota() {
           locationId,
           serviceId,
           staffId,
-          startsAt: new Date(`${day}T${slot}:00`).toISOString(),
+          startsAt: toUtcISO(day, slot),
           durationMinutes: service.duration_minutes,
           customerName: form.name,
           customerEmail: form.email,
