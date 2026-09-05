@@ -8,6 +8,18 @@ import { toast } from "sonner";
 import { siteQuery, formatPrice } from "@/lib/site-query";
 import { createBooking } from "@/lib/booking.functions";
 import { PageHeader } from "@/components/site/Section";
+import {
+  SLOTS,
+  allowedStaffFor,
+  bookableDays,
+  buildAlternatives,
+  closuresForLocation,
+  isClosedOn,
+  nextDays,
+  slotsForDay,
+  toUtcISO,
+  ymd,
+} from "@/lib/availability";
 
 export const Route = createFileRoute("/prenota")({
   head: () => ({
