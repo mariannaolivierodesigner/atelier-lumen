@@ -29,7 +29,7 @@ export type BookingRejection = {
 };
 
 /** Traduce l'errore della procedura di prenotazione in un messaggio chiaro per il cliente. */
-function describeBookingError(raw: string): BookingRejection {
+export function describeBookingError(raw: string): BookingRejection {
   const text = raw.toLowerCase();
   if (text.includes("il centro \u00e8 chiuso")) {
     return {

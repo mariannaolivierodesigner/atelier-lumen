@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { hasOverlappingRules } from "@/lib/availability";
+
 /** Genera uno slug stabile a partire dal nome del trattamento o della categoria. */
 export function slugify(value: string) {
   return value
@@ -47,10 +49,21 @@ export const availabilityInputSchema = z.object({
         endTime: timeSchema,
       }),
     )
-    .max(7)
+    .max(14)
     .refine((rules) => rules.every((r) => r.endTime > r.startTime), {
       message: "L'orario di fine deve seguire quello di inizio",
-    }),
+    })
+    .refine(
+      (rules) =>
+        !hasOverlappingRules(
+          rules.map((r) => ({
+            weekday: r.weekday,
+            start_time: r.startTime,
+            end_time: r.endTime,
+          })),
+        ),
+      { message: "Due fasce orarie dello stesso giorno si sovrappongono" },
+    ),
   staffIds: z.array(z.string().uuid()).max(50),
 });
 

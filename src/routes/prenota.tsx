@@ -8,6 +8,18 @@ import { toast } from "sonner";
 import { siteQuery, formatPrice } from "@/lib/site-query";
 import { createBooking } from "@/lib/booking.functions";
 import { PageHeader } from "@/components/site/Section";
+import {
+  SLOTS,
+  allowedStaffFor,
+  bookableDays,
+  buildAlternatives,
+  closuresForLocation,
+  isClosedOn,
+  nextDays,
+  slotsForDay,
+  toUtcISO,
+  ymd,
+} from "@/lib/availability";
 
 export const Route = createFileRoute("/prenota")({
   head: () => ({
@@ -27,30 +39,6 @@ export const Route = createFileRoute("/prenota")({
 });
 
 const STEPS = ["Sede", "Trattamento", "Data e ora", "Conferma"] as const;
-const SLOTS = ["09:00", "10:30", "12:00", "14:30", "16:00", "17:30", "19:00"];
-
-/** Converte "HH:MM" o "HH:MM:SS" in minuti dalla mezzanotte. */
-function toMinutes(value: string) {
-  const [h = "0", m = "0"] = value.split(":");
-  return Number(h) * 60 + Number(m);
-}
-
-/** Data locale in formato ISO (YYYY-MM-DD), senza slittamenti di fuso. */
-function ymd(d: Date) {
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-}
-
-function nextDays(count: number) {
-  const out: Date[] = [];
-  const d = new Date();
-  d.setHours(0, 0, 0, 0);
-  for (let i = 1; out.length < count; i++) {
-    const day = new Date(d);
-    day.setDate(d.getDate() + i);
-    if (day.getDay() !== 0) out.push(day);
-  }
-  return out;
-}
 
 function Prenota() {
   const { data } = useSuspenseQuery(siteQuery);
@@ -77,21 +65,9 @@ function Prenota() {
 
   /** Chiusure straordinarie e ferie che riguardano la sede scelta. */
   const closures = useMemo(
-    () =>
-      data.closures.filter((c) => !c.location_id || !locationId || c.location_id === locationId),
+    () => closuresForLocation(data.closures, locationId),
     [data.closures, locationId],
   );
-
-  const isClosed = useMemo(
-    () => (d: Date) => {
-      const value = ymd(d);
-      return closures.some((c) => value >= c.start_date && value <= c.end_date);
-    },
-    [closures],
-  );
-
-  /** Giorni prenotabili: esclude ferie e chiusure straordinarie. */
-  const allDays = useMemo(() => rawDays.filter((d) => !isClosed(d)), [rawDays, isClosed]);
 
   const upcomingClosures = useMemo(() => {
     const today = ymd(new Date());
@@ -105,64 +81,30 @@ function Prenota() {
   );
 
   /** Operatori abilitati al trattamento. Nessuna abilitazione = tutti. */
-  const allowedStaff = useMemo(() => {
-    if (!serviceId) return data.staff;
-    const ids = data.serviceStaff
-      .filter((x) => x.service_id === serviceId)
-      .map((x) => x.staff_id);
-    return ids.length ? data.staff.filter((p) => ids.includes(p.id)) : data.staff;
-  }, [data.staff, data.serviceStaff, serviceId]);
+  const allowedStaff = useMemo(
+    () => allowedStaffFor(data.staff, data.serviceStaff, serviceId),
+    [data.staff, data.serviceStaff, serviceId],
+  );
 
   const staff = allowedStaff.find((p) => p.id === staffId) ?? null;
 
-  const days = useMemo(() => {
-    const filtered = rules.length
-      ? allDays.filter((d) => rules.some((r) => r.weekday === d.getDay()))
-      : allDays;
-    return filtered.slice(0, 8);
-  }, [allDays, rules]);
+  const days = useMemo(
+    () => bookableDays(rawDays, rules, closures).slice(0, 8),
+    [rawDays, rules, closures],
+  );
 
   const slots = useMemo(() => {
     if (!day || !service) return SLOTS;
-    if (!rules.length) return SLOTS;
-    const weekday = new Date(`${day}T00:00:00`).getDay();
-    const dayRules = rules.filter((r) => r.weekday === weekday);
-    return SLOTS.filter((s) => {
-      const start = toMinutes(s);
-      const end = start + service.duration_minutes;
-      return dayRules.some(
-        (r) => toMinutes(r.start_time) <= start && toMinutes(r.end_time) >= end,
-      );
-    });
-  }, [day, rules, service]);
+    if (isClosedOn(closures, day)) return [];
+    return slotsForDay(rules, day, service.duration_minutes);
+  }, [day, rules, service, closures]);
 
   /** Prime combinazioni giorno/orario realmente erogabili per il trattamento scelto. */
-  const alternatives = useMemo(() => {
-    if (!service) return [] as { day: string; slot: string; label: string }[];
-    const out: { day: string; slot: string; label: string }[] = [];
-    for (const d of allDays) {
-      const weekday = d.getDay();
-      const dayRules = rules.filter((r) => r.weekday === weekday);
-      if (rules.length && !dayRules.length) continue;
-      for (const s of SLOTS) {
-        const start = toMinutes(s);
-        const end = start + service.duration_minutes;
-        const ok =
-          !rules.length ||
-          dayRules.some(
-            (r) => toMinutes(r.start_time) <= start && toMinutes(r.end_time) >= end,
-          );
-        if (!ok) continue;
-        out.push({
-          day: ymd(d),
-          slot: s,
-          label: `${d.toLocaleDateString("it-IT", { weekday: "short", day: "numeric", month: "short" })} · ${s}`,
-        });
-        if (out.length >= 6) return out;
-      }
-    }
-    return out;
-  }, [allDays, rules, service]);
+  const alternatives = useMemo(
+    () =>
+      service ? buildAlternatives(rawDays, rules, closures, service.duration_minutes) : [],
+    [rawDays, rules, closures, service],
+  );
 
   function chooseService(id: string) {
     setRejection(null);
@@ -185,7 +127,7 @@ function Prenota() {
           locationId,
           serviceId,
           staffId,
-          startsAt: new Date(`${day}T${slot}:00`).toISOString(),
+          startsAt: toUtcISO(day, slot),
           durationMinutes: service.duration_minutes,
           customerName: form.name,
           customerEmail: form.email,
