@@ -39,30 +39,6 @@ export const Route = createFileRoute("/prenota")({
 });
 
 const STEPS = ["Sede", "Trattamento", "Data e ora", "Conferma"] as const;
-const SLOTS = ["09:00", "10:30", "12:00", "14:30", "16:00", "17:30", "19:00"];
-
-/** Converte "HH:MM" o "HH:MM:SS" in minuti dalla mezzanotte. */
-function toMinutes(value: string) {
-  const [h = "0", m = "0"] = value.split(":");
-  return Number(h) * 60 + Number(m);
-}
-
-/** Data locale in formato ISO (YYYY-MM-DD), senza slittamenti di fuso. */
-function ymd(d: Date) {
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-}
-
-function nextDays(count: number) {
-  const out: Date[] = [];
-  const d = new Date();
-  d.setHours(0, 0, 0, 0);
-  for (let i = 1; out.length < count; i++) {
-    const day = new Date(d);
-    day.setDate(d.getDate() + i);
-    if (day.getDay() !== 0) out.push(day);
-  }
-  return out;
-}
 
 function Prenota() {
   const { data } = useSuspenseQuery(siteQuery);
