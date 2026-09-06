@@ -52,7 +52,7 @@ export function nextDays(count: number, from: Date = new Date()) {
 }
 
 /** Chiusure che riguardano la sede scelta (quelle senza sede valgono per tutte). */
-export function closuresForLocation(closures: Closure[], locationId?: string | null) {
+export function closuresForLocation<T extends Closure>(closures: T[], locationId?: string | null) {
   return closures.filter((c) => !c.location_id || !locationId || c.location_id === locationId);
 }
 
