@@ -78,11 +78,18 @@ describe("slot compatibili con le regole", () => {
 
   it("esclude gli slot in cui il trattamento non finirebbe dentro la fascia", () => {
     // sabato 5 settembre 2026, trattamento da 90 minuti
-    expect(slotsForDay(rules, "2026-09-05", 90)).toEqual(["09:00", "16:00"]);
+    // 12:00 escluso (finirebbe alle 13:30, oltre la fascia mattutina)
+    expect(slotsForDay(rules, "2026-09-05", 90)).toEqual(["09:00", "10:30", "16:00", "17:30"]);
   });
 
   it("con trattamenti brevi apre più slot", () => {
-    expect(slotsForDay(rules, "2026-09-05", 30)).toEqual(["09:00", "10:30", "12:00", "16:00", "17:30"]);
+    expect(slotsForDay(rules, "2026-09-05", 30)).toEqual([
+      "09:00",
+      "10:30",
+      "12:00",
+      "16:00",
+      "17:30",
+    ]);
   });
 
   it("non propone slot in un giorno senza regole", () => {
