@@ -7,14 +7,13 @@ import { PageHeader } from "@/components/site/Section";
 export const Route = createFileRoute("/contatti")({
   head: () => ({
     meta: [
-      { title: "Contatti e sedi a Milano — Atelier Lumen" },
+      { title: "Contatti — Atelier Lumen" },
       {
         name: "description",
-        content:
-          "Indirizzi, telefoni, email e orari delle due sedi Atelier Lumen a Milano: Brera e Porta Nuova.",
+        content: "Indirizzo, telefono, email e orari di apertura di Atelier Lumen.",
       },
-      { property: "og:title", content: "Contatti e sedi a Milano — Atelier Lumen" },
-      { property: "og:description", content: "Indirizzi, telefoni e orari delle due sedi." },
+      { property: "og:title", content: "Contatti — Atelier Lumen" },
+      { property: "og:description", content: "Indirizzo, telefono e orari di apertura." },
     ],
   }),
   loader: ({ context }) => context.queryClient.ensureQueryData(siteQuery),

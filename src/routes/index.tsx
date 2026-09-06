@@ -18,7 +18,7 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Protocolli viso e corpo su misura, rituali spa e prenotazione online in quattro passaggi. Due sedi a Milano.",
+          "Protocolli viso e corpo su misura, rituali spa e prenotazione online in tre passaggi.",
       },
       { property: "og:title", content: "Atelier Lumen — Centro estetico e spa a Milano" },
       {
@@ -63,7 +63,11 @@ function Home() {
         />
       </section>
 
-      <Section eyebrow="Trattamenti" title="I nostri protocolli" intro="Ogni trattamento inizia con una consulenza e prosegue con un protocollo scritto, rivisto nel tempo.">
+      <Section
+        eyebrow="Trattamenti"
+        title="I nostri protocolli"
+        intro="Ogni trattamento inizia con una consulenza e prosegue con un protocollo scritto, rivisto nel tempo."
+      >
         <div className="mt-14 grid gap-x-8 gap-y-12 sm:grid-cols-2">
           {featured.map((s) => (
             <article key={s.id} className="group">

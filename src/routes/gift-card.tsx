@@ -15,8 +15,7 @@ export const Route = createFileRoute("/gift-card")({
       { title: "Gift Card — Atelier Lumen" },
       {
         name: "description",
-        content:
-          "Gift card Atelier Lumen da 50, 100 o 150 euro. Validità dodici mesi, utilizzabili in entrambe le sedi di Milano.",
+        content: "Gift card Atelier Lumen da 50, 100 o 150 euro. Validità dodici mesi.",
       },
       { property: "og:title", content: "Gift Card — Atelier Lumen" },
       {
@@ -34,7 +33,7 @@ function GiftCard() {
       <PageHeader
         eyebrow="Gift Card"
         title="Regalare tempo"
-        intro="Nominative, valide dodici mesi, utilizzabili anche parzialmente in entrambe le sedi."
+        intro="Nominative, valide dodici mesi, utilizzabili anche parzialmente."
       />
 
       <div className="shell grid gap-12 pb-24 lg:grid-cols-2">

@@ -28,10 +28,10 @@ export const Route = createFileRoute("/prenota")({
       {
         name: "description",
         content:
-          "Prenota il tuo trattamento in quattro passaggi: sede, trattamento e operatore, data e ora, conferma.",
+          "Prenota il tuo trattamento in pochi passaggi: trattamento e operatore, data e ora, conferma.",
       },
       { property: "og:title", content: "Prenota online — Atelier Lumen" },
-      { property: "og:description", content: "Quattro passaggi, meno di un minuto." },
+      { property: "og:description", content: "Pochi passaggi, meno di un minuto." },
     ],
   }),
   loader: ({ context }) => context.queryClient.ensureQueryData(siteQuery),
@@ -44,8 +44,17 @@ function Prenota() {
   const { data } = useSuspenseQuery(siteQuery);
   const submit = useServerFn(createBooking);
 
-  const [step, setStep] = useState(0);
-  const [locationId, setLocationId] = useState<string | null>(null);
+  // Se il centro ha una sola sede, la selezioniamo da sola e saltiamo
+  // il passaggio "Scegli la sede": non ha senso far scegliere qualcosa
+  // quando c'è una sola opzione possibile.
+  const singleLocation = data.locations.length === 1 ? data.locations[0] : null;
+  const firstStep = singleLocation ? 1 : 0;
+  const visibleSteps = singleLocation ? STEPS.slice(1) : STEPS;
+
+  const [step, setStep] = useState(firstStep);
+  const [locationId, setLocationId] = useState<string | null>(
+    singleLocation ? singleLocation.id : null,
+  );
   const [serviceId, setServiceId] = useState<string | null>(null);
   const [staffId, setStaffId] = useState<string | null>(null);
   const [day, setDay] = useState<string | null>(null);
@@ -101,8 +110,7 @@ function Prenota() {
 
   /** Prime combinazioni giorno/orario realmente erogabili per il trattamento scelto. */
   const alternatives = useMemo(
-    () =>
-      service ? buildAlternatives(rawDays, rules, closures, service.duration_minutes) : [],
+    () => (service ? buildAlternatives(rawDays, rules, closures, service.duration_minutes) : []),
     [rawDays, rules, closures, service],
   );
 
@@ -167,7 +175,10 @@ function Prenota() {
           {day && new Date(day).toLocaleDateString("it-IT", { day: "numeric", month: "long" })} alle{" "}
           {slot} presso {location?.name}. Riceverai la conferma via email.
         </p>
-        <Link to="/" className="mt-8 rounded-md bg-primary px-7 py-3.5 text-sm text-primary-foreground">
+        <Link
+          to="/"
+          className="mt-8 rounded-md bg-primary px-7 py-3.5 text-sm text-primary-foreground"
+        >
           Torna alla home
         </Link>
       </div>
@@ -176,19 +187,25 @@ function Prenota() {
 
   return (
     <>
-      <PageHeader eyebrow="Prenotazione" title="Quattro passaggi" />
+      <PageHeader
+        eyebrow="Prenotazione"
+        title={singleLocation ? "Tre passaggi" : "Quattro passaggi"}
+      />
 
       <div className="shell max-w-3xl pb-24">
         <ol className="flex flex-wrap gap-x-6 gap-y-2 border-b border-border pb-5">
-          {STEPS.map((s, i) => (
-            <li
-              key={s}
-              aria-current={i === step ? "step" : undefined}
-              className={`text-xs tracking-[0.16em] uppercase ${i === step ? "text-foreground" : "text-muted-foreground"}`}
-            >
-              {String(i + 1).padStart(2, "0")} {s}
-            </li>
-          ))}
+          {visibleSteps.map((s, i) => {
+            const realIndex = i + firstStep;
+            return (
+              <li
+                key={s}
+                aria-current={realIndex === step ? "step" : undefined}
+                className={`text-xs tracking-[0.16em] uppercase ${realIndex === step ? "text-foreground" : "text-muted-foreground"}`}
+              >
+                {String(i + 1).padStart(2, "0")} {s}
+              </li>
+            );
+          })}
         </ol>
 
         {rejection && (
@@ -362,7 +379,11 @@ function Prenota() {
                         }}
                         className={`min-h-11 rounded-md border px-4 py-2 text-sm ${day === value ? "border-accent bg-accent/10" : "border-border"}`}
                       >
-                        {d.toLocaleDateString("it-IT", { weekday: "short", day: "numeric", month: "short" })}
+                        {d.toLocaleDateString("it-IT", {
+                          weekday: "short",
+                          day: "numeric",
+                          month: "short",
+                        })}
                       </button>
                     );
                   })}
@@ -428,7 +449,12 @@ function Prenota() {
                 <p className="text-lg">{service?.name}</p>
                 <p className="mt-2 text-muted-foreground">
                   {location?.name} ·{" "}
-                  {day && new Date(day).toLocaleDateString("it-IT", { day: "numeric", month: "long" })} alle {slot}
+                  {day &&
+                    new Date(day).toLocaleDateString("it-IT", {
+                      day: "numeric",
+                      month: "long",
+                    })}{" "}
+                  alle {slot}
                   {staff ? ` · ${staff.full_name}` : ""}
                 </p>
               </div>
@@ -492,8 +518,8 @@ function Prenota() {
         <div className="mt-12 flex items-center justify-between">
           <button
             type="button"
-            onClick={() => setStep((s) => Math.max(0, s - 1))}
-            disabled={step === 0}
+            onClick={() => setStep((s) => Math.max(firstStep, s - 1))}
+            disabled={step === firstStep}
             className="inline-flex min-h-11 items-center gap-1.5 text-sm text-muted-foreground disabled:opacity-40"
           >
             <ChevronLeft className="size-4" aria-hidden /> Indietro

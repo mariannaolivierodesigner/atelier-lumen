@@ -20,7 +20,7 @@ export function SiteFooter({ name, locations }: { name: string; locations: Locat
         </div>
 
         <div>
-          <p className="eyebrow">Sedi</p>
+          <p className="eyebrow">{locations.length === 1 ? "Sede" : "Sedi"}</p>
           <ul className="mt-4 space-y-4 text-sm text-muted-foreground">
             {locations.map((l) => (
               <li key={l.id}>
