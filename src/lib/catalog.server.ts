@@ -67,6 +67,15 @@ export const availabilityInputSchema = z.object({
   staffIds: z.array(z.string().uuid()).max(50),
 });
 
+/** Applicazione massiva delle stesse regole a più trattamenti. */
+export const bulkAvailabilitySchema = availabilityInputSchema
+  .omit({ serviceId: true })
+  .extend({
+    serviceIds: z.array(z.string().uuid()).min(1).max(200),
+    applyRules: z.boolean().default(true),
+    applyStaff: z.boolean().default(true),
+  });
+
 export const catalogImportSchema = z.object({
   createMissing: z.boolean().default(true),
   rows: z
