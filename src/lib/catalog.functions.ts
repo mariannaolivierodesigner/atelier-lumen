@@ -3,6 +3,7 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { resolveTenantId } from "./crm.server";
 import {
   availabilityInputSchema,
+  bulkAvailabilitySchema,
   catalogImportSchema,
   categoryInputSchema,
   idSchema,
@@ -117,6 +118,70 @@ export const saveServiceAvailability = createServerFn({ method: "POST" })
     }
 
     return { ok: true as const };
+  });
+
+/** Applica le stesse regole di disponibilità (e operatori) a più trattamenti in una volta. */
+export const applyAvailabilityToServices = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => bulkAvailabilitySchema.parse(input))
+  .handler(async ({ data, context }) => {
+    const tenantId = await resolveTenantId(context.supabase);
+    if (!tenantId) throw new Error("Centro non trovato");
+
+    const owned = await context.supabase
+      .from("services")
+      .select("id")
+      .eq("tenant_id", tenantId)
+      .in("id", data.serviceIds);
+    if (owned.error) throw owned.error;
+    const ids = (owned.data ?? []).map((s) => s.id);
+    if (!ids.length) throw new Error("Nessun trattamento valido selezionato");
+
+    if (data.applyRules) {
+      const wipe = await context.supabase
+        .from("service_availability")
+        .delete()
+        .eq("tenant_id", tenantId)
+        .in("service_id", ids);
+      if (wipe.error) throw wipe.error;
+
+      if (data.rules.length) {
+        const rows = ids.flatMap((serviceId) =>
+          data.rules.map((r) => ({
+            tenant_id: tenantId,
+            service_id: serviceId,
+            weekday: r.weekday,
+            start_time: r.startTime,
+            end_time: r.endTime,
+          })),
+        );
+        const { error } = await context.supabase.from("service_availability").insert(rows);
+        if (error) throw error;
+      }
+    }
+
+    if (data.applyStaff) {
+      const wipe = await context.supabase
+        .from("service_staff")
+        .delete()
+        .eq("tenant_id", tenantId)
+        .in("service_id", ids);
+      if (wipe.error) throw wipe.error;
+
+      if (data.staffIds.length) {
+        const rows = ids.flatMap((serviceId) =>
+          data.staffIds.map((staffId) => ({
+            tenant_id: tenantId,
+            service_id: serviceId,
+            staff_id: staffId,
+          })),
+        );
+        const { error } = await context.supabase.from("service_staff").insert(rows);
+        if (error) throw error;
+      }
+    }
+
+    return { ok: true as const, count: ids.length };
   });
 
 /** Crea o aggiorna un trattamento del listino. */
