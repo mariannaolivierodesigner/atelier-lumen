@@ -189,3 +189,67 @@ export function toUtcISO(day: string, slot: string, timeZone = BOOKING_TIMEZONE)
   }
   return new Date(ts).toISOString();
 }
+
+/** Riga modificabile nell'editor del gestionale (un giorno della settimana). */
+export type EditableRule = {
+  weekday: number;
+  startTime: string;
+  endTime: string;
+  enabled: boolean;
+};
+
+/** Regola copiata negli appunti: solo i giorni realmente attivi. */
+export type CopiedRule = { weekday: number; startTime: string; endTime: string };
+
+/** Gruppi di giorni usati dalle azioni rapide dell'editor. */
+export const WEEKDAY_GROUPS = {
+  all: [1, 2, 3, 4, 5, 6, 0],
+  weekdays: [1, 2, 3, 4, 5],
+  weekend: [6, 0],
+} as const;
+
+/** Estrae dagli appunti le sole righe attive e valide. */
+export function copiedRulesFrom(days: EditableRule[]): CopiedRule[] {
+  return days
+    .filter((d) => d.enabled && d.endTime > d.startTime)
+    .map((d) => ({ weekday: d.weekday, startTime: d.startTime, endTime: d.endTime }))
+    .sort((a, b) => a.weekday - b.weekday);
+}
+
+/** Copia l'orario di un giorno sui giorni indicati, attivandoli. */
+export function applyHoursToDays(
+  days: EditableRule[],
+  sourceWeekday: number,
+  targets: readonly number[],
+) {
+  const source = days.find((d) => d.weekday === sourceWeekday);
+  if (!source) return days;
+  const set = new Set(targets);
+  return days.map((d) =>
+    set.has(d.weekday) && d.weekday !== sourceWeekday
+      ? { ...d, enabled: true, startTime: source.startTime, endTime: source.endTime }
+      : d,
+  );
+}
+
+/**
+ * Incolla le regole copiate.
+ * `replace` sostituisce l'intera settimana, `merge` aggiunge senza spegnere i giorni già attivi.
+ */
+export function pasteRules(
+  days: EditableRule[],
+  copied: CopiedRule[],
+  mode: "replace" | "merge" = "replace",
+) {
+  return days.map((d) => {
+    const match = copied.find((c) => c.weekday === d.weekday);
+    if (match) return { ...d, enabled: true, startTime: match.startTime, endTime: match.endTime };
+    return mode === "replace" ? { ...d, enabled: false } : d;
+  });
+}
+
+/** Attiva o disattiva in blocco un gruppo di giorni mantenendone gli orari. */
+export function toggleDays(days: EditableRule[], targets: readonly number[], enabled: boolean) {
+  const set = new Set(targets);
+  return days.map((d) => (set.has(d.weekday) ? { ...d, enabled } : d));
+}
