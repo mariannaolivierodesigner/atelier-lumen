@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import type { Database } from "@/integrations/supabase/types";
+import { sendBookingConfirmationEmail } from "@/lib/notify.server";
 
 const bookingSchema = z.object({
   locationId: z.string().uuid(),
@@ -16,15 +17,7 @@ const bookingSchema = z.object({
 });
 
 export type BookingRejection = {
-  code:
-    | "availability"
-    | "closure"
-    | "staff"
-    | "date"
-    | "service"
-    | "location"
-    | "data"
-    | "unknown";
+  code: "availability" | "closure" | "staff" | "date" | "service" | "location" | "data" | "unknown";
   message: string;
 };
 
@@ -39,7 +32,6 @@ export function describeBookingError(raw: string): BookingRejection {
     };
   }
   if (text.includes("non \u00e8 disponibile in questo giorno")) {
-
     return {
       code: "availability",
       message:
@@ -71,8 +63,16 @@ export function describeBookingError(raw: string): BookingRejection {
   if (text.includes("sede non valida")) {
     return { code: "location", message: "La sede selezionata non \u00e8 pi\u00f9 attiva." };
   }
-  if (text.includes("nome non valido") || text.includes("email non valida") || text.includes("telefono non valido") || text.includes("note troppo lunghe")) {
-    return { code: "data", message: "Controlla i dati di contatto inseriti: alcuni non sono validi." };
+  if (
+    text.includes("nome non valido") ||
+    text.includes("email non valida") ||
+    text.includes("telefono non valido") ||
+    text.includes("note troppo lunghe")
+  ) {
+    return {
+      code: "data",
+      message: "Controlla i dati di contatto inseriti: alcuni non sono validi.",
+    };
   }
   return {
     code: "unknown",
@@ -112,6 +112,26 @@ export const createBooking = createServerFn({ method: "POST" })
     if (error) {
       console.error("[booking] request_booking failed", error);
       return { ok: false as const, ...describeBookingError(error.message ?? "") };
+    }
+
+    // L'email di conferma non deve mai far fallire la prenotazione: recuperiamo i nomi
+    // (non ci fidiamo di testo mandato dal browser per un'email) e inviamo "a parte".
+    try {
+      const [{ data: service }, { data: location }] = await Promise.all([
+        supabase.from("services").select("name").eq("id", data.serviceId).maybeSingle(),
+        supabase.from("locations").select("name").eq("id", data.locationId).maybeSingle(),
+      ]);
+      if (service && location) {
+        await sendBookingConfirmationEmail({
+          to: data.customerEmail,
+          customerName: data.customerName,
+          serviceName: service.name,
+          locationName: location.name,
+          startsAt: data.startsAt,
+        });
+      }
+    } catch (notifyError) {
+      console.error("[booking] invio email di conferma non riuscito", notifyError);
     }
 
     return { ok: true as const };

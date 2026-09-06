@@ -4,7 +4,8 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 const DEFAULT_TENANT = "atelier-lumen";
 
-export type BookingStatus = "pending" | "confirmed" | "completed" | "cancelled" | "no_show";
+export type BookingStatus =
+  "pending" | "confirmed" | "rejected" | "completed" | "cancelled" | "no_show";
 
 /**
  * Dati operativi del back office per il centro dell'utente autenticato.
@@ -89,7 +90,7 @@ export const getWorkspace = createServerFn({ method: "GET" })
 
 const statusSchema = z.object({
   id: z.string().uuid(),
-  status: z.enum(["pending", "confirmed", "completed", "cancelled", "no_show"]),
+  status: z.enum(["pending", "confirmed", "rejected", "completed", "cancelled", "no_show"]),
 });
 
 export const updateBookingStatus = createServerFn({ method: "POST" })

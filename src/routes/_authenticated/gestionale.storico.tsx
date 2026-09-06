@@ -10,7 +10,7 @@ export const Route = createFileRoute("/_authenticated/gestionale/storico")({
   },
   head: () => ({
     meta: [
-      { title: "Storico modifiche listino · BeautyOS" },
+      { title: "Storico modifiche listino · Atelier Lumen" },
       {
         name: "description",
         content:
@@ -53,15 +53,7 @@ const FIELD_LABEL: Record<string, string> = {
   service_id: "Trattamento",
 };
 
-const WEEKDAYS = [
-  "Domenica",
-  "Lunedì",
-  "Martedì",
-  "Mercoledì",
-  "Giovedì",
-  "Venerdì",
-  "Sabato",
-];
+const WEEKDAYS = ["Domenica", "Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato"];
 
 const stamp = new Intl.DateTimeFormat("it-IT", {
   day: "2-digit",

@@ -86,6 +86,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "theme-color", content: "#4a3728" },
+      { name: "mobile-web-app-capable", content: "yes" },
+      { name: "apple-mobile-web-app-capable", content: "yes" },
+      { name: "apple-mobile-web-app-status-bar-style", content: "default" },
+      { name: "apple-mobile-web-app-title", content: "Atelier Lumen" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
@@ -96,6 +101,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         href: "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=Jost:wght@300;400;500&display=swap",
       },
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+      { rel: "manifest", href: "/manifest.webmanifest" },
+      { rel: "apple-touch-icon", href: "/icons/apple-touch-icon.png" },
     ],
   }),
   loader: ({ context }) => context.queryClient.ensureQueryData(siteQuery),
@@ -137,6 +144,14 @@ function RootComponent() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   // Le aree riservate (accesso e gestionale) hanno una loro interfaccia.
   const bare = pathname.startsWith("/gestionale") || pathname.startsWith("/auth");
+
+  useEffect(() => {
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("/sw.js").catch(() => {
+        // Contesto non sicuro o non supportato: il sito resta comunque utilizzabile da browser.
+      });
+    }
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>

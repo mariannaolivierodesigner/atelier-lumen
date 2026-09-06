@@ -3,6 +3,7 @@ import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import {
   CalendarDays,
   CalendarOff,
+  Download,
   History,
   LayoutDashboard,
   ListChecks,
@@ -12,6 +13,7 @@ import {
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { workspaceQuery } from "@/lib/admin-query";
+import { useInstallPrompt } from "@/hooks/use-install-prompt";
 
 export const Route = createFileRoute("/_authenticated/gestionale")({
   loader: ({ context }) => {
@@ -30,11 +32,11 @@ const NAV = [
   { to: "/gestionale/storico", label: "Storico", icon: History, exact: false },
 ] as const;
 
-
 function BackOfficeLayout() {
   const { data } = useSuspenseQuery(workspaceQuery);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { canInstall, promptInstall } = useInstallPrompt();
 
   async function signOut() {
     await queryClient.cancelQueries();
@@ -81,13 +83,24 @@ function BackOfficeLayout() {
             </Link>
             <p className="text-xs text-muted-foreground">Gestionale · {roleLabel}</p>
           </div>
-          <button
-            onClick={signOut}
-            className="inline-flex items-center gap-2 rounded-md border border-border px-4 py-2.5 text-sm transition-colors hover:bg-accent"
-          >
-            <LogOut className="size-4" aria-hidden="true" />
-            Esci
-          </button>
+          <div className="flex items-center gap-3">
+            {canInstall && (
+              <button
+                onClick={promptInstall}
+                className="inline-flex items-center gap-2 rounded-md border border-border px-4 py-2.5 text-sm transition-colors hover:bg-accent"
+              >
+                <Download className="size-4" aria-hidden="true" />
+                Installa app
+              </button>
+            )}
+            <button
+              onClick={signOut}
+              className="inline-flex items-center gap-2 rounded-md border border-border px-4 py-2.5 text-sm transition-colors hover:bg-accent"
+            >
+              <LogOut className="size-4" aria-hidden="true" />
+              Esci
+            </button>
+          </div>
         </div>
         <div className="shell flex gap-1 overflow-x-auto pb-1">
           {NAV.map((item) => (

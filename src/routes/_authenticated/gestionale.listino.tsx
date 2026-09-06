@@ -6,12 +6,7 @@ import { toast } from "sonner";
 import { Plus, Trash2 } from "lucide-react";
 
 import { catalogQuery, formatDuration } from "@/lib/catalog-query";
-import {
-  deleteCategory,
-  deleteService,
-  saveCategory,
-  saveService,
-} from "@/lib/catalog.functions";
+import { deleteCategory, deleteService, saveCategory, saveService } from "@/lib/catalog.functions";
 import { workspaceQuery } from "@/lib/admin-query";
 import { formatPrice } from "@/lib/site-query";
 import { AvailabilityEditor } from "@/components/gestionale/AvailabilityEditor";
@@ -471,11 +466,13 @@ function Listino() {
         <AvailabilityEditor
           key={form.id}
           serviceId={form.id}
+          serviceName={form.name}
           rules={data.availability.filter((a) => a.service_id === form.id)}
           staff={data.staff}
           enabledStaffIds={data.serviceStaff
             .filter((x) => x.service_id === form.id)
             .map((x) => x.staff_id)}
+          services={data.services}
         />
       )}
     </div>

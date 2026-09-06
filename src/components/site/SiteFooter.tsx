@@ -65,7 +65,7 @@ export function SiteFooter({ name, locations }: { name: string; locations: Locat
         <p>
           © {new Date().getFullYear()} {name}. Tutti i diritti riservati.
         </p>
-        <p>Powered by BeautyOS</p>
+        <p>Atelier Lumen</p>
       </div>
     </footer>
   );

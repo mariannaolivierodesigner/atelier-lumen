@@ -10,6 +10,7 @@ export const workspaceQuery = queryOptions({
 export const STATUS_LABEL: Record<BookingStatus, string> = {
   pending: "Da confermare",
   confirmed: "Confermata",
+  rejected: "Rifiutata",
   completed: "Completata",
   cancelled: "Annullata",
   no_show: "Assente",
@@ -18,6 +19,7 @@ export const STATUS_LABEL: Record<BookingStatus, string> = {
 export const STATUS_CLASS: Record<BookingStatus, string> = {
   pending: "bg-accent/60 text-accent-foreground",
   confirmed: "bg-primary/10 text-foreground",
+  rejected: "bg-destructive/10 text-destructive",
   completed: "bg-muted text-muted-foreground",
   cancelled: "bg-destructive/10 text-destructive",
   no_show: "bg-destructive/10 text-destructive",

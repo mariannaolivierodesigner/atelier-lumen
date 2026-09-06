@@ -13,10 +13,11 @@ export const Route = createFileRoute("/_authenticated/gestionale/prenotazioni")(
 
 const FILTERS: Array<{ value: BookingStatus | "all"; label: string }> = [
   { value: "all", label: "Tutte" },
-  { value: "pending", label: "Da confermare" },
+  { value: "pending", label: "In arrivo" },
   { value: "confirmed", label: "Confermate" },
-  { value: "completed", label: "Completate" },
+  { value: "rejected", label: "Rifiutate" },
   { value: "cancelled", label: "Annullate" },
+  { value: "completed", label: "Completate" },
 ];
 
 function Bookings() {
@@ -25,6 +26,8 @@ function Bookings() {
   const setStatus = useServerFn(updateBookingStatus);
   const [filter, setFilter] = useState<BookingStatus | "all">("all");
   const [search, setSearch] = useState("");
+  const [serviceFilter, setServiceFilter] = useState<string>("all");
+  const [dayFilter, setDayFilter] = useState<string>("");
 
   const mutation = useMutation({
     mutationFn: setStatus,
@@ -41,6 +44,8 @@ function Bookings() {
 
   const rows = data.bookings
     .filter((b) => (filter === "all" ? true : b.status === filter))
+    .filter((b) => (serviceFilter === "all" ? true : b.service_id === serviceFilter))
+    .filter((b) => (dayFilter ? b.starts_at.slice(0, 10) === dayFilter : true))
     .filter((b) =>
       search.trim()
         ? `${b.customer_name} ${b.customer_email}`.toLowerCase().includes(search.toLowerCase())
@@ -56,22 +61,31 @@ function Bookings() {
         <h1 className="mt-3 text-4xl">Richieste e appuntamenti</h1>
       </div>
 
-      <div className="flex flex-wrap items-center gap-3">
-        <div className="flex flex-wrap gap-1">
-          {FILTERS.map((f) => (
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+        {FILTERS.map((f) => {
+          const count =
+            f.value === "all"
+              ? data.bookings.length
+              : data.bookings.filter((b) => b.status === f.value).length;
+          return (
             <button
               key={f.value}
+              type="button"
               onClick={() => setFilter(f.value)}
-              className={`rounded-md px-4 py-2.5 text-sm transition-colors ${
+              className={`rounded-lg border p-4 text-left transition-colors ${
                 filter === f.value
-                  ? "bg-primary text-primary-foreground"
-                  : "border border-border bg-background text-muted-foreground hover:text-foreground"
+                  ? "border-primary bg-primary/5"
+                  : "border-border bg-background hover:border-foreground/30"
               }`}
             >
-              {f.label}
+              <p className="text-2xl">{count}</p>
+              <p className="text-xs text-muted-foreground">{f.label}</p>
             </button>
-          ))}
-        </div>
+          );
+        })}
+      </div>
+
+      <div className="flex flex-wrap items-center gap-3">
         <label className="sr-only" htmlFor="ricerca">
           Cerca cliente
         </label>
@@ -82,6 +96,41 @@ function Bookings() {
           placeholder="Cerca per nome o email"
           className="min-w-56 flex-1 rounded-md border border-input bg-background px-4 py-2.5 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
         />
+        <label className="sr-only" htmlFor="filtro-trattamento">
+          Filtra per trattamento
+        </label>
+        <select
+          id="filtro-trattamento"
+          value={serviceFilter}
+          onChange={(e) => setServiceFilter(e.target.value)}
+          className="rounded-md border border-input bg-background px-3 py-2.5 text-sm"
+        >
+          <option value="all">Tutti i trattamenti</option>
+          {data.services.map((s) => (
+            <option key={s.id} value={s.id}>
+              {s.name}
+            </option>
+          ))}
+        </select>
+        <label className="sr-only" htmlFor="filtro-giorno">
+          Filtra per giorno
+        </label>
+        <input
+          id="filtro-giorno"
+          type="date"
+          value={dayFilter}
+          onChange={(e) => setDayFilter(e.target.value)}
+          className="rounded-md border border-input bg-background px-3 py-2.5 text-sm"
+        />
+        {dayFilter && (
+          <button
+            type="button"
+            onClick={() => setDayFilter("")}
+            className="text-xs text-muted-foreground underline underline-offset-2"
+          >
+            Rimuovi filtro giorno
+          </button>
+        )}
       </div>
 
       <div className="overflow-x-auto rounded-lg border border-border bg-background">

@@ -3,7 +3,10 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 
 import { siteQuery, formatPrice } from "@/lib/site-query";
 
-const SITE_URL = "https://salonstream-suite.lovable.app";
+// L'indirizzo del sito per i link SEO (Open Graph). Si imposta con la variabile
+// d'ambiente VITE_SITE_URL su Vercel — finché non è impostata, i link restano
+// relativi (funzionano comunque, solo meno ottimali per la condivisione social).
+const SITE_URL = (import.meta.env["VITE_SITE_URL"] as string | undefined) ?? "";
 
 export const Route = createFileRoute("/servizi/$slug")({
   loader: async ({ context, params }) => {
@@ -61,9 +64,7 @@ function TrattamentoNonTrovato() {
   return (
     <div className="shell py-32">
       <h1 className="text-4xl">Trattamento non disponibile</h1>
-      <p className="mt-4 text-muted-foreground">
-        Il trattamento cercato non è più in listino.
-      </p>
+      <p className="mt-4 text-muted-foreground">Il trattamento cercato non è più in listino.</p>
       <Link to="/servizi" className="mt-8 inline-flex text-sm underline">
         Torna al listino
       </Link>

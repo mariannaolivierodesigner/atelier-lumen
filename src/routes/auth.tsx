@@ -2,17 +2,16 @@ import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable/index";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
-      { title: "Accesso staff — BeautyOS" },
+      { title: "Accesso staff — Atelier Lumen" },
       {
         name: "description",
         content: "Area riservata al personale del centro: agenda, prenotazioni e clienti.",
       },
-      { property: "og:title", content: "Accesso staff — BeautyOS" },
+      { property: "og:title", content: "Accesso staff — Atelier Lumen" },
       {
         property: "og:description",
         content: "Area riservata al personale del centro: agenda, prenotazioni e clienti.",
@@ -64,15 +63,15 @@ function AuthPage() {
   }
 
   async function handleGoogle() {
-    const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin,
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: `${window.location.origin}/gestionale` },
     });
-    if (result.error) {
+    if (error) {
       toast.error("Accesso con Google non riuscito");
-      return;
     }
-    if (result.redirected) return;
-    navigate({ to: "/gestionale", replace: true });
+    // In caso di successo, Supabase reindirizza automaticamente a Google e poi
+    // di nuovo qui: non c'è altro da fare in questa funzione.
   }
 
   return (
