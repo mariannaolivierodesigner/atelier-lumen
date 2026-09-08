@@ -6,7 +6,7 @@ import { sendBookingConfirmationEmail } from "@/lib/notify.server";
 
 const bookingSchema = z.object({
   locationId: z.string().uuid(),
-  serviceId: z.string().uuid(),
+  serviceIds: z.array(z.string().uuid()).min(1).max(10),
   staffId: z.string().uuid().nullable(),
   startsAt: z.string().min(10),
   durationMinutes: z.number().int().min(10).max(480),
@@ -101,7 +101,7 @@ export const createBooking = createServerFn({ method: "POST" })
     const { error } = await supabase.rpc("request_booking", {
       _tenant_slug: "atelier-lumen",
       _location_id: data.locationId,
-      _service_id: data.serviceId,
+      _service_ids: data.serviceIds,
       _staff_id: data.staffId as unknown as string,
       _starts_at: data.startsAt,
       _customer_name: data.customerName,
@@ -117,15 +117,15 @@ export const createBooking = createServerFn({ method: "POST" })
     // L'email di conferma non deve mai far fallire la prenotazione: recuperiamo i nomi
     // (non ci fidiamo di testo mandato dal browser per un'email) e inviamo "a parte".
     try {
-      const [{ data: service }, { data: location }] = await Promise.all([
-        supabase.from("services").select("name").eq("id", data.serviceId).maybeSingle(),
+      const [{ data: services }, { data: location }] = await Promise.all([
+        supabase.from("services").select("name").in("id", data.serviceIds),
         supabase.from("locations").select("name").eq("id", data.locationId).maybeSingle(),
       ]);
-      if (service && location) {
+      if (services && services.length > 0 && location) {
         await sendBookingConfirmationEmail({
           to: data.customerEmail,
           customerName: data.customerName,
-          serviceName: service.name,
+          serviceName: services.map((s) => s.name).join(" + "),
           locationName: location.name,
           startsAt: data.startsAt,
         });

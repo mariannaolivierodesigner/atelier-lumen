@@ -42,9 +42,31 @@ function Bookings() {
   const staffById = new Map(data.staff.map((s) => [s.id, s]));
   const locationById = new Map(data.locations.map((l) => [l.id, l]));
 
+  /**
+   * Trattamenti di ogni prenotazione. Le prenotazioni create prima di questa
+   * funzionalità non hanno righe qui: per quelle usiamo il solo trattamento
+   * principale già presente su `bookings.service_id`, così restano visibili
+   * correttamente anche loro.
+   */
+  const servicesByBooking = new Map<string, { serviceId: string; priceCents: number }[]>();
+  for (const bs of data.bookingServices) {
+    const list = servicesByBooking.get(bs.booking_id) ?? [];
+    list.push({ serviceId: bs.service_id, priceCents: bs.price_cents });
+    servicesByBooking.set(bs.booking_id, list);
+  }
+  function servicesFor(b: (typeof data.bookings)[number]) {
+    const rows = servicesByBooking.get(b.id);
+    if (rows && rows.length > 0) return rows;
+    return b.service_id
+      ? [{ serviceId: b.service_id, priceCents: serviceById.get(b.service_id)?.price_cents ?? 0 }]
+      : [];
+  }
+
   const rows = data.bookings
     .filter((b) => (filter === "all" ? true : b.status === filter))
-    .filter((b) => (serviceFilter === "all" ? true : b.service_id === serviceFilter))
+    .filter((b) =>
+      serviceFilter === "all" ? true : servicesFor(b).some((s) => s.serviceId === serviceFilter),
+    )
     .filter((b) => (dayFilter ? b.starts_at.slice(0, 10) === dayFilter : true))
     .filter((b) =>
       search.trim()
@@ -148,7 +170,11 @@ function Bookings() {
           <tbody className="divide-y divide-border">
             {rows.map((b) => {
               const start = new Date(b.starts_at);
-              const service = serviceById.get(b.service_id ?? "");
+              const bookingServices = servicesFor(b);
+              const names = bookingServices
+                .map((s) => serviceById.get(s.serviceId)?.name)
+                .filter((n): n is string => !!n);
+              const totalPrice = bookingServices.reduce((sum, s) => sum + s.priceCents, 0);
               return (
                 <tr key={b.id}>
                   <td className="px-5 py-4 align-top">
@@ -168,11 +194,9 @@ function Bookings() {
                     )}
                   </td>
                   <td className="px-5 py-4 align-top">
-                    <p>{service?.name ?? "—"}</p>
-                    {service && (
-                      <p className="text-xs text-muted-foreground">
-                        {formatPrice(service.price_cents)}
-                      </p>
+                    <p>{names.length > 0 ? names.join(" + ") : "—"}</p>
+                    {totalPrice > 0 && (
+                      <p className="text-xs text-muted-foreground">{formatPrice(totalPrice)}</p>
                     )}
                   </td>
                   <td className="px-5 py-4 align-top">

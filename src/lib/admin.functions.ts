@@ -50,10 +50,18 @@ export const getWorkspace = createServerFn({ method: "GET" })
     }
 
     if (!membership) {
-      return { tenant, membership: null, bookings: [], services: [], staff: [], locations: [] };
+      return {
+        tenant,
+        membership: null,
+        bookings: [],
+        bookingServices: [],
+        services: [],
+        staff: [],
+        locations: [],
+      };
     }
 
-    const [bookings, services, staff, locations] = await Promise.all([
+    const [bookings, bookingServices, services, staff, locations] = await Promise.all([
       supabase
         .from("bookings")
         .select(
@@ -61,6 +69,9 @@ export const getWorkspace = createServerFn({ method: "GET" })
         )
         .eq("tenant_id", tenant.id)
         .order("starts_at", { ascending: true }),
+      supabase
+        .from("booking_services")
+        .select("booking_id, service_id, duration_minutes, price_cents"),
       supabase
         .from("services")
         .select("id, name, price_cents, duration_minutes")
@@ -82,6 +93,7 @@ export const getWorkspace = createServerFn({ method: "GET" })
       tenant,
       membership,
       bookings: bookings.data ?? [],
+      bookingServices: bookingServices.data ?? [],
       services: services.data ?? [],
       staff: staff.data ?? [],
       locations: locations.data ?? [],

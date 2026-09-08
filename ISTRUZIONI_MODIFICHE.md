@@ -86,3 +86,37 @@ il sito è ancora su un indirizzo Vercel provvisorio).
    senza errori
 4. Fai una prenotazione di prova da `/prenota` con una tua email vera (dopo aver configurato
    Resend) e controlla che arrivi davvero
+
+## ✅ 5. Prenotazione multi-trattamento (completata)
+
+Ora un cliente può scegliere **più di un trattamento** nella stessa prenotazione (checkbox
+invece di scelta singola nel modulo pubblico). Il sistema calcola da solo durata totale e
+prezzo totale, e propone solo orari compatibili con **tutti** i trattamenti scelti insieme e
+con un operatore che sappia farli tutti.
+
+**Cosa cambia nel database**: nuova tabella `booking_services` (elenco dei trattamenti di ogni
+prenotazione, con durata e prezzo "fotografati" al momento della prenotazione). Le prenotazioni
+già esistenti restano visibili correttamente (il trattamento principale, `bookings.service_id`,
+resta sempre popolato per compatibilità).
+
+**Verificato con test reali** (non solo scritto): un solo trattamento si comporta esattamente
+come prima, più trattamenti insieme sommano correttamente durata/prezzo, un trattamento non
+valido viene rifiutato con l'errore giusto — build, controllo tipi e test automatici del
+progetto tutti puliti (solo 3 test di integrazione che richiedono connessione diretta a
+Supabase non sono verificabili dal mio ambiente di lavoro per un limite di rete locale, non
+per un problema del codice).
+
+**Passaggio SQL da eseguire** (in più rispetto al file schema-completo, dato che questa è una
+migrazione nuova): esegui il contenuto di
+`supabase/migrations/20260907000000_multi_service_bookings.sql` nell'SQL Editor del tuo
+progetto Supabase.
+
+**Nota per dopo**: il gestionale ora mostra tutti i trattamenti di una prenotazione multipla
+nella pagina Prenotazioni (colonna "Trattamento"), e il filtro per trattamento cerca in tutti
+i trattamenti scelti, non solo nel principale.
+
+## 🧹 Pulizia — file .env
+Ho trovato un file `.env` nel repository con le credenziali di un **progetto Supabase vecchio**
+(quello che avevi poi ricreato). L'ho aggiornato con i valori del progetto attuale — utile se
+lavori mai in locale su questo progetto, altrimenti non ha effetto sul sito pubblicato (Vercel
+usa le sue variabili d'ambiente, non questo file).

@@ -55,7 +55,7 @@ function Prenota() {
   const [locationId, setLocationId] = useState<string | null>(
     singleLocation ? singleLocation.id : null,
   );
-  const [serviceId, setServiceId] = useState<string | null>(null);
+  const [serviceIds, setServiceIds] = useState<string[]>([]);
   const [staffId, setStaffId] = useState<string | null>(null);
   const [day, setDay] = useState<string | null>(null);
   const [slot, setSlot] = useState<string | null>(null);
@@ -69,8 +69,14 @@ function Prenota() {
     () => data.services.filter((s) => s.is_bookable),
     [data.services],
   );
-  const service = data.services.find((s) => s.id === serviceId) ?? null;
   const location = data.locations.find((l) => l.id === locationId) ?? null;
+  const selectedServices = useMemo(
+    () => data.services.filter((s) => serviceIds.includes(s.id)),
+    [data.services, serviceIds],
+  );
+  const totalDuration = selectedServices.reduce((sum, s) => sum + s.duration_minutes, 0);
+  const totalPrice = selectedServices.reduce((sum, s) => sum + s.price_cents, 0);
+  const treatmentsLabel = selectedServices.map((s) => s.name).join(" + ");
 
   /** Chiusure straordinarie e ferie che riguardano la sede scelta. */
   const closures = useMemo(
@@ -83,60 +89,79 @@ function Prenota() {
     return closures.filter((c) => c.end_date >= today).slice(0, 3);
   }, [closures]);
 
-  /** Regole giorno/orario del trattamento scelto. Nessuna regola = sempre disponibile. */
-  const rules = useMemo(
-    () => data.availability.filter((a) => a.service_id === serviceId),
-    [data.availability, serviceId],
+  /**
+   * Regole giorno/orario di OGNI trattamento scelto. Con più trattamenti insieme,
+   * un giorno/orario è valido solo se lo è per tutti i trattamenti richiesti
+   * (si eseguono uno di seguito all'altro, per la durata totale): calcoliamo
+   * quindi giorni e orari validi trattamento per trattamento, poi teniamo solo
+   * l'intersezione — riusando la stessa logica già testata per un trattamento solo.
+   */
+  const rulesPerService = useMemo(
+    () => selectedServices.map((s) => data.availability.filter((a) => a.service_id === s.id)),
+    [data.availability, selectedServices],
   );
+  const rules = useMemo(() => rulesPerService[0] ?? [], [rulesPerService]);
 
-  /** Operatori abilitati al trattamento. Nessuna abilitazione = tutti. */
-  const allowedStaff = useMemo(
-    () => allowedStaffFor(data.staff, data.serviceStaff, serviceId),
-    [data.staff, data.serviceStaff, serviceId],
-  );
+  /** Operatori abilitati a TUTTI i trattamenti scelti (nessun trattamento scelto = nessun vincolo). */
+  const allowedStaff = useMemo(() => {
+    if (selectedServices.length === 0) return allowedStaffFor(data.staff, data.serviceStaff, null);
+    const perService = selectedServices.map((s) =>
+      allowedStaffFor(data.staff, data.serviceStaff, s.id),
+    );
+    return perService.reduce((acc, list) => acc.filter((p) => list.some((x) => x.id === p.id)));
+  }, [data.staff, data.serviceStaff, selectedServices]);
 
   const staff = allowedStaff.find((p) => p.id === staffId) ?? null;
 
-  const days = useMemo(
-    () => bookableDays(rawDays, rules, closures).slice(0, 8),
-    [rawDays, rules, closures],
-  );
+  const days = useMemo(() => {
+    if (rulesPerService.length === 0) return bookableDays(rawDays, [], closures).slice(0, 8);
+    const perService = rulesPerService.map((r) => bookableDays(rawDays, r, closures));
+    const intersected = perService.reduce((acc, list) =>
+      acc.filter((d) => list.some((x) => ymd(x) === ymd(d))),
+    );
+    return intersected.slice(0, 8);
+  }, [rawDays, rulesPerService, closures]);
 
   const slots = useMemo(() => {
-    if (!day || !service) return SLOTS;
+    if (!day || selectedServices.length === 0) return SLOTS;
     if (isClosedOn(closures, day)) return [];
-    return slotsForDay(rules, day, service.duration_minutes);
-  }, [day, rules, service, closures]);
+    const perService = rulesPerService.map((r) => slotsForDay(r, day, totalDuration));
+    return perService.reduce((acc, list) => acc.filter((s) => list.includes(s)));
+  }, [day, rulesPerService, selectedServices, totalDuration, closures]);
 
-  /** Prime combinazioni giorno/orario realmente erogabili per il trattamento scelto. */
+  /** Prime combinazioni giorno/orario realmente erogabili per il trattamento scelto.
+   *  Con più trattamenti insieme, ci basiamo sul primo per suggerire alternative:
+   *  un'approssimazione ragionevole, il vero controllo di validità resta comunque
+   *  quello sull'intersezione fatto sopra (`days`/`slots`). */
   const alternatives = useMemo(
-    () => (service ? buildAlternatives(rawDays, rules, closures, service.duration_minutes) : []),
-    [rawDays, rules, closures, service],
+    () =>
+      selectedServices.length > 0 ? buildAlternatives(rawDays, rules, closures, totalDuration) : [],
+    [rawDays, rules, closures, selectedServices, totalDuration],
   );
 
-  function chooseService(id: string) {
+  function toggleService(id: string) {
     setRejection(null);
-    setServiceId(id);
+    setServiceIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
     setDay(null);
     setSlot(null);
     setStaffId(null);
   }
 
-  const canContinue = [!!locationId, !!serviceId, !!day && !!slot, true][step];
+  const canContinue = [!!locationId, serviceIds.length > 0, !!day && !!slot, true][step];
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!locationId || !serviceId || !day || !slot || !service) return;
+    if (!locationId || serviceIds.length === 0 || !day || !slot) return;
     setSending(true);
     setRejection(null);
     try {
       const result = await submit({
         data: {
           locationId,
-          serviceId,
+          serviceIds,
           staffId,
           startsAt: toUtcISO(day, slot),
-          durationMinutes: service.duration_minutes,
+          durationMinutes: totalDuration,
           customerName: form.name,
           customerEmail: form.email,
           customerPhone: form.phone,
@@ -171,7 +196,7 @@ function Prenota() {
         </span>
         <h1 className="mt-8 text-4xl">Richiesta inviata</h1>
         <p className="mt-4 leading-relaxed text-muted-foreground">
-          Ti abbiamo riservato {service?.name} il{" "}
+          Ti abbiamo riservato {treatmentsLabel} il{" "}
           {day && new Date(day).toLocaleDateString("it-IT", { day: "numeric", month: "long" })} alle{" "}
           {slot} presso {location?.name}. Riceverai la conferma via email.
         </p>
@@ -221,7 +246,7 @@ function Prenota() {
               rejection.code === "closure") &&
               (alternatives.length > 0 ? (
                 <div className="mt-4">
-                  <p className="text-sm">Prime disponibilità per {service?.name}:</p>
+                  <p className="text-sm">Prime disponibilità per {treatmentsLabel}:</p>
                   <div className="mt-3 flex flex-wrap gap-2">
                     {alternatives.map((a) => (
                       <button
@@ -314,22 +339,40 @@ function Prenota() {
           {step === 1 && (
             <div className="space-y-10">
               <fieldset>
-                <legend className="mb-5 text-2xl">Scegli il trattamento</legend>
+                <legend className="mb-5 text-2xl">Scegli uno o più trattamenti</legend>
                 <div className="space-y-3">
-                  {bookableServices.map((s) => (
-                    <button
-                      key={s.id}
-                      type="button"
-                      onClick={() => chooseService(s.id)}
-                      className={`flex w-full flex-wrap items-baseline justify-between gap-3 rounded-lg border p-5 text-left transition-colors ${serviceId === s.id ? "border-accent bg-accent/10" : "border-border hover:border-foreground/30"}`}
-                    >
-                      <span className="text-lg">{s.name}</span>
-                      <span className="text-sm text-muted-foreground">
-                        {s.duration_minutes}′ · {formatPrice(s.price_cents)}
-                      </span>
-                    </button>
-                  ))}
+                  {bookableServices.map((s) => {
+                    const checked = serviceIds.includes(s.id);
+                    return (
+                      <button
+                        key={s.id}
+                        type="button"
+                        aria-pressed={checked}
+                        onClick={() => toggleService(s.id)}
+                        className={`flex w-full flex-wrap items-baseline justify-between gap-3 rounded-lg border p-5 text-left transition-colors ${checked ? "border-accent bg-accent/10" : "border-border hover:border-foreground/30"}`}
+                      >
+                        <span className="flex items-center gap-3 text-lg">
+                          <span
+                            aria-hidden="true"
+                            className={`flex size-5 items-center justify-center rounded border ${checked ? "border-accent bg-accent text-accent-foreground" : "border-border"}`}
+                          >
+                            {checked && <Check className="size-3.5" />}
+                          </span>
+                          {s.name}
+                        </span>
+                        <span className="text-sm text-muted-foreground">
+                          {s.duration_minutes}′ · {formatPrice(s.price_cents)}
+                        </span>
+                      </button>
+                    );
+                  })}
                 </div>
+                {selectedServices.length > 1 && (
+                  <p className="mt-4 text-sm text-muted-foreground">
+                    Totale: {totalDuration}′ · {formatPrice(totalPrice)} per{" "}
+                    {selectedServices.length} trattamenti
+                  </p>
+                )}
               </fieldset>
 
               <fieldset>
@@ -353,7 +396,7 @@ function Prenota() {
                     </button>
                   ))}
                 </div>
-                {serviceId && allowedStaff.length < data.staff.length && (
+                {serviceIds.length > 0 && allowedStaff.length < data.staff.length && (
                   <p className="mt-3 text-sm text-muted-foreground">
                     Solo questi operatori sono abilitati al trattamento scelto.
                   </p>
@@ -446,7 +489,12 @@ function Prenota() {
           {step === 3 && (
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="rounded-lg bg-secondary/60 p-6 text-sm">
-                <p className="text-lg">{service?.name}</p>
+                <p className="text-lg">{treatmentsLabel}</p>
+                {selectedServices.length > 1 && (
+                  <p className="text-muted-foreground">
+                    {totalDuration}′ complessivi · {formatPrice(totalPrice)}
+                  </p>
+                )}
                 <p className="mt-2 text-muted-foreground">
                   {location?.name} ·{" "}
                   {day &&
