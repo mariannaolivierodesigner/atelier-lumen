@@ -9,6 +9,7 @@ import {
   ListChecks,
   LogOut,
   Sparkles,
+  UserCog,
   Users,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -30,6 +31,7 @@ const NAV = [
   { to: "/gestionale/agenda", label: "Agenda", icon: CalendarDays, exact: false },
   { to: "/gestionale/prenotazioni", label: "Prenotazioni", icon: ListChecks, exact: false },
   { to: "/gestionale/clienti", label: "Clienti", icon: Users, exact: false },
+  { to: "/gestionale/staff", label: "Staff", icon: UserCog, exact: false },
   { to: "/gestionale/listino", label: "Listino", icon: Sparkles, exact: false },
   { to: "/gestionale/chiusure", label: "Chiusure", icon: CalendarOff, exact: false },
   { to: "/gestionale/storico", label: "Storico", icon: History, exact: false },
