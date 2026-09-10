@@ -36,8 +36,8 @@ export const saveStaffAbsence = createServerFn({ method: "POST" })
       type: data.type,
       start_date: data.startDate,
       end_date: data.endDate,
-      start_time: data.type === "permesso" ? data.startTime : null,
-      end_time: data.type === "permesso" ? data.endTime : null,
+      start_time: data.type === "permesso" ? (data.startTime ?? null) : null,
+      end_time: data.type === "permesso" ? (data.endTime ?? null) : null,
       reason: data.reason?.trim() || null,
     };
 
