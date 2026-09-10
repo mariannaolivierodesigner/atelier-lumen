@@ -12,7 +12,7 @@ export const getStaffAbsences = createServerFn({ method: "GET" })
 
     const { data, error } = await context.supabase
       .from("staff_absences")
-      .select("id, staff_id, start_date, end_date, reason")
+      .select("id, staff_id, type, start_date, end_date, start_time, end_time, reason")
       .eq("tenant_id", tenantId)
       .order("start_date", { ascending: true });
     if (error) {
@@ -33,9 +33,12 @@ export const saveStaffAbsence = createServerFn({ method: "POST" })
     const payload = {
       tenant_id: tenantId,
       staff_id: data.staffId,
+      type: data.type,
       start_date: data.startDate,
       end_date: data.endDate,
-      reason: data.reason.trim(),
+      start_time: data.type === "permesso" ? data.startTime : null,
+      end_time: data.type === "permesso" ? data.endTime : null,
+      reason: data.reason?.trim() || null,
     };
 
     if (data.id) {
