@@ -5,6 +5,20 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
+ * Tailwind's reset sets `cursor: default` on <button>, which removes the
+ * usual hand cursor on hover. Restore it on every actually-clickable element.
+ */
+@layer base {
+  button:not(:disabled),
+  a,
+  select,
+  [role="button"],
+  summary {
+    cursor: pointer;
+  }
+}
+
+/*
  * BeautyOS — Design System
  *
  * Direzione: premium minimale, palette calda (avorio, sabbia, espresso, oro
