@@ -19,6 +19,9 @@ export const Route = createFileRoute("/_authenticated/gestionale")({
   loader: ({ context }) => {
     context.queryClient.ensureQueryData(workspaceQuery);
   },
+  head: () => ({
+    links: [{ rel: "manifest", href: "/manifest.webmanifest" }],
+  }),
   component: BackOfficeLayout,
 });
 
