@@ -95,6 +95,7 @@ export const catalogImportSchema = z.object({
 });
 
 const dateSchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Data non valida");
+const timeSchema = z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, "Orario non valido");
 
 export const closureInputSchema = z
   .object({
@@ -110,15 +111,33 @@ export const closureInputSchema = z
     path: ["endDate"],
   });
 
+export const ABSENCE_TYPES = ["ferie", "malattia", "permesso"] as const;
+export type AbsenceType = (typeof ABSENCE_TYPES)[number];
+
 export const absenceInputSchema = z
   .object({
     id: z.string().uuid().optional(),
     staffId: z.string().uuid(),
+    type: z.enum(ABSENCE_TYPES),
     startDate: dateSchema,
     endDate: dateSchema,
-    reason: z.string().min(2).max(120),
+    startTime: timeSchema.optional().nullable(),
+    endTime: timeSchema.optional().nullable(),
+    reason: z.string().max(120).optional(),
   })
   .refine((a) => a.endDate >= a.startDate, {
     message: "La data di fine deve seguire quella di inizio",
     path: ["endDate"],
+  })
+  .refine((a) => a.type !== "permesso" || a.startDate === a.endDate, {
+    message: "Un permesso ha un orario: scegli un solo giorno",
+    path: ["endDate"],
+  })
+  .refine((a) => a.type !== "permesso" || (!!a.startTime && !!a.endTime), {
+    message: "Indica l'orario di inizio e fine del permesso",
+    path: ["startTime"],
+  })
+  .refine((a) => a.type !== "permesso" || !a.startTime || !a.endTime || a.endTime > a.startTime, {
+    message: "L'orario di fine deve seguire quello di inizio",
+    path: ["endTime"],
   });
