@@ -28,9 +28,7 @@ type FormState = {
   fullName: string;
   email: string;
   phone: string;
-  birthDate: string;
   notes: string;
-  tags: string;
   marketingConsent: boolean;
   privacyConsent: boolean;
 };
@@ -39,9 +37,7 @@ const EMPTY: FormState = {
   fullName: "",
   email: "",
   phone: "",
-  birthDate: "",
   notes: "",
-  tags: "",
   marketingConsent: false,
   privacyConsent: false,
 };
@@ -96,7 +92,6 @@ function Crm() {
     },
     onError: () => toast.error("Cancellazione non riuscita"),
   });
-
 
   const saveMutation = useMutation({
     mutationFn: save,
@@ -163,9 +158,7 @@ function Crm() {
             fullName: customer.full_name,
             email: customer.email ?? "",
             phone: customer.phone ?? "",
-            birthDate: customer.birth_date ?? "",
             notes: customer.notes ?? "",
-            tags: (customer.tags ?? []).join(", "),
             marketingConsent: customer.marketing_consent,
             privacyConsent: customer.privacy_consent,
           }
@@ -180,8 +173,8 @@ function Crm() {
           <p className="eyebrow">CRM</p>
           <h1 className="mt-3 text-4xl">Schede cliente</h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            {data.customers.length} clienti · {data.customers.filter((c) => c.marketing_consent).length}{" "}
-            con consenso marketing
+            {data.customers.length} clienti ·{" "}
+            {data.customers.filter((c) => c.marketing_consent).length} con consenso marketing
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -261,12 +254,7 @@ function Crm() {
                     fullName: form.fullName,
                     email: form.email,
                     phone: form.phone,
-                    birthDate: form.birthDate,
                     notes: form.notes,
-                    tags: form.tags
-                      .split(",")
-                      .map((t) => t.trim())
-                      .filter(Boolean),
                     marketingConsent: form.marketingConsent,
                     privacyConsent: form.privacyConsent,
                   },
@@ -298,23 +286,7 @@ function Crm() {
                     className="input-base"
                   />
                 </Field>
-                <Field label="Data di nascita">
-                  <input
-                    type="date"
-                    value={form.birthDate}
-                    onChange={(e) => setForm({ ...form, birthDate: e.target.value })}
-                    className="input-base"
-                  />
-                </Field>
               </div>
-              <Field label="Tag (separati da virgola)">
-                <input
-                  value={form.tags}
-                  onChange={(e) => setForm({ ...form, tags: e.target.value })}
-                  placeholder="viso, abbonamento, VIP"
-                  className="input-base"
-                />
-              </Field>
               <Field label="Note interne">
                 <textarea
                   rows={3}
@@ -368,8 +340,7 @@ function Crm() {
                     {selected.email ?? "—"} · {selected.phone ?? "—"}
                   </p>
                   <p className="mt-1 text-xs text-muted-foreground">
-                    Cliente dal {formatDate(selected.created_at)} · Nascita{" "}
-                    {formatDate(selected.birth_date)}
+                    Cliente dal {formatDate(selected.created_at)}
                   </p>
                 </div>
                 <div className="flex gap-2">
@@ -390,11 +361,6 @@ function Crm() {
               </div>
 
               <div className="flex flex-wrap gap-2">
-                {(selected.tags ?? []).map((tag) => (
-                  <span key={tag} className="rounded-md bg-secondary px-3 py-1 text-xs">
-                    {tag}
-                  </span>
-                ))}
                 <span className="rounded-md bg-secondary px-3 py-1 text-xs">
                   Privacy: {selected.privacy_consent ? "sì" : "no"}
                 </span>
@@ -442,7 +408,6 @@ function Crm() {
                   </button>
                 </div>
               </section>
-
 
               <section className="space-y-3">
                 <h3 className="text-xs tracking-wide text-muted-foreground uppercase">

@@ -374,6 +374,54 @@ export type Database = {
           },
         ];
       };
+      location_hours: {
+        Row: {
+          created_at: string;
+          end_time: string;
+          id: string;
+          location_id: string;
+          start_time: string;
+          tenant_id: string;
+          updated_at: string;
+          weekday: number;
+        };
+        Insert: {
+          created_at?: string;
+          end_time: string;
+          id?: string;
+          location_id: string;
+          start_time: string;
+          tenant_id: string;
+          updated_at?: string;
+          weekday: number;
+        };
+        Update: {
+          created_at?: string;
+          end_time?: string;
+          id?: string;
+          location_id?: string;
+          start_time?: string;
+          tenant_id?: string;
+          updated_at?: string;
+          weekday?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "location_hours_location_id_fkey";
+            columns: ["location_id"];
+            isOneToOne: false;
+            referencedRelation: "locations";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "location_hours_tenant_id_fkey";
+            columns: ["tenant_id"];
+            isOneToOne: false;
+            referencedRelation: "tenants";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       locations: {
         Row: {
           address: string | null;
@@ -756,6 +804,54 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "site_sections_tenant_id_fkey";
+            columns: ["tenant_id"];
+            isOneToOne: false;
+            referencedRelation: "tenants";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      staff_absences: {
+        Row: {
+          created_at: string;
+          end_date: string;
+          id: string;
+          reason: string;
+          staff_id: string;
+          start_date: string;
+          tenant_id: string;
+          updated_at: string;
+        };
+        Insert: {
+          created_at?: string;
+          end_date: string;
+          id?: string;
+          reason: string;
+          staff_id: string;
+          start_date: string;
+          tenant_id: string;
+          updated_at?: string;
+        };
+        Update: {
+          created_at?: string;
+          end_date?: string;
+          id?: string;
+          reason?: string;
+          staff_id?: string;
+          start_date?: string;
+          tenant_id?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "staff_absences_staff_id_fkey";
+            columns: ["staff_id"];
+            isOneToOne: false;
+            referencedRelation: "staff";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "staff_absences_tenant_id_fkey";
             columns: ["tenant_id"];
             isOneToOne: false;
             referencedRelation: "tenants";

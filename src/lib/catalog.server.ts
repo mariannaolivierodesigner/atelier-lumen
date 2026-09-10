@@ -68,13 +68,11 @@ export const availabilityInputSchema = z.object({
 });
 
 /** Applicazione massiva delle stesse regole a più trattamenti. */
-export const bulkAvailabilitySchema = availabilityInputSchema
-  .omit({ serviceId: true })
-  .extend({
-    serviceIds: z.array(z.string().uuid()).min(1).max(200),
-    applyRules: z.boolean().default(true),
-    applyStaff: z.boolean().default(true),
-  });
+export const bulkAvailabilitySchema = availabilityInputSchema.omit({ serviceId: true }).extend({
+  serviceIds: z.array(z.string().uuid()).min(1).max(200),
+  applyRules: z.boolean().default(true),
+  applyStaff: z.boolean().default(true),
+});
 
 export const catalogImportSchema = z.object({
   createMissing: z.boolean().default(true),
@@ -108,6 +106,19 @@ export const closureInputSchema = z
     notes: z.string().max(500).optional(),
   })
   .refine((c) => c.endDate >= c.startDate, {
+    message: "La data di fine deve seguire quella di inizio",
+    path: ["endDate"],
+  });
+
+export const absenceInputSchema = z
+  .object({
+    id: z.string().uuid().optional(),
+    staffId: z.string().uuid(),
+    startDate: dateSchema,
+    endDate: dateSchema,
+    reason: z.string().min(2).max(120),
+  })
+  .refine((a) => a.endDate >= a.startDate, {
     message: "La data di fine deve seguire quella di inizio",
     path: ["endDate"],
   });
