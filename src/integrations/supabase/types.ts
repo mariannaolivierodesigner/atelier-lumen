@@ -815,31 +815,40 @@ export type Database = {
         Row: {
           created_at: string;
           end_date: string;
+          end_time: string | null;
           id: string;
-          reason: string;
+          reason: string | null;
           staff_id: string;
           start_date: string;
+          start_time: string | null;
           tenant_id: string;
+          type: string;
           updated_at: string;
         };
         Insert: {
           created_at?: string;
           end_date: string;
+          end_time?: string | null;
           id?: string;
-          reason: string;
+          reason?: string | null;
           staff_id: string;
           start_date: string;
+          start_time?: string | null;
           tenant_id: string;
+          type?: string;
           updated_at?: string;
         };
         Update: {
           created_at?: string;
           end_date?: string;
+          end_time?: string | null;
           id?: string;
-          reason?: string;
+          reason?: string | null;
           staff_id?: string;
           start_date?: string;
+          start_time?: string | null;
           tenant_id?: string;
+          type?: string;
           updated_at?: string;
         };
         Relationships: [
