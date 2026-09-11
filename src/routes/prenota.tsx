@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Check, ChevronLeft } from "lucide-react";
 import { toast } from "sonner";
 
@@ -63,6 +63,14 @@ function Prenota() {
   const [sending, setSending] = useState(false);
   const [rejection, setRejection] = useState<{ code: string; message: string } | null>(null);
   const [done, setDone] = useState(false);
+
+  // Su mobile, dopo "Continua"/"Indietro" la pagina resta scrollata dov'era
+  // (vicino ai bottoni di navigazione, in fondo): il nuovo step appare sopra,
+  // fuori dallo schermo, e l'utente non se ne accorge. Riportiamo la pagina
+  // in cima a ogni cambio di step così il nuovo contenuto è sempre visibile.
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [step]);
 
   const rawDays = useMemo(() => nextDays(21), []);
   const bookableServices = useMemo(
