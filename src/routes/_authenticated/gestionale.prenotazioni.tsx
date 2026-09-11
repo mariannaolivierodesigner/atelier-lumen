@@ -234,7 +234,7 @@ function Bookings() {
                   </td>
                   <td className="px-5 py-4 align-top">
                     <span
-                      className={`rounded-full px-3 py-1 text-xs ${STATUS_CLASS[b.status as BookingStatus]}`}
+                      className={`inline-block rounded-full px-3 py-1 text-xs whitespace-nowrap ${STATUS_CLASS[b.status as BookingStatus]}`}
                     >
                       {STATUS_LABEL[b.status as BookingStatus] ?? b.status}
                     </span>
