@@ -1,84 +1,50 @@
-// public/sw.js
-// Service Worker minimale per Atelier Lumen PWA.
+// Service Worker Atelier Lumen — versione minimale e sicura (v3).
 //
-// REGOLA D'ORO: questo SW NON deve mai intercettare chiamate dati
-// (Supabase, API, fetch verso il backend). Gestisce SOLO la cache
-// delle icone della PWA elencate in SHELL_ASSETS.
-// Tutto il resto passa dritto alla rete, senza intervento del SW.
+// Il tentativo precedente escludeva le pagine del gestionale per percorso
+// (/gestionale, /auth), ma le chiamate che portano davvero i dati (le
+// funzioni server come getWorkspace) passano da un indirizzo tecnico
+// diverso da quello della pagina, quindi restavano comunque intercettate.
+//
+// Soluzione più sicura: il Service Worker ora risponde SOLO alle richieste
+// dei file dell'involucro statico (icone, manifest) che ha già in cache —
+// e per ogni altra richiesta, di qualunque tipo o pagina, non interviene
+// affatto: il browser la gestisce esattamente come se il Service Worker
+// non esistesse. Ottiene comunque tutto ciò che serve per installare il
+// sito come app, senza nessun rischio di interferire con i dati.
 
-const CACHE_NAME = "atelier-lumen-shell-v1";
+const CACHE_NAME = "atelier-lumen-shell-v3";
+const SHELL_ASSETS = ["/manifest.webmanifest", "/icons/icon-192.png", "/icons/icon-512.png", "/favicon.ico"];
 
-// Whitelist: SOLO le icone precaricate della PWA.
-// Nessuna pagina, nessuna route, nessuna chiamata dati va qui dentro.
-const SHELL_ASSETS = [
-  "/icons/icon-192.png",
-  "/icons/icon-512.png",
-  "/icons/apple-touch-icon.png",
-  "/favicon.ico",
-];
-
-// INSTALL: precarica solo le icone in whitelist.
 self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(SHELL_ASSETS))
+    caches
+      .open(CACHE_NAME)
+      .then((cache) => cache.addAll(SHELL_ASSETS))
+      .then(() => self.skipWaiting()),
   );
-  self.skipWaiting();
 });
 
-// ACTIVATE: elimina eventuali cache vecchie di versioni precedenti del SW.
 self.addEventListener("activate", (event) => {
   event.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(
-        keys
-          .filter((key) => key !== CACHE_NAME)
-          .map((key) => caches.delete(key))
-      )
-    )
+    caches
+      .keys()
+      .then((keys) => Promise.all(keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k))))
+      .then(() => self.clients.claim()),
   );
-  self.clients.claim();
 });
 
-// FETCH: intercetta SOLO le richieste GET per gli asset in whitelist.
-// Qualsiasi altra richiesta (pagine, chiamate dati, API, Supabase,
-// POST/PUT/PATCH/DELETE, ecc.) NON viene toccata: il browser la
-// gestisce normalmente, come se il Service Worker non esistesse.
 self.addEventListener("fetch", (event) => {
-  const { request } = event;
+  const url = new URL(event.request.url);
 
-  // Non toccare mai nulla che non sia una GET.
-  if (request.method !== "GET") {
-    return;
-  }
+  // Solo per i 4 file dell'involucro statico: rispondi dalla cache se il
+  // dispositivo è offline, altrimenti lascia fare alla rete normalmente.
+  // Per TUTTO il resto (pagine, dati, chiamate alle funzioni server):
+  // nessun intervento, nessun respondWith — il Service Worker si
+  // "toglie di mezzo" completamente.
+  if (!SHELL_ASSETS.includes(url.pathname)) return;
+  if (event.request.method !== "GET") return;
 
-  const url = new URL(request.url);
-
-  // Non toccare mai richieste verso altri domini (es. Supabase, API esterne).
-  if (url.origin !== self.location.origin) {
-    return;
-  }
-
-  // Intercetta SOLO se il path è esattamente uno degli asset in whitelist.
-  const isShellAsset = SHELL_ASSETS.includes(url.pathname);
-  if (!isShellAsset) {
-    // Non è un'icona precaricata: lascia passare la richiesta senza
-    // rispondere con event.respondWith(). Il SW resta trasparente.
-    return;
-  }
-
-  // Solo per le icone: cache-first con fallback alla rete.
   event.respondWith(
-    caches.match(request).then((cached) => {
-      return (
-        cached ||
-        fetch(request).then((response) => {
-          const responseClone = response.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(request, responseClone);
-          });
-          return response;
-        })
-      );
-    })
+    fetch(event.request).catch(() => caches.match(event.request).then((cached) => cached ?? Response.error())),
   );
 });
