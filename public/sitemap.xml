@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://atelier-lumen-silk.vercel.app/</loc>
+    <lastmod>2026-09-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://atelier-lumen-silk.vercel.app/prenota</loc>
+    <lastmod>2026-09-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://atelier-lumen-silk.vercel.app/servizi</loc>
+    <lastmod>2026-09-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://atelier-lumen-silk.vercel.app/chi-siamo</loc>
+    <lastmod>2026-09-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://atelier-lumen-silk.vercel.app/team</loc>
+    <lastmod>2026-09-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://atelier-lumen-silk.vercel.app/contatti</loc>
+    <lastmod>2026-09-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://atelier-lumen-silk.vercel.app/gift-card</loc>
+    <lastmod>2026-09-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://atelier-lumen-silk.vercel.app/faq</loc>
+    <lastmod>2026-09-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://atelier-lumen-silk.vercel.app/blog</loc>
+    <lastmod>2026-09-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
+  <!--
+    Le pagine /servizi/{slug} (una per trattamento) NON sono incluse qui perché
+    i trattamenti vivono nel database (tabella services) e cambiano da tenant a
+    tenant e nel tempo: un elenco statico si disallineerebbe alla prima modifica
+    del listino. Lo script scripts/generate-sitemap.mjs (nella stessa consegna)
+    le aggiunge leggendole da Supabase. Quando un cliente vero sarà attivo,
+    conviene collegare quello script a un hook di build su Vercel così il
+    sitemap resta sempre aggiornato da solo.
+  -->
+</urlset>
