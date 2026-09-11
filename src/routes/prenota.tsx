@@ -104,12 +104,35 @@ function Prenota() {
 
   /** Operatori abilitati a TUTTI i trattamenti scelti (nessun trattamento scelto = nessun vincolo). */
   const allowedStaff = useMemo(() => {
-    if (selectedServices.length === 0) return allowedStaffFor(data.staff, data.serviceStaff, null);
-    const perService = selectedServices.map((s) =>
-      allowedStaffFor(data.staff, data.serviceStaff, s.id),
-    );
-    return perService.reduce((acc, list) => acc.filter((p) => list.some((x) => x.id === p.id)));
-  }, [data.staff, data.serviceStaff, selectedServices]);
+    const byService = (() => {
+      if (selectedServices.length === 0)
+        return allowedStaffFor(data.staff, data.serviceStaff, null);
+      const perService = selectedServices.map((s) =>
+        allowedStaffFor(data.staff, data.serviceStaff, s.id),
+      );
+      return perService.reduce((acc, list) => acc.filter((p) => list.some((x) => x.id === p.id)));
+    })();
+
+    // Finché non è stato scelto un giorno, non possiamo ancora sapere chi è
+    // assente o fuori turno quel giorno specifico: mostriamo tutti quelli
+    // abilitati al trattamento, il filtro si restringe non appena si sceglie
+    // il giorno (stesso identico controllo che comunque avviene di nuovo,
+    // in modo definitivo, sul server al momento della conferma).
+    if (!day) return byService;
+
+    const weekday = new Date(`${day}T12:00:00`).getDay();
+
+    return byService.filter((p) => {
+      const isAbsent = data.staffAbsences.some(
+        (a) => a.staff_id === p.id && day >= a.start_date && day <= a.end_date,
+      );
+      if (isAbsent) return false;
+
+      const shifts = data.staffShifts.filter((s) => s.staff_id === p.id);
+      if (shifts.length === 0) return true; // nessun turno impostato = sempre disponibile
+      return shifts.some((s) => s.weekday === weekday);
+    });
+  }, [data.staff, data.serviceStaff, data.staffAbsences, data.staffShifts, selectedServices, day]);
 
   const staff = allowedStaff.find((p) => p.id === staffId) ?? null;
 

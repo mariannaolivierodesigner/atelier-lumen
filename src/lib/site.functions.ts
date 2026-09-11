@@ -54,64 +54,71 @@ export const getSite = createServerFn({ method: "GET" }).handler(async () => {
     availability,
     serviceStaff,
     closures,
+    staffShifts,
+    staffAbsences,
   ] = await Promise.all([
-      supabase
-        .from("locations")
-        .select("id, name, address, city, postal_code, phone, email, opening_hours")
-        .eq("tenant_id", tenantId)
-        .order("sort_order"),
-      supabase
-        .from("service_categories")
-        .select("id, slug, name, description")
-        .eq("tenant_id", tenantId)
-        .order("sort_order"),
-      supabase
-        .from("services")
-        .select(
-          "id, slug, name, description, duration_minutes, price_cents, image_url, is_featured, is_bookable, category_id",
-        )
-        .eq("tenant_id", tenantId)
-        .order("sort_order"),
-      supabase
-        .from("staff")
-        .select("id, full_name, role_title, bio, specialties")
-        .eq("tenant_id", tenantId)
-        .order("sort_order"),
-      supabase
-        .from("site_sections")
-        .select("key, content")
-        .eq("tenant_id", tenantId)
-        .order("sort_order"),
-      supabase
-        .from("posts")
-        .select("slug, title, excerpt, body, published_at")
-        .eq("tenant_id", tenantId)
-        .order("published_at", { ascending: false }),
-      supabase
-        .from("faqs")
-        .select("id, question, answer")
-        .eq("tenant_id", tenantId)
-        .order("sort_order"),
-      supabase
-        .from("reviews")
-        .select("id, author_name, rating, body, source")
-        .eq("tenant_id", tenantId)
-        .order("created_at", { ascending: false }),
-      supabase
-        .from("service_availability")
-        .select("service_id, weekday, start_time, end_time")
-        .eq("tenant_id", tenantId)
-        .order("weekday"),
-      supabase
-        .from("service_staff")
-        .select("service_id, staff_id")
-        .eq("tenant_id", tenantId),
-      supabase
-        .from("closures")
-        .select("id, location_id, start_date, end_date, reason")
-        .eq("tenant_id", tenantId)
-        .order("start_date"),
-    ]);
+    supabase
+      .from("locations")
+      .select("id, name, address, city, postal_code, phone, email, opening_hours")
+      .eq("tenant_id", tenantId)
+      .order("sort_order"),
+    supabase
+      .from("service_categories")
+      .select("id, slug, name, description")
+      .eq("tenant_id", tenantId)
+      .order("sort_order"),
+    supabase
+      .from("services")
+      .select(
+        "id, slug, name, description, duration_minutes, price_cents, image_url, is_featured, is_bookable, category_id",
+      )
+      .eq("tenant_id", tenantId)
+      .order("sort_order"),
+    supabase
+      .from("staff")
+      .select("id, full_name, role_title, bio, specialties")
+      .eq("tenant_id", tenantId)
+      .order("sort_order"),
+    supabase
+      .from("site_sections")
+      .select("key, content")
+      .eq("tenant_id", tenantId)
+      .order("sort_order"),
+    supabase
+      .from("posts")
+      .select("slug, title, excerpt, body, published_at")
+      .eq("tenant_id", tenantId)
+      .order("published_at", { ascending: false }),
+    supabase
+      .from("faqs")
+      .select("id, question, answer")
+      .eq("tenant_id", tenantId)
+      .order("sort_order"),
+    supabase
+      .from("reviews")
+      .select("id, author_name, rating, body, source")
+      .eq("tenant_id", tenantId)
+      .order("created_at", { ascending: false }),
+    supabase
+      .from("service_availability")
+      .select("service_id, weekday, start_time, end_time")
+      .eq("tenant_id", tenantId)
+      .order("weekday"),
+    supabase.from("service_staff").select("service_id, staff_id").eq("tenant_id", tenantId),
+    supabase
+      .from("closures")
+      .select("id, location_id, start_date, end_date, reason")
+      .eq("tenant_id", tenantId)
+      .order("start_date"),
+    supabase
+      .from("staff_shifts")
+      .select("staff_id, weekday, start_time, end_time")
+      .eq("tenant_id", tenantId),
+    supabase
+      .from("staff_absences")
+      .select("staff_id, start_date, end_date")
+      .eq("tenant_id", tenantId),
+  ]);
 
   return {
     tenant,
@@ -129,5 +136,7 @@ export const getSite = createServerFn({ method: "GET" }).handler(async () => {
     availability: availability.data ?? [],
     serviceStaff: serviceStaff.data ?? [],
     closures: closures.data ?? [],
+    staffShifts: staffShifts.data ?? [],
+    staffAbsences: staffAbsences.data ?? [],
   };
 });

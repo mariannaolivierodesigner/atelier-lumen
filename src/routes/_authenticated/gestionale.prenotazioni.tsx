@@ -3,8 +3,17 @@ import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-q
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { toast } from "sonner";
-import { workspaceQuery, STATUS_CLASS, STATUS_LABEL, dayFmt, timeFmt } from "@/lib/admin-query";
+import { MessageCircle, MessageSquareText } from "lucide-react";
+import {
+  workspaceQuery,
+  remindersQuery,
+  STATUS_CLASS,
+  STATUS_LABEL,
+  dayFmt,
+  timeFmt,
+} from "@/lib/admin-query";
 import { updateBookingStatus, type BookingStatus } from "@/lib/admin.functions";
+import { sendReminder } from "@/lib/reminders.functions";
 import { formatPrice } from "@/lib/site-query";
 
 export const Route = createFileRoute("/_authenticated/gestionale/prenotazioni")({
@@ -22,8 +31,10 @@ const FILTERS: Array<{ value: BookingStatus | "all"; label: string }> = [
 
 function Bookings() {
   const { data } = useSuspenseQuery(workspaceQuery);
+  const { data: reminderData } = useSuspenseQuery(remindersQuery);
   const queryClient = useQueryClient();
   const setStatus = useServerFn(updateBookingStatus);
+  const sendReminderFn = useServerFn(sendReminder);
   const [filter, setFilter] = useState<BookingStatus | "all">("all");
   const [search, setSearch] = useState("");
   const [serviceFilter, setServiceFilter] = useState<string>("all");
@@ -37,6 +48,24 @@ function Bookings() {
     },
     onError: () => toast.error("Aggiornamento non riuscito"),
   });
+
+  const reminderMutation = useMutation({
+    mutationFn: sendReminderFn,
+    onSuccess: (result) => {
+      queryClient.invalidateQueries({ queryKey: ["reminders"] });
+      toast.success(
+        result.channel === "sms" ? "Promemoria SMS inviato" : "Promemoria WhatsApp inviato",
+        { description: result.message },
+      );
+    },
+    onError: () => toast.error("Invio del promemoria non riuscito"),
+  });
+
+  /** Ultimo promemoria inviato per ciascuna prenotazione, se c'è. */
+  const lastReminderByBooking = new Map<string, (typeof reminderData.reminders)[number]>();
+  for (const r of reminderData.reminders) {
+    if (!lastReminderByBooking.has(r.booking_id)) lastReminderByBooking.set(r.booking_id, r);
+  }
 
   const serviceById = new Map(data.services.map((s) => [s.id, s]));
   const staffById = new Map(data.staff.map((s) => [s.id, s]));
@@ -164,6 +193,7 @@ function Bookings() {
               <th className="px-5 py-4 font-normal">Trattamento</th>
               <th className="px-5 py-4 font-normal">Operatore</th>
               <th className="px-5 py-4 font-normal">Stato</th>
+              <th className="px-5 py-4 font-normal">Promemoria</th>
               <th className="px-5 py-4 font-normal">Azioni</th>
             </tr>
           </thead>
@@ -208,6 +238,53 @@ function Bookings() {
                     >
                       {STATUS_LABEL[b.status as BookingStatus] ?? b.status}
                     </span>
+                  </td>
+                  <td className="px-5 py-4 align-top">
+                    {b.status === "confirmed" ? (
+                      <div>
+                        <div className="flex gap-2">
+                          <button
+                            type="button"
+                            title="Invia promemoria via SMS"
+                            disabled={reminderMutation.isPending}
+                            onClick={() =>
+                              reminderMutation.mutate({ data: { bookingId: b.id, channel: "sms" } })
+                            }
+                            className="inline-flex min-h-9 items-center gap-1.5 rounded-md border border-border px-3 text-xs hover:bg-accent disabled:opacity-50"
+                          >
+                            <MessageSquareText className="size-3.5" aria-hidden="true" />
+                            SMS
+                          </button>
+                          <button
+                            type="button"
+                            title="Invia promemoria via WhatsApp"
+                            disabled={reminderMutation.isPending}
+                            onClick={() =>
+                              reminderMutation.mutate({
+                                data: { bookingId: b.id, channel: "whatsapp" },
+                              })
+                            }
+                            className="inline-flex min-h-9 items-center gap-1.5 rounded-md border border-border px-3 text-xs hover:bg-accent disabled:opacity-50"
+                          >
+                            <MessageCircle className="size-3.5" aria-hidden="true" />
+                            WhatsApp
+                          </button>
+                        </div>
+                        {lastReminderByBooking.get(b.id) && (
+                          <p className="mt-1.5 text-xs text-muted-foreground">
+                            Inviato via{" "}
+                            {lastReminderByBooking.get(b.id)?.channel === "sms"
+                              ? "SMS"
+                              : "WhatsApp"}
+                            {" · "}
+                            {dayFmt.format(new Date(lastReminderByBooking.get(b.id)!.sent_at))}{" "}
+                            {timeFmt.format(new Date(lastReminderByBooking.get(b.id)!.sent_at))}
+                          </p>
+                        )}
+                      </div>
+                    ) : (
+                      <span className="text-xs text-muted-foreground">—</span>
+                    )}
                   </td>
                   <td className="px-5 py-4 align-top">
                     <label className="sr-only" htmlFor={`stato-${b.id}`}>

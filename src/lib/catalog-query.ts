@@ -2,6 +2,7 @@ import { queryOptions } from "@tanstack/react-query";
 import { getCatalog, getCatalogAuditLog } from "./catalog.functions";
 import { getClosures } from "./closures.functions";
 import { getStaffAbsences } from "./staff-absences.functions";
+import { getStaffShifts } from "./staff-shifts.functions";
 
 export const catalogQuery = queryOptions({
   queryKey: ["catalog"],
@@ -31,5 +32,11 @@ export const closuresQuery = queryOptions({
 export const staffAbsencesQuery = queryOptions({
   queryKey: ["staff-absences"],
   queryFn: () => getStaffAbsences(),
+  staleTime: 30 * 1000,
+});
+
+export const staffShiftsQuery = queryOptions({
+  queryKey: ["staff-shifts"],
+  queryFn: () => getStaffShifts(),
   staleTime: 30 * 1000,
 });

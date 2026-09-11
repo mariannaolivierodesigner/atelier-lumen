@@ -8,6 +8,38 @@ export type Database = {
   };
   public: {
     Tables: {
+      booking_reminders: {
+        Row: {
+          booking_id: string;
+          channel: string;
+          id: string;
+          message: string;
+          sent_at: string;
+        };
+        Insert: {
+          booking_id: string;
+          channel: string;
+          id?: string;
+          message: string;
+          sent_at?: string;
+        };
+        Update: {
+          booking_id?: string;
+          channel?: string;
+          id?: string;
+          message?: string;
+          sent_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "booking_reminders_booking_id_fkey";
+            columns: ["booking_id"];
+            isOneToOne: false;
+            referencedRelation: "bookings";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       booking_services: {
         Row: {
           booking_id: string;
@@ -815,40 +847,31 @@ export type Database = {
         Row: {
           created_at: string;
           end_date: string;
-          end_time: string | null;
           id: string;
-          reason: string | null;
+          reason: string;
           staff_id: string;
           start_date: string;
-          start_time: string | null;
           tenant_id: string;
-          type: string;
           updated_at: string;
         };
         Insert: {
           created_at?: string;
           end_date: string;
-          end_time?: string | null;
           id?: string;
-          reason?: string | null;
+          reason: string;
           staff_id: string;
           start_date: string;
-          start_time?: string | null;
           tenant_id: string;
-          type?: string;
           updated_at?: string;
         };
         Update: {
           created_at?: string;
           end_date?: string;
-          end_time?: string | null;
           id?: string;
-          reason?: string | null;
+          reason?: string;
           staff_id?: string;
           start_date?: string;
-          start_time?: string | null;
           tenant_id?: string;
-          type?: string;
           updated_at?: string;
         };
         Relationships: [
@@ -861,6 +884,54 @@ export type Database = {
           },
           {
             foreignKeyName: "staff_absences_tenant_id_fkey";
+            columns: ["tenant_id"];
+            isOneToOne: false;
+            referencedRelation: "tenants";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      staff_shifts: {
+        Row: {
+          created_at: string;
+          end_time: string;
+          id: string;
+          staff_id: string;
+          start_time: string;
+          tenant_id: string;
+          updated_at: string;
+          weekday: number;
+        };
+        Insert: {
+          created_at?: string;
+          end_time: string;
+          id?: string;
+          staff_id: string;
+          start_time: string;
+          tenant_id: string;
+          updated_at?: string;
+          weekday: number;
+        };
+        Update: {
+          created_at?: string;
+          end_time?: string;
+          id?: string;
+          staff_id?: string;
+          start_time?: string;
+          tenant_id?: string;
+          updated_at?: string;
+          weekday?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "staff_shifts_staff_id_fkey";
+            columns: ["staff_id"];
+            isOneToOne: false;
+            referencedRelation: "staff";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "staff_shifts_tenant_id_fkey";
             columns: ["tenant_id"];
             isOneToOne: false;
             referencedRelation: "tenants";

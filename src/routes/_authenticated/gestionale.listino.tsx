@@ -3,7 +3,8 @@ import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-q
 import { useServerFn } from "@tanstack/react-start";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
-import { Plus, Trash2 } from "lucide-react";
+import { ImageUp, Loader2, Plus, Trash2, X } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 import { catalogQuery, formatDuration } from "@/lib/catalog-query";
 import { deleteCategory, deleteService, saveCategory, saveService } from "@/lib/catalog.functions";
@@ -54,6 +55,36 @@ function Listino() {
   const [form, setForm] = useState<ServiceForm | null>(null);
   const [categoryForm, setCategoryForm] = useState<{ id?: string; name: string } | null>(null);
   const [filter, setFilter] = useState<"all" | "published" | "hidden">("all");
+  const [uploadingImage, setUploadingImage] = useState(false);
+
+  async function handleImageUpload(file: File) {
+    if (!file.type.startsWith("image/")) {
+      toast.error("Carica un'immagine (JPG, PNG, WebP...)");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("L'immagine non può superare 5 MB");
+      return;
+    }
+    setUploadingImage(true);
+    try {
+      const ext = file.name.split(".").pop() ?? "jpg";
+      const path = `${crypto.randomUUID()}.${ext}`;
+      const { error } = await supabase.storage.from("treatment-images").upload(path, file, {
+        cacheControl: "3600",
+        upsert: false,
+      });
+      if (error) throw error;
+      const { data: pub } = supabase.storage.from("treatment-images").getPublicUrl(path);
+      setForm((f) => (f ? { ...f, imageUrl: pub.publicUrl } : f));
+      toast.success("Immagine caricata");
+    } catch (err) {
+      console.error("[upload immagine]", err);
+      toast.error("Caricamento non riuscito, riprova");
+    } finally {
+      setUploadingImage(false);
+    }
+  }
 
   const canDelete =
     workspace.membership?.role === "owner" || workspace.membership?.role === "manager";
@@ -388,14 +419,46 @@ function Listino() {
                 />
               </label>
               <label className="text-sm">
-                Immagine (URL)
-                <input
-                  type="text"
-                  maxLength={500}
-                  value={form.imageUrl}
-                  onChange={(e) => setForm({ ...form, imageUrl: e.target.value })}
-                  className="input-base mt-2"
-                />
+                Immagine del trattamento
+                <div className="mt-2 flex items-center gap-4">
+                  {form.imageUrl && (
+                    <div className="relative">
+                      <img
+                        src={form.imageUrl}
+                        alt=""
+                        className="size-20 rounded-md border border-border object-cover"
+                      />
+                      <button
+                        type="button"
+                        aria-label="Rimuovi immagine"
+                        onClick={() => setForm({ ...form, imageUrl: "" })}
+                        className="absolute -right-2 -top-2 flex size-6 items-center justify-center rounded-full border border-border bg-background"
+                      >
+                        <X className="size-3.5" aria-hidden="true" />
+                      </button>
+                    </div>
+                  )}
+                  <label className="inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-md border border-border px-4 text-sm hover:bg-accent">
+                    {uploadingImage ? (
+                      <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+                    ) : (
+                      <ImageUp className="size-4" aria-hidden="true" />
+                    )}
+                    {form.imageUrl ? "Sostituisci" : "Carica immagine"}
+                    <input
+                      type="file"
+                      accept="image/png,image/jpeg,image/webp"
+                      className="sr-only"
+                      disabled={uploadingImage}
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) void handleImageUpload(file);
+                        e.target.value = "";
+                      }}
+                    />
+                  </label>
+                </div>
+                <p className="mt-2 text-xs text-muted-foreground">JPG, PNG o WebP · max 5 MB</p>
               </label>
               <label className="text-sm">
                 Ordine di visualizzazione

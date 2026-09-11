@@ -1,10 +1,17 @@
 import { queryOptions } from "@tanstack/react-query";
 import { getWorkspace, type BookingStatus } from "./admin.functions";
+import { getReminders } from "./reminders.functions";
 
 export const workspaceQuery = queryOptions({
   queryKey: ["workspace"],
   queryFn: () => getWorkspace(),
   staleTime: 30 * 1000,
+});
+
+export const remindersQuery = queryOptions({
+  queryKey: ["reminders"],
+  queryFn: () => getReminders(),
+  staleTime: 10 * 1000,
 });
 
 export const STATUS_LABEL: Record<BookingStatus, string> = {
