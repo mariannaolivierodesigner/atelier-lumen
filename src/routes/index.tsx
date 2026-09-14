@@ -65,7 +65,7 @@ function Home() {
 
       <Section
         eyebrow="Trattamenti"
-        title="I nostri protocolli"
+        title="I nostri trattamenti"
         intro="Ogni trattamento inizia con una consulenza e prosegue con un protocollo scritto, rivisto nel tempo."
       >
         <div className="mt-14 grid gap-x-8 gap-y-12 sm:grid-cols-2">
