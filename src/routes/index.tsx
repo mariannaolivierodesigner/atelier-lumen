@@ -9,8 +9,6 @@ import atelier from "@/assets/atelier.jpg";
 import serviceViso from "@/assets/service-viso.jpg";
 import serviceCorpo from "@/assets/service-corpo.jpg";
 
-const IMAGES: Record<string, string> = { viso: serviceViso, corpo: serviceCorpo };
-
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
@@ -72,7 +70,7 @@ function Home() {
           {featured.map((s) => (
             <article key={s.id} className="group">
               <img
-                src={IMAGES[s.image_url ?? "viso"] ?? serviceViso}
+                src={s.image_url || (s.id.charCodeAt(0) % 2 === 0 ? serviceViso : serviceCorpo)}
                 alt={s.name}
                 loading="lazy"
                 width={1000}
