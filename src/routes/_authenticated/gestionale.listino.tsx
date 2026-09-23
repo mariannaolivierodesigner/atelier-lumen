@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { ImageUp, Loader2, Plus, Trash2, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -53,6 +53,14 @@ function Listino() {
   const queryClient = useQueryClient();
 
   const [form, setForm] = useState<ServiceForm | null>(null);
+
+  // Con un listino lungo, la scheda di modifica finisce ben oltre lo
+  // schermo (compare dopo l'intero elenco): la portiamo in vista da sola
+  // ogni volta che si apre, invece di lasciare l'utente a scorrere a mano.
+  const formSectionRef = useRef<HTMLElement>(null);
+  useEffect(() => {
+    if (form) formSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [form]);
   const [categoryForm, setCategoryForm] = useState<{ id?: string; name: string } | null>(null);
   const [filter, setFilter] = useState<"all" | "published" | "hidden">("all");
   const [uploadingImage, setUploadingImage] = useState(false);
@@ -60,10 +68,6 @@ function Listino() {
   async function handleImageUpload(file: File) {
     if (!file.type.startsWith("image/")) {
       toast.error("Carica un'immagine (JPG, PNG, WebP...)");
-      return;
-    }
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error("L'immagine non può superare 5 MB");
       return;
     }
     setUploadingImage(true);
@@ -357,7 +361,7 @@ function Listino() {
       </section>
 
       {form && (
-        <section className="rounded-lg border border-border bg-background p-6">
+        <section ref={formSectionRef} className="rounded-lg border border-border bg-background p-6">
           <h2 className="text-2xl">{form.id ? "Modifica trattamento" : "Nuovo trattamento"}</h2>
           <form
             onSubmit={(e) => {
@@ -458,7 +462,7 @@ function Listino() {
                     />
                   </label>
                 </div>
-                <p className="mt-2 text-xs text-muted-foreground">JPG, PNG o WebP · max 5 MB</p>
+                <p className="mt-2 text-xs text-muted-foreground">JPG, PNG o WebP</p>
               </label>
               <label className="text-sm">
                 Ordine di visualizzazione
