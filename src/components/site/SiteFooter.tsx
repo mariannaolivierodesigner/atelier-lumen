@@ -34,7 +34,7 @@ export function SiteFooter({ name, locations }: { name: string; locations: Locat
           </ul>
         </div>
 
-        <div>
+        <div className="hidden md:block">
           <p className="eyebrow">Pagine</p>
           <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
             <li>
@@ -61,11 +61,10 @@ export function SiteFooter({ name, locations }: { name: string; locations: Locat
         </div>
       </div>
 
-      <div className="shell hairline flex flex-col gap-2 py-6 text-xs text-muted-foreground sm:flex-row sm:justify-between">
+      <div className="shell hairline py-6 text-xs text-muted-foreground">
         <p>
           © {new Date().getFullYear()} {name}. Tutti i diritti riservati.
         </p>
-        <p>Atelier Lumen</p>
       </div>
     </footer>
   );
