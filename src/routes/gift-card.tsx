@@ -63,9 +63,6 @@ function GiftCard() {
           >
             Richiedi una gift card
           </Link>
-          <p className="mt-4 text-xs text-muted-foreground">
-            L'acquisto online con pagamento immediato arriva con il modulo ecommerce.
-          </p>
         </div>
       </div>
     </>
