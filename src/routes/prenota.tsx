@@ -380,7 +380,7 @@ function Prenota() {
                         type="button"
                         aria-pressed={checked}
                         onClick={() => toggleService(s.id)}
-                        className={`flex w-full flex-wrap items-baseline justify-between gap-3 rounded-lg border p-5 text-left transition-colors ${checked ? "border-accent bg-accent/10" : "border-border hover:border-foreground/30"}`}
+                        className={`grid w-full grid-cols-[1fr_auto] items-baseline gap-x-3 gap-y-1 rounded-lg border p-5 text-left transition-colors ${checked ? "border-accent bg-accent/10" : "border-border hover:border-foreground/30"}`}
                       >
                         <span className="flex items-center gap-3 text-lg">
                           <span
@@ -594,7 +594,10 @@ function Prenota() {
           )}
         </div>
 
-        <div className="mt-12 flex items-center justify-between">
+        {/* Su mobile resta agganciata in fondo allo schermo (comoda quando lo step
+            ha molti orari e si scorre parecchio), su desktop torna al posto
+            normale nel flusso della pagina, come prima. */}
+        <div className="sticky bottom-0 z-10 mt-12 flex items-center justify-between border-t border-border bg-background/95 py-4 backdrop-blur sm:static sm:border-t-0 sm:bg-transparent sm:py-0 sm:backdrop-blur-none">
           <button
             type="button"
             onClick={() => setStep((s) => Math.max(firstStep, s - 1))}
