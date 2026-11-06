@@ -3,7 +3,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { Plus, Star } from "lucide-react";
 
 import { siteQuery, formatPrice } from "@/lib/site-query";
-import { BlurText, CountUp } from "@/components/site/motion";
+import { BlurText } from "@/components/site/motion";
 import hero from "@/assets/hero.jpg";
 import atelier from "@/assets/atelier.jpg";
 import serviceViso from "@/assets/service-viso.jpg";
@@ -185,26 +185,6 @@ function Home() {
               <h3 className="font-display text-2xl leading-tight">{f.t}</h3>
               <p className="max-w-[40ch] text-muted-foreground">{f.d}</p>
             </article>
-          ))}
-        </div>
-      </section>
-
-      {/* Numeri */}
-      <section className="border-y border-border py-16 md:py-24">
-        <div className="shell grid grid-cols-2 gap-y-10 md:grid-cols-4">
-          {[
-            [data.services.length, "trattamenti in sette categorie"],
-            [4, "professioniste in team"],
-            [6, "giorni di apertura a settimana"],
-            [12, "mesi di validità delle gift card"],
-          ].map(([n, l]) => (
-            <div key={l} className="rv">
-              <CountUp
-                to={Number(n)}
-                className="font-display text-5xl font-medium tracking-[-0.04em] tabular-nums md:text-7xl"
-              />
-              <p className="mt-3 max-w-[22ch] text-sm text-muted-foreground">{l}</p>
-            </div>
           ))}
         </div>
       </section>
