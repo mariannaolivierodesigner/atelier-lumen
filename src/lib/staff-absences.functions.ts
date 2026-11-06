@@ -25,7 +25,7 @@ export const getStaffAbsences = createServerFn({ method: "GET" })
 /** Crea o aggiorna un'assenza. */
 export const saveStaffAbsence = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => absenceInputSchema.parse(input))
+  .validator((input: unknown) => absenceInputSchema.parse(input))
   .handler(async ({ data, context }) => {
     const tenantId = await resolveTenantId(context.supabase);
     if (!tenantId) throw new Error("Centro non trovato");
@@ -64,7 +64,7 @@ export const saveStaffAbsence = createServerFn({ method: "POST" })
 /** Elimina un'assenza. */
 export const deleteStaffAbsence = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => idSchema.parse(input))
+  .validator((input: unknown) => idSchema.parse(input))
   .handler(async ({ data, context }) => {
     const { error } = await context.supabase.from("staff_absences").delete().eq("id", data.id);
     if (error) throw error;

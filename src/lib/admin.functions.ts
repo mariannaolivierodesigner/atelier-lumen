@@ -107,7 +107,7 @@ const statusSchema = z.object({
 
 export const updateBookingStatus = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => statusSchema.parse(input))
+  .validator((input: unknown) => statusSchema.parse(input))
   .handler(async ({ data, context }) => {
     const { error } = await context.supabase
       .from("bookings")
@@ -125,7 +125,7 @@ const rescheduleSchema = z.object({
 
 export const rescheduleBooking = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => rescheduleSchema.parse(input))
+  .validator((input: unknown) => rescheduleSchema.parse(input))
   .handler(async ({ data, context }) => {
     const { error } = await context.supabase
       .from("bookings")

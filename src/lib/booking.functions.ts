@@ -81,7 +81,7 @@ export function describeBookingError(raw: string): BookingRejection {
 }
 
 export const createBooking = createServerFn({ method: "POST" })
-  .inputValidator((input: unknown) => bookingSchema.parse(input))
+  .validator((input: unknown) => bookingSchema.parse(input))
   .handler(async ({ data }) => {
     const key = process.env["SUPABASE_PUBLISHABLE_KEY"]!;
     const supabase = createClient<Database>(process.env["SUPABASE_URL"]!, key, {

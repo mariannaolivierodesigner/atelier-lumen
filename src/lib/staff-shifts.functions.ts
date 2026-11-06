@@ -42,7 +42,7 @@ export const getStaffShifts = createServerFn({ method: "GET" })
 /** Crea o aggiorna un turno. */
 export const saveStaffShift = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => shiftInputSchema.parse(input))
+  .validator((input: unknown) => shiftInputSchema.parse(input))
   .handler(async ({ data, context }) => {
     const tenantId = await resolveTenantId(context.supabase);
     if (!tenantId) throw new Error("Centro non trovato");
@@ -78,7 +78,7 @@ export const saveStaffShift = createServerFn({ method: "POST" })
 /** Elimina un turno. */
 export const deleteStaffShift = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => idSchema.parse(input))
+  .validator((input: unknown) => idSchema.parse(input))
   .handler(async ({ data, context }) => {
     const { error } = await context.supabase.from("staff_shifts").delete().eq("id", data.id);
     if (error) throw error;

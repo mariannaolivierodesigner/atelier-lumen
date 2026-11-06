@@ -25,7 +25,7 @@ export const getClosures = createServerFn({ method: "GET" })
 /** Crea o aggiorna una chiusura. */
 export const saveClosure = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => closureInputSchema.parse(input))
+  .validator((input: unknown) => closureInputSchema.parse(input))
   .handler(async ({ data, context }) => {
     const tenantId = await resolveTenantId(context.supabase);
     if (!tenantId) throw new Error("Centro non trovato");
@@ -62,7 +62,7 @@ export const saveClosure = createServerFn({ method: "POST" })
 /** Elimina una chiusura (solo titolari e responsabili). */
 export const deleteClosure = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => idSchema.parse(input))
+  .validator((input: unknown) => idSchema.parse(input))
   .handler(async ({ data, context }) => {
     const { error } = await context.supabase.from("closures").delete().eq("id", data.id);
     if (error) throw error;

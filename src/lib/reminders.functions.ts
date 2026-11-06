@@ -20,7 +20,7 @@ const reminderInputSchema = z.object({
  */
 export const sendReminder = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => reminderInputSchema.parse(input))
+  .validator((input: unknown) => reminderInputSchema.parse(input))
   .handler(async ({ data, context }) => {
     const { data: booking, error: bookingError } = await context.supabase
       .from("bookings")

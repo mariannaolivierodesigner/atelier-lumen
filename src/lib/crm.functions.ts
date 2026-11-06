@@ -35,7 +35,7 @@ export const getCustomers = createServerFn({ method: "GET" })
 /** Crea o aggiorna una scheda cliente, consensi inclusi. */
 export const saveCustomer = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => customerInputSchema.parse(input))
+  .validator((input: unknown) => customerInputSchema.parse(input))
   .handler(async ({ data, context }) => {
     const tenantId = await resolveTenantId(context.supabase);
     if (!tenantId) throw new Error("Centro non trovato");
@@ -75,7 +75,7 @@ export const saveCustomer = createServerFn({ method: "POST" })
 /** Elimina una scheda cliente (solo titolari e responsabili). */
 export const deleteCustomer = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => customerIdSchema.parse(input))
+  .validator((input: unknown) => customerIdSchema.parse(input))
   .handler(async ({ data, context }) => {
     const { error } = await context.supabase.from("customers").delete().eq("id", data.id);
     if (error) throw error;
@@ -85,7 +85,7 @@ export const deleteCustomer = createServerFn({ method: "POST" })
 /** Aggiunge una nota allo storico del cliente. */
 export const addCustomerNote = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => noteInputSchema.parse(input))
+  .validator((input: unknown) => noteInputSchema.parse(input))
   .handler(async ({ data, context }) => {
     const tenantId = await resolveTenantId(context.supabase);
     if (!tenantId) throw new Error("Centro non trovato");
@@ -168,7 +168,7 @@ export const importCustomersFromBookings = createServerFn({ method: "POST" })
 /** GDPR — Esporta tutti i dati collegati a un cliente (diritto di accesso/portabilità). */
 export const exportCustomerData = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => customerIdSchema.parse(input))
+  .validator((input: unknown) => customerIdSchema.parse(input))
   .handler(async ({ data, context }) => {
     const tenantId = await resolveTenantId(context.supabase);
     if (!tenantId) throw new Error("Centro non trovato");
@@ -214,7 +214,7 @@ export const exportCustomerData = createServerFn({ method: "POST" })
 /** GDPR — Cancella i dati personali di un cliente (diritto all'oblio). */
 export const eraseCustomerData = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => customerIdSchema.parse(input))
+  .validator((input: unknown) => customerIdSchema.parse(input))
   .handler(async ({ data, context }) => {
     const tenantId = await resolveTenantId(context.supabase);
     if (!tenantId) throw new Error("Centro non trovato");

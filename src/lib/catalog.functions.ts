@@ -65,7 +65,7 @@ export const getCatalog = createServerFn({ method: "GET" })
 /** Sostituisce le regole di disponibilità e gli operatori abilitati di un trattamento. */
 export const saveServiceAvailability = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => availabilityInputSchema.parse(input))
+  .validator((input: unknown) => availabilityInputSchema.parse(input))
   .handler(async ({ data, context }) => {
     const tenantId = await resolveTenantId(context.supabase);
     if (!tenantId) throw new Error("Centro non trovato");
@@ -123,7 +123,7 @@ export const saveServiceAvailability = createServerFn({ method: "POST" })
 /** Applica le stesse regole di disponibilità (e operatori) a più trattamenti in una volta. */
 export const applyAvailabilityToServices = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => bulkAvailabilitySchema.parse(input))
+  .validator((input: unknown) => bulkAvailabilitySchema.parse(input))
   .handler(async ({ data, context }) => {
     const tenantId = await resolveTenantId(context.supabase);
     if (!tenantId) throw new Error("Centro non trovato");
@@ -187,7 +187,7 @@ export const applyAvailabilityToServices = createServerFn({ method: "POST" })
 /** Crea o aggiorna un trattamento del listino. */
 export const saveService = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => serviceInputSchema.parse(input))
+  .validator((input: unknown) => serviceInputSchema.parse(input))
   .handler(async ({ data, context }) => {
     const tenantId = await resolveTenantId(context.supabase);
     if (!tenantId) throw new Error("Centro non trovato");
@@ -230,7 +230,7 @@ export const saveService = createServerFn({ method: "POST" })
 /** Elimina un trattamento (solo titolari e responsabili). */
 export const deleteService = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => idSchema.parse(input))
+  .validator((input: unknown) => idSchema.parse(input))
   .handler(async ({ data, context }) => {
     const { error } = await context.supabase.from("services").delete().eq("id", data.id);
     if (error) throw error;
@@ -240,7 +240,7 @@ export const deleteService = createServerFn({ method: "POST" })
 /** Crea o aggiorna una categoria del listino. */
 export const saveCategory = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => categoryInputSchema.parse(input))
+  .validator((input: unknown) => categoryInputSchema.parse(input))
   .handler(async ({ data, context }) => {
     const tenantId = await resolveTenantId(context.supabase);
     if (!tenantId) throw new Error("Centro non trovato");
@@ -277,7 +277,7 @@ export const saveCategory = createServerFn({ method: "POST" })
 /** Elimina una categoria (solo titolari e responsabili). */
 export const deleteCategory = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => idSchema.parse(input))
+  .validator((input: unknown) => idSchema.parse(input))
   .handler(async ({ data, context }) => {
     const { error } = await context.supabase
       .from("service_categories")
@@ -310,7 +310,7 @@ export const getCatalogAuditLog = createServerFn({ method: "GET" })
 /** Importa o aggiorna in blocco i trattamenti del listino da un file CSV. */
 export const importCatalog = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => catalogImportSchema.parse(input))
+  .validator((input: unknown) => catalogImportSchema.parse(input))
   .handler(async ({ data, context }) => {
     const tenantId = await resolveTenantId(context.supabase);
     if (!tenantId) throw new Error("Centro non trovato");
