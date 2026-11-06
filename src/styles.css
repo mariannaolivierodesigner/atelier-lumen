@@ -69,8 +69,8 @@
 :root {
   --radius: 0.25rem;
 
-  --font-display-family: "Cormorant Garamond", Georgia, serif;
-  --font-body-family: "Jost", system-ui, sans-serif;
+  --font-display-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Inter, "Segoe UI", Arial, sans-serif;
+  --font-body-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Inter, "Segoe UI", Arial, sans-serif;
 
   --background: oklch(0.978 0.008 85);
   --foreground: oklch(0.27 0.021 55);
@@ -139,8 +139,8 @@
   h3,
   h4 {
     font-family: var(--font-display-family);
-    font-weight: 300;
-    letter-spacing: -0.015em;
+    font-weight: 600;
+    letter-spacing: -0.035em;
   }
 
   :focus-visible {
@@ -178,4 +178,25 @@
   padding: 0.625rem 0.875rem;
   font-size: 0.875rem;
   color: var(--color-foreground);
+}
+
+/* Rivelazione allo scroll: solo CSS, il contenuto resta visibile dove non è supportata. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .rv {
+      animation: rv-in linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 35%;
+    }
+    @keyframes rv-in {
+      from {
+        opacity: 0;
+        transform: translateY(24px);
+      }
+      to {
+        opacity: 1;
+        transform: none;
+      }
+    }
+  }
 }

@@ -10,10 +10,12 @@ type Location = {
 
 export function SiteFooter({ name, locations }: { name: string; locations: Location[] }) {
   return (
-    <footer className="mt-28 border-t border-border bg-secondary/40">
+    <footer className="mt-20 border-t border-border bg-secondary/40">
       <div className="shell grid gap-12 py-16 md:grid-cols-3">
         <div>
-          <p className="font-display text-2xl">{name}</p>
+          <p className="text-3xl" style={{ fontFamily: '"Cormorant Garamond", Georgia, serif' }}>
+            {name}
+          </p>
           <p className="mt-3 max-w-xs text-sm text-muted-foreground">
             Bellezza essenziale, protocolli su misura, tempo che rallenta.
           </p>

@@ -18,7 +18,7 @@ export function SiteHeader({ name }: { name: string }) {
   return (
     <header className="sticky top-0 z-50 border-b border-border/70 bg-background/85 backdrop-blur">
       <div className="shell flex h-20 items-center justify-between gap-6">
-        <Link to="/" className="font-display text-2xl tracking-tight">
+        <Link to="/" className="text-[1.75rem] font-normal tracking-normal" style={{ fontFamily: '"Cormorant Garamond", Georgia, serif' }}>
           {name}
         </Link>
 
