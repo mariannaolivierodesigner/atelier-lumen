@@ -36,7 +36,6 @@ export function SiteFooter({ name, locations }: { name: string; locations: Locat
         <div>
           <p className="eyebrow">Informazioni</p>
           <ul className={`mt-5 ${col}`}>
-            <li><Link to="/blog" className="hover:text-foreground">Journal</Link></li>
             <li><Link to="/faq" className="hover:text-foreground">FAQ</Link></li>
             <li><Link to="/contatti" className="hover:text-foreground">Contatti</Link></li>
             <li><Link to="/prenota" className="hover:text-foreground">Prenota</Link></li>

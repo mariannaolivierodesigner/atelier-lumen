@@ -28,7 +28,6 @@ const staticPages = [
   { path: "/contatti", changefreq: "monthly", priority: "0.6" },
   { path: "/gift-card", changefreq: "monthly", priority: "0.5" },
   { path: "/faq", changefreq: "monthly", priority: "0.4" },
-  { path: "/blog", changefreq: "weekly", priority: "0.5" },
 ];
 
 async function fetchServiceSlugs() {

@@ -12,7 +12,6 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
-import { Route as BlogRouteImport } from './routes/blog'
 import { Route as ChiSiamoRouteImport } from './routes/chi-siamo'
 import { Route as ContattiRouteImport } from './routes/contatti'
 import { Route as FaqRouteImport } from './routes/faq'
@@ -28,6 +27,7 @@ import { Route as AuthenticatedGestionaleChiusureRouteImport } from './routes/_a
 import { Route as AuthenticatedGestionaleClientiRouteImport } from './routes/_authenticated/gestionale.clienti'
 import { Route as AuthenticatedGestionaleListinoRouteImport } from './routes/_authenticated/gestionale.listino'
 import { Route as AuthenticatedGestionalePrenotazioniRouteImport } from './routes/_authenticated/gestionale.prenotazioni'
+import { Route as AuthenticatedGestionaleStaffRouteImport } from './routes/_authenticated/gestionale.staff'
 import { Route as AuthenticatedGestionaleStoricoRouteImport } from './routes/_authenticated/gestionale.storico'
 
 const IndexRoute = IndexRouteImport.update({
@@ -42,11 +42,6 @@ const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BlogRoute = BlogRouteImport.update({
-  id: '/blog',
-  path: '/blog',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ChiSiamoRoute = ChiSiamoRouteImport.update({
@@ -130,6 +125,12 @@ const AuthenticatedGestionalePrenotazioniRoute =
     path: '/prenotazioni',
     getParentRoute: () => AuthenticatedGestionaleRoute,
   } as any)
+const AuthenticatedGestionaleStaffRoute =
+  AuthenticatedGestionaleStaffRouteImport.update({
+    id: '/staff',
+    path: '/staff',
+    getParentRoute: () => AuthenticatedGestionaleRoute,
+  } as any)
 const AuthenticatedGestionaleStoricoRoute =
   AuthenticatedGestionaleStoricoRouteImport.update({
     id: '/storico',
@@ -140,7 +141,6 @@ const AuthenticatedGestionaleStoricoRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
-  '/blog': typeof BlogRoute
   '/chi-siamo': typeof ChiSiamoRoute
   '/contatti': typeof ContattiRoute
   '/faq': typeof FaqRoute
@@ -155,13 +155,13 @@ export interface FileRoutesByFullPath {
   '/gestionale/clienti': typeof AuthenticatedGestionaleClientiRoute
   '/gestionale/listino': typeof AuthenticatedGestionaleListinoRoute
   '/gestionale/prenotazioni': typeof AuthenticatedGestionalePrenotazioniRoute
+  '/gestionale/staff': typeof AuthenticatedGestionaleStaffRoute
   '/gestionale/storico': typeof AuthenticatedGestionaleStoricoRoute
   '/gestionale/': typeof AuthenticatedGestionaleIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
-  '/blog': typeof BlogRoute
   '/chi-siamo': typeof ChiSiamoRoute
   '/contatti': typeof ContattiRoute
   '/faq': typeof FaqRoute
@@ -175,6 +175,7 @@ export interface FileRoutesByTo {
   '/gestionale/clienti': typeof AuthenticatedGestionaleClientiRoute
   '/gestionale/listino': typeof AuthenticatedGestionaleListinoRoute
   '/gestionale/prenotazioni': typeof AuthenticatedGestionalePrenotazioniRoute
+  '/gestionale/staff': typeof AuthenticatedGestionaleStaffRoute
   '/gestionale/storico': typeof AuthenticatedGestionaleStoricoRoute
   '/gestionale': typeof AuthenticatedGestionaleIndexRoute
 }
@@ -183,7 +184,6 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
-  '/blog': typeof BlogRoute
   '/chi-siamo': typeof ChiSiamoRoute
   '/contatti': typeof ContattiRoute
   '/faq': typeof FaqRoute
@@ -198,6 +198,7 @@ export interface FileRoutesById {
   '/_authenticated/gestionale/clienti': typeof AuthenticatedGestionaleClientiRoute
   '/_authenticated/gestionale/listino': typeof AuthenticatedGestionaleListinoRoute
   '/_authenticated/gestionale/prenotazioni': typeof AuthenticatedGestionalePrenotazioniRoute
+  '/_authenticated/gestionale/staff': typeof AuthenticatedGestionaleStaffRoute
   '/_authenticated/gestionale/storico': typeof AuthenticatedGestionaleStoricoRoute
   '/_authenticated/gestionale/': typeof AuthenticatedGestionaleIndexRoute
 }
@@ -206,7 +207,6 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
-    | '/blog'
     | '/chi-siamo'
     | '/contatti'
     | '/faq'
@@ -221,13 +221,13 @@ export interface FileRouteTypes {
     | '/gestionale/clienti'
     | '/gestionale/listino'
     | '/gestionale/prenotazioni'
+    | '/gestionale/staff'
     | '/gestionale/storico'
     | '/gestionale/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/auth'
-    | '/blog'
     | '/chi-siamo'
     | '/contatti'
     | '/faq'
@@ -241,6 +241,7 @@ export interface FileRouteTypes {
     | '/gestionale/clienti'
     | '/gestionale/listino'
     | '/gestionale/prenotazioni'
+    | '/gestionale/staff'
     | '/gestionale/storico'
     | '/gestionale'
   id:
@@ -248,7 +249,6 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/auth'
-    | '/blog'
     | '/chi-siamo'
     | '/contatti'
     | '/faq'
@@ -263,6 +263,7 @@ export interface FileRouteTypes {
     | '/_authenticated/gestionale/clienti'
     | '/_authenticated/gestionale/listino'
     | '/_authenticated/gestionale/prenotazioni'
+    | '/_authenticated/gestionale/staff'
     | '/_authenticated/gestionale/storico'
     | '/_authenticated/gestionale/'
   fileRoutesById: FileRoutesById
@@ -271,7 +272,6 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
-  BlogRoute: typeof BlogRoute
   ChiSiamoRoute: typeof ChiSiamoRoute
   ContattiRoute: typeof ContattiRoute
   FaqRoute: typeof FaqRoute
@@ -303,13 +303,6 @@ declare module '@tanstack/react-router' {
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/blog': {
-      id: '/blog'
-      path: '/blog'
-      fullPath: '/blog'
-      preLoaderRoute: typeof BlogRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/chi-siamo': {
@@ -417,6 +410,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedGestionalePrenotazioniRouteImport
       parentRoute: typeof AuthenticatedGestionaleRoute
     }
+    '/_authenticated/gestionale/staff': {
+      id: '/_authenticated/gestionale/staff'
+      path: '/staff'
+      fullPath: '/gestionale/staff'
+      preLoaderRoute: typeof AuthenticatedGestionaleStaffRouteImport
+      parentRoute: typeof AuthenticatedGestionaleRoute
+    }
     '/_authenticated/gestionale/storico': {
       id: '/_authenticated/gestionale/storico'
       path: '/storico'
@@ -433,6 +433,7 @@ interface AuthenticatedGestionaleRouteChildren {
   AuthenticatedGestionaleClientiRoute: typeof AuthenticatedGestionaleClientiRoute
   AuthenticatedGestionaleListinoRoute: typeof AuthenticatedGestionaleListinoRoute
   AuthenticatedGestionalePrenotazioniRoute: typeof AuthenticatedGestionalePrenotazioniRoute
+  AuthenticatedGestionaleStaffRoute: typeof AuthenticatedGestionaleStaffRoute
   AuthenticatedGestionaleStoricoRoute: typeof AuthenticatedGestionaleStoricoRoute
   AuthenticatedGestionaleIndexRoute: typeof AuthenticatedGestionaleIndexRoute
 }
@@ -445,6 +446,7 @@ const AuthenticatedGestionaleRouteChildren: AuthenticatedGestionaleRouteChildren
     AuthenticatedGestionaleListinoRoute: AuthenticatedGestionaleListinoRoute,
     AuthenticatedGestionalePrenotazioniRoute:
       AuthenticatedGestionalePrenotazioniRoute,
+    AuthenticatedGestionaleStaffRoute: AuthenticatedGestionaleStaffRoute,
     AuthenticatedGestionaleStoricoRoute: AuthenticatedGestionaleStoricoRoute,
     AuthenticatedGestionaleIndexRoute: AuthenticatedGestionaleIndexRoute,
   }
@@ -469,7 +471,6 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
-  BlogRoute: BlogRoute,
   ChiSiamoRoute: ChiSiamoRoute,
   ContattiRoute: ContattiRoute,
   FaqRoute: FaqRoute,
