@@ -87,7 +87,7 @@ function DettaglioTrattamento() {
 
   return (
     <>
-      <div className="shell pt-20 pb-6 md:pt-28">
+      <div className="shell pt-16 pb-6 md:pt-24">
         <p className="eyebrow">
           <Link to="/servizi" className="hover:text-foreground">
             Trattamenti
@@ -175,7 +175,7 @@ function DettaglioTrattamento() {
           {service.is_bookable ? (
             <Link
               to="/prenota"
-              className="mt-7 inline-flex w-full justify-center rounded-md bg-primary px-6 py-3 text-sm text-primary-foreground"
+              className="mt-7 inline-flex w-full justify-center btn"
             >
               Prenota ora
             </Link>

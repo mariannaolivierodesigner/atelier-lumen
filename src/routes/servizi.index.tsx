@@ -74,7 +74,7 @@ function Servizi() {
       <div className="shell pb-24">
         <Link
           to="/prenota"
-          className="inline-flex rounded-md bg-primary px-7 py-3.5 text-sm text-primary-foreground"
+          className="inline-flex btn"
         >
           Prenota un trattamento
         </Link>

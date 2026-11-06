@@ -27,6 +27,7 @@ export function Section({
   );
 }
 
+/* Testata delle pagine interne: spazio sotto l'intestazione fissa, titolo grande al centro. */
 export function PageHeader({
   eyebrow,
   title,
@@ -37,10 +38,12 @@ export function PageHeader({
   intro?: string | undefined;
 }) {
   return (
-    <div className="shell pt-20 pb-6 md:pt-28">
+    <div className="shell pt-16 pb-10 text-center md:pt-24">
       <p className="eyebrow">{eyebrow}</p>
-      <h1 className="mt-4 max-w-3xl text-5xl md:text-6xl">{title}</h1>
-      {intro && <p className="mt-6 max-w-2xl leading-relaxed text-muted-foreground">{intro}</p>}
+      <h1 className="mx-auto mt-5 max-w-[16ch] text-5xl text-balance md:text-7xl">{title}</h1>
+      {intro && (
+        <p className="mx-auto mt-6 max-w-xl leading-relaxed text-muted-foreground">{intro}</p>
+      )}
     </div>
   );
 }

@@ -69,8 +69,8 @@
 :root {
   --radius: 0.25rem;
 
-  --font-display-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Inter, "Segoe UI", Arial, sans-serif;
-  --font-body-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Inter, "Segoe UI", Arial, sans-serif;
+  --font-display-family: "Noto Serif", Georgia, serif;
+  --font-body-family: "Geist", system-ui, sans-serif;
 
   --background: oklch(0.978 0.008 85);
   --foreground: oklch(0.27 0.021 55);
@@ -139,8 +139,9 @@
   h3,
   h4 {
     font-family: var(--font-display-family);
-    font-weight: 600;
-    letter-spacing: -0.035em;
+    font-weight: 500;
+    letter-spacing: -0.04em;
+    line-height: 1.1;
   }
 
   :focus-visible {
@@ -199,4 +200,35 @@
       }
     }
   }
+}
+
+/* Pulsanti del sito pubblico: maiuscoletto piccolo, angoli 8px (come nella reference). */
+@utility btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  padding: 1rem 1.5rem;
+  font-size: 0.75rem;
+  line-height: 1;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background-color: var(--color-primary);
+  color: var(--color-primary-foreground);
+  transition: opacity 0.2s, background-color 0.2s;
+}
+@utility btn-glass {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  padding: 1rem 1.5rem;
+  font-size: 0.75rem;
+  line-height: 1;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background-color: rgb(255 255 255 / 0.16);
+  color: #fff;
+  backdrop-filter: blur(10px);
+  transition: background-color 0.2s;
 }

@@ -59,7 +59,7 @@ function GiftCard() {
           </ul>
           <Link
             to="/contatti"
-            className="mt-10 inline-flex rounded-md bg-primary px-7 py-3.5 text-sm text-primary-foreground"
+            className="mt-10 inline-flex btn"
           >
             Richiedi una gift card
           </Link>

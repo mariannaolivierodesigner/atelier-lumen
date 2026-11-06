@@ -28,7 +28,7 @@ function NotFoundComponent() {
         </p>
         <Link
           to="/"
-          className="mt-8 inline-flex rounded-md bg-primary px-5 py-2.5 text-sm text-primary-foreground"
+          className="mt-8 inline-flex btn"
         >
           Torna alla home
         </Link>
@@ -57,7 +57,7 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
               router.invalidate();
               reset();
             }}
-            className="rounded-md bg-primary px-5 py-2.5 text-sm text-primary-foreground"
+            className="btn"
           >
             Riprova
           </button>
@@ -98,7 +98,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
         rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=Jost:wght@300;400;500&display=swap",
+        href: "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400&family=Noto+Serif:ital,wght@0,400;0,500;0,600;1,400&family=Geist:wght@300;400;500&display=swap",
       },
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
       { rel: "apple-touch-icon", href: "/icons/apple-touch-icon.png" },
@@ -127,10 +127,11 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function SiteChrome() {
   const { data } = useSuspenseQuery(siteQuery);
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
   return (
     <>
       <SiteHeader name={data.tenant.name} />
-      <main id="contenuto">
+      <main id="contenuto" className={pathname === "/" ? "" : "pt-20"}>
         <Outlet />
       </main>
       <SiteFooter name={data.tenant.name} locations={data.locations} />
