@@ -91,7 +91,7 @@ function Home() {
           className="absolute inset-0 -z-20 size-full object-cover"
         />
         <div className="absolute inset-0 -z-10 bg-black/35" />
-        <h1 className="mt-[8vh] max-w-[11ch] text-5xl leading-[1] text-balance sm:text-6xl md:text-7xl">
+        <h1 className="mt-[8vh] max-w-[14ch] text-5xl leading-[1] text-balance sm:text-6xl md:text-7xl">
           Cura naturale per la bellezza della tua pelle
         </h1>
         <div className="flex flex-col items-center">
