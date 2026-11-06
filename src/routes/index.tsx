@@ -1,8 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { Plus } from "lucide-react";
+import { Plus, Star } from "lucide-react";
 
 import { siteQuery, formatPrice } from "@/lib/site-query";
+import { BlurText, CountUp } from "@/components/site/motion";
 import hero from "@/assets/hero.jpg";
 import atelier from "@/assets/atelier.jpg";
 import serviceViso from "@/assets/service-viso.jpg";
@@ -16,12 +17,12 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Trattamenti personalizzati viso e corpo, rituali spa e prenotazione online all'Atelier Lumen di Milano.",
+          "Protocolli viso e corpo su misura, rituali spa e prenotazione online in tre passaggi.",
       },
       { property: "og:title", content: "Atelier Lumen — Centro estetico e spa a Milano" },
       {
         property: "og:description",
-        content: "Cura personale per la bellezza duratura della tua pelle.",
+        content: "Protocolli viso e corpo su misura, rituali spa e prenotazione online.",
       },
     ],
   }),
@@ -30,53 +31,53 @@ export const Route = createFileRoute("/")({
 });
 
 const COLLEZIONE = [
-  { t: "Pulizia profonda", img: serviceViso, pos: "center 30%" },
-  { t: "Terapia viso", img: hero, pos: "30% center" },
-  { t: "Levigatura della pelle", img: serviceCorpo, pos: "center 20%" },
-  { t: "Rinnovo luminoso", img: giftcard, pos: "center" },
-  { t: "Rimodellamento corpo", img: atelier, pos: "70% center" },
+  { t: "Viso", img: serviceViso, pos: "center 30%" },
+  { t: "Sopracciglia e ciglia", img: hero, pos: "30% center" },
+  { t: "Corpo", img: serviceCorpo, pos: "center 20%" },
+  { t: "Epilazione", img: giftcard, pos: "center" },
+  { t: "Rituali spa", img: atelier, pos: "70% center" },
 ];
 
 const PASSI = [
   {
-    t: "Capire la tua pelle e le tue esigenze",
-    d: "Iniziamo con una consulenza attenta, dedicata alla tua pelle, alle tue necessità e ai risultati che vuoi ottenere con una cura delicata e personalizzata.",
+    t: "Consulenza",
+    d: "Un colloquio su pelle, abitudini e obiettivi, senza impegno, prima di scegliere qualsiasi trattamento.",
   },
   {
-    t: "Creare un piano di trattamento su misura",
-    d: "Ogni trattamento viene scelto con cura in base al tuo tipo di pelle, ai tuoi lineamenti naturali e ai tuoi obiettivi di bellezza, nel modo più equilibrato e personale.",
+    t: "Protocollo su misura",
+    d: "Gesti, prodotti e frequenza vengono messi per iscritto e restano a tua disposizione.",
   },
   {
-    t: "Trattamenti delicati, risultati che durano",
-    d: "Il nostro metodo unisce tecniche moderne e gesti rilassanti, per una pelle fresca, sana, naturalmente luminosa e in equilibrio nel tempo.",
+    t: "Trattamento",
+    d: "Mani esperte, tempi mai compressi, un ambiente pensato per rallentare.",
+  },
+  {
+    t: "Revisione nel tempo",
+    d: "Dopo ogni seduta aggiorniamo il protocollo, così il risultato si costruisce e si mantiene.",
   },
 ];
 
 const FOCUS = [
-  { tag: "Le nostre esperte", t: "Estetiste esperte di cui fidarti", img: serviceViso },
-  { tag: "I nostri prodotti", t: "Cosmetici scelti con attenzione per la tua pelle", img: serviceCorpo },
-  { tag: "Il nostro spazio", t: "Uno spazio calmo, pensato per rilassarti", img: atelier },
+  { tag: "Pelle", t: "Viso su misura", d: "Protocolli che cambiano con la stagione e con la tua pelle, non il contrario.", img: serviceViso },
+  { tag: "Corpo", t: "Tempo per il corpo", d: "Massaggi decontratturanti e drenanti, con pressioni decise insieme a te.", img: serviceCorpo },
+  { tag: "Spa", t: "Rituali lunghi", d: "Percorsi da novanta minuti in su per staccare davvero, anche in coppia o con la sposa.", img: atelier },
 ];
 
 const FAQ = [
-  ["Come scelgo il trattamento giusto per la mia pelle?", "Durante la consulenza iniziale analizziamo pelle, abitudini e obiettivi, poi ti proponiamo un protocollo scritto. Non devi scegliere da sola."],
-  ["Cosa succede durante la prima consulenza?", "Parliamo della tua pelle, osserviamo le zone da trattare e definiamo insieme priorità e frequenza. Non è un impegno e non ha costi."],
-  ["Quanto dura una seduta di trattamento viso?", "Dipende dal trattamento: da 50 a 75 minuti per la maggior parte dei protocolli viso. La durata è sempre indicata nel listino."],
-  ["I trattamenti sono personalizzati per ogni tipo di pelle?", "Sì. Ogni protocollo viene adattato a pelle secca, sensibile, impura o matura, e rivisto dopo ogni seduta."],
-  ["Quando vedrò i primi risultati?", "Molti trattamenti danno un effetto visibile già dalla prima seduta. Per risultati duraturi serve un percorso costante, che costruiamo insieme."],
-  ["Dopo i trattamenti c'è un tempo di recupero?", "Per la maggior parte dei trattamenti no: puoi tornare alle tue attività subito. Se serve qualche attenzione, te la spieghiamo a fine seduta."],
-  ["I trattamenti sono adatti alle pelli sensibili?", "Sì, scegliamo prodotti e gesti delicati e facciamo sempre una prova prima di procedere. Segnalaci allergie e reazioni passate."],
-  ["Quali prodotti usate durante i trattamenti?", "Cosmetici professionali selezionati per efficacia e delicatezza. Su richiesta ti indichiamo i prodotti usati in cabina."],
-  ["I trattamenti migliorano texture e luminosità?", "Sì, pulizia, esfoliazione e idratazione mirate migliorano la grana della pelle e restituiscono luminosità."],
-  ["Come mantengo i risultati tra un appuntamento e l'altro?", "Ti lasciamo una routine semplice a casa, scritta nel tuo protocollo: pochi gesti e prodotti, da fare con regolarità."],
-  ["Ogni quanto devo prenotare i trattamenti?", "In genere ogni tre o quattro settimane per il viso, ma la frequenza dipende dal tuo protocollo."],
-  ["La consulenza è inclusa prima di ogni trattamento?", "Sì, ogni percorso inizia con una consulenza, e la ripetiamo ogni volta che i tuoi obiettivi cambiano."],
+  ["Come prenoto un trattamento?", "Dal sito, scegliendo trattamento, giorno e orario. Ricevi una conferma e un promemoria prima dell'appuntamento."],
+  ["Posso disdire o spostare?", "Sì, avvisandoci per tempo. Ti chiediamo di scriverci o telefonare il prima possibile, così l'orario resta disponibile per altri."],
+  ["La consulenza è a pagamento?", "No. È il punto di partenza di ogni protocollo e dura il tempo che serve per conoscerci."],
+  ["Come funzionano le gift card?", "Sono nominative, valide dodici mesi e utilizzabili anche parzialmente, su tutti i trattamenti."],
+  ["Quali sono gli orari di apertura?", "Dal lunedì al venerdì dalle 09:00 alle 20:00, il sabato dalle 09:00 alle 18:00. La domenica siamo chiusi."],
 ];
 
 const h2 = "text-4xl text-balance md:text-[42px] md:leading-[1.1]";
 
 function Home() {
   const { data } = useSuspenseQuery(siteQuery);
+  const heroContent = data.sections["hero"] ?? {};
+  const about = data.sections["about"] ?? {};
+  const promo = data.sections["promo"] ?? {};
   const prezzi = data.services.slice(0, 10);
 
   return (
@@ -92,44 +93,37 @@ function Home() {
         />
         <div className="absolute inset-0 -z-10 bg-black/35" />
         <h1 className="mt-[8vh] max-w-[14ch] text-5xl leading-[1] text-balance sm:text-6xl md:text-7xl">
-          Cura naturale per la bellezza della tua pelle
+          {heroContent["title"]}
         </h1>
         <div className="flex flex-col items-center">
-          <p className="max-w-md text-base leading-relaxed text-white/85">
-            Trattamenti personalizzati pensati per il comfort, la sicurezza e una bellezza naturale
-            senza tempo.
-          </p>
+          <p className="max-w-md text-base leading-relaxed text-white/85">{heroContent["body"]}</p>
           <div className="mt-6 flex flex-wrap justify-center gap-3">
             <Link to="/prenota" className="btn !bg-[#c7a08b] text-white">
-              Prenota
+              {heroContent["cta"] ?? "Prenota"}
             </Link>
             <Link to="/contatti" className="btn-glass !bg-black/40">
-              Contattaci
+              Contatti
             </Link>
           </div>
         </div>
       </section>
 
-      {/* Panoramica */}
+      {/* Frase di apertura */}
       <section className="shell py-24 md:py-36">
         <div className="mx-auto max-w-4xl">
-          <p className="rv font-display text-3xl leading-[1.15] font-medium tracking-[-0.04em] text-balance md:text-[42px]">
-            Crediamo che la pelle rifletta la cura, la sicurezza e la dolcezza che ti fanno sentire
-            te stessa. Con trattamenti delicati ti aiutiamo a preservare la bellezza naturale, in
-            modo calmo e personale.
-          </p>
+          <BlurText
+            text="Ogni trattamento inizia con una consulenza e prosegue con un protocollo scritto, rivisto nel tempo."
+            className="font-display text-3xl leading-[1.15] font-medium tracking-[-0.04em] text-balance md:text-[42px]"
+          />
           <p className="rv mt-10 ml-auto max-w-md text-sm leading-relaxed text-muted-foreground md:text-base">
-            Aiutiamo la tua pelle a sentirsi sana, fresca e naturalmente giovane, con trattamenti,
-            cure delicate ed esperienze di bellezza personalizzate.
+            {about["body"]}
           </p>
         </div>
       </section>
 
       {/* Collezione */}
       <section id="trattamenti" className="shell pb-24 md:pb-36">
-        <h2 className={`rv mx-auto max-w-[18ch] text-center ${h2}`}>
-          Una collezione personalizzata per la tua bellezza naturale
-        </h2>
+        <h2 className={`rv mx-auto max-w-[18ch] text-center ${h2}`}>I nostri trattamenti</h2>
         <div className="mt-14 grid grid-cols-2 gap-3 md:grid-cols-5 md:gap-4">
           {COLLEZIONE.map((c, i) => (
             <Link
@@ -155,12 +149,10 @@ function Home() {
         </div>
       </section>
 
-      {/* Processo */}
+      {/* Metodo */}
       <section id="metodo" className="bg-secondary/60 py-24 md:py-36">
         <div className="shell">
-          <h2 className={`rv max-w-[20ch] ${h2}`}>
-            Una cura attenta, pensata intorno alla tua bellezza
-          </h2>
+          <h2 className={`rv max-w-[20ch] ${h2}`}>Un protocollo scritto per te</h2>
           <div className="mt-16 border-t border-border">
             {PASSI.map((p) => (
               <div
@@ -175,12 +167,12 @@ function Home() {
         </div>
       </section>
 
-      {/* Focus */}
+      {/* Pensato per te */}
       <section id="atelier" className="shell py-24 md:py-36">
-        <h2 className={`rv max-w-[14ch] ${h2}`}>Attenzione al comfort e alla bellezza naturale</h2>
+        <h2 className={`rv max-w-[14ch] ${h2}`}>Pensato per te</h2>
         <div className="mt-14 grid gap-4 lg:grid-cols-3">
           {FOCUS.map((f) => (
-            <article key={f.tag} className="rv flex min-w-0 flex-col gap-5">
+            <article key={f.tag} className="rv flex min-w-0 flex-col gap-4">
               <img
                 src={f.img}
                 alt=""
@@ -191,6 +183,7 @@ function Home() {
               />
               <span className="eyebrow">{f.tag}</span>
               <h3 className="font-display text-2xl leading-tight">{f.t}</h3>
+              <p className="max-w-[40ch] text-muted-foreground">{f.d}</p>
             </article>
           ))}
         </div>
@@ -198,46 +191,35 @@ function Home() {
 
       {/* Numeri */}
       <section className="border-y border-border py-16 md:py-24">
-        <div className="shell">
-          <h2 className={`rv max-w-[16ch] ${h2}`}>Esperienze di bellezza con risultati concreti</h2>
-          <div className="mt-14 grid grid-cols-2 gap-y-10 md:grid-cols-5">
-            {[
-              [String(data.services.length), "trattamenti in listino"],
-              ["7", "categorie di trattamento"],
-              ["4", "professioniste in team"],
-              ["6", "giorni di apertura a settimana"],
-              ["12", "mesi di validità delle gift card"],
-            ].map(([n, l]) => (
-              <div key={l} className="rv">
-                <p className="font-display text-5xl font-medium tracking-[-0.04em] tabular-nums md:text-6xl">
-                  {n}
-                </p>
-                <p className="mt-3 max-w-[18ch] text-sm text-muted-foreground">{l}</p>
-              </div>
-            ))}
-          </div>
+        <div className="shell grid grid-cols-2 gap-y-10 md:grid-cols-4">
+          {[
+            [data.services.length, "trattamenti in sette categorie"],
+            [4, "professioniste in team"],
+            [6, "giorni di apertura a settimana"],
+            [12, "mesi di validità delle gift card"],
+          ].map(([n, l]) => (
+            <div key={l} className="rv">
+              <CountUp
+                to={Number(n)}
+                className="font-display text-5xl font-medium tracking-[-0.04em] tabular-nums md:text-7xl"
+              />
+              <p className="mt-3 max-w-[22ch] text-sm text-muted-foreground">{l}</p>
+            </div>
+          ))}
         </div>
       </section>
 
-      {/* Pelle sana */}
+      {/* Atelier, team, gift card */}
       <section className="shell py-24 md:py-36">
-        <div className="grid gap-10 md:grid-cols-2 md:gap-20">
-          <h2 className={`rv ${h2}`}>La pelle sana riflette come ti prendi cura di te</h2>
+        <div className="grid items-center gap-10 md:grid-cols-2 md:gap-20">
           <div className="rv">
-            <p className="font-display text-2xl leading-snug tracking-tight">
-              La cura che dai oggi alla tua pelle diventa la bellezza che porti domani.
-            </p>
-            <p className="mt-6 max-w-md text-muted-foreground">
-              Con il tempo la pelle perde collagene ed elasticità: una cura costante e una buona
-              idratazione sono essenziali per un aspetto sano.
-            </p>
-            <Link to="/prenota" className="btn mt-8">
-              Prenota
+            <p className="eyebrow">L'atelier</p>
+            <h2 className={`mt-4 ${h2}`}>{about["title"] ?? "Un atelier, non un salone"}</h2>
+            <p className="mt-5 max-w-md text-muted-foreground">{about["body"]}</p>
+            <Link to="/chi-siamo" className="btn mt-8">
+              Scopri la nostra storia
             </Link>
           </div>
-        </div>
-
-        <div className="mt-24 grid items-center gap-10 md:grid-cols-2 md:gap-20">
           <img
             src={atelier}
             alt="Interno dell'atelier"
@@ -246,55 +228,87 @@ function Home() {
             height={1008}
             className="rv aspect-[5/4] w-full rounded-xl object-cover"
           />
-          <div className="rv">
-            <h3 className="font-display text-3xl leading-tight md:text-4xl">
-              Una pelle più sana a ogni trattamento
-            </h3>
-            <p className="mt-5 max-w-md text-muted-foreground">
-              Trattamenti pensati per migliorare la grana della pelle, ripristinare l'idratazione e
-              lasciarla morbida, fresca ed equilibrata nel tempo.
-            </p>
-            <Link to="/prenota" className="btn mt-8">
-              Prenota
-            </Link>
-          </div>
         </div>
 
         <div className="mt-24 grid items-center gap-10 md:grid-cols-2 md:gap-20">
-          <div className="rv md:order-1">
-            <h3 className="font-display text-3xl leading-tight md:text-4xl">
-              Una pelle naturalmente liscia e luminosa
-            </h3>
-            <p className="mt-5 max-w-md text-muted-foreground">
-              Cura personalizzata e trattamenti delicati sostengono l'elasticità, la levigatezza e
-              un aspetto fresco che si sente sano ogni giorno.
-            </p>
-            <Link to="/prenota" className="btn mt-8">
-              Prenota
-            </Link>
-          </div>
           <img
             src={serviceViso}
             alt="Trattamento viso"
             loading="lazy"
             width={1000}
             height={1200}
-            className="rv aspect-[5/4] w-full rounded-xl object-cover md:order-2"
+            className="rv aspect-[5/4] w-full rounded-xl object-cover md:order-1"
+          />
+          <div className="rv md:order-2">
+            <p className="eyebrow">Il team</p>
+            <h2 className={`mt-4 ${h2}`}>Mani esperte, un nome per ogni gesto</h2>
+            <p className="mt-5 max-w-md text-muted-foreground">
+              Quattro professioniste, una sola idea di cura. Ti accompagnano dalla consulenza
+              all'ultimo appuntamento.
+            </p>
+            <Link to="/team" className="btn mt-8">
+              Conosci il team
+            </Link>
+          </div>
+        </div>
+
+        <div className="mt-24 grid items-center gap-10 md:grid-cols-2 md:gap-20">
+          <div className="rv">
+            <p className="eyebrow">Gift card</p>
+            <h2 className={`mt-4 ${h2}`}>Regalare tempo</h2>
+            <p className="mt-5 max-w-md text-muted-foreground">
+              Nominative, valide dodici mesi, utilizzabili anche parzialmente. Da 50, 100 o 150
+              euro.
+            </p>
+            <Link to="/gift-card" className="btn mt-8">
+              Richiedi una gift card
+            </Link>
+          </div>
+          <img
+            src={giftcard}
+            alt="Gift card Atelier Lumen"
+            loading="lazy"
+            width={1200}
+            height={900}
+            className="rv aspect-[5/4] w-full rounded-xl object-cover"
           />
         </div>
       </section>
 
+      {/* Promozione (dal gestionale) */}
+      {promo["title"] && (
+        <section className="shell pb-24 md:pb-36">
+          <div className="rv flex flex-col gap-6 rounded-2xl bg-sand/60 p-8 sm:flex-row sm:items-center sm:justify-between md:p-12">
+            <div>
+              <p className="eyebrow">Promozione</p>
+              <h2 className="mt-3 text-3xl md:text-4xl">{promo["title"]}</h2>
+              <p className="mt-4 max-w-md leading-relaxed">{promo["body"]}</p>
+              <p className="mt-2 text-xs text-muted-foreground">{promo["note"]}</p>
+            </div>
+            <p className="font-display text-5xl font-medium tracking-[-0.04em]">{promo["price"]}</p>
+          </div>
+        </section>
+      )}
+
       {/* Listino */}
       <section className="bg-secondary/60 py-24 md:py-36">
         <div className="shell">
-          <h2 className={`rv max-w-[18ch] ${h2}`}>Trattamenti premium con prezzi chiari</h2>
-          <div className="mt-14 border-t border-border">
+          <h2 className={`rv max-w-[18ch] ${h2}`}>Listino</h2>
+          <p className="rv mt-4 max-w-md text-muted-foreground">
+            Durate e prezzi indicativi: il protocollo definitivo viene definito in consulenza.
+          </p>
+          <div className="mt-12 border-t border-border">
             {prezzi.map((s) => (
               <div
                 key={s.id}
                 className="rv flex items-baseline justify-between gap-6 border-b border-border py-5"
               >
-                <span className="font-display text-xl tracking-tight md:text-2xl">{s.name}</span>
+                <span className="font-display text-xl tracking-tight md:text-2xl">
+                  {s.name}
+                  <span className="ml-3 text-sm text-muted-foreground">
+                    {s.duration_minutes} min
+                  </span>
+                </span>
                 <span className="font-display text-xl whitespace-nowrap tabular-nums md:text-2xl">
                   {formatPrice(s.price_cents)}
                 </span>
@@ -302,26 +316,31 @@ function Home() {
             ))}
           </div>
           <Link to="/servizi" className="btn mt-10">
-            Tutto il listino
+            Tutti i trattamenti
           </Link>
         </div>
       </section>
 
-      {/* Testimonianze */}
+      {/* Recensioni (dal gestionale) */}
       {data.reviews.length > 0 && (
         <section className="shell py-24 md:py-36">
-          <h2 className={`rv max-w-[18ch] ${h2}`}>
-            La soddisfazione delle clienti è il nostro standard quotidiano
-          </h2>
+          <h2 className={`rv max-w-[18ch] ${h2}`}>Cosa dicono i clienti</h2>
           <div className="mt-14 grid gap-4 md:grid-cols-3">
             {data.reviews.map((r) => (
               <figure
                 key={r.id}
                 className="rv flex flex-col justify-between rounded-xl bg-secondary/60 p-8"
               >
-                <blockquote className="font-display text-lg leading-snug tracking-tight">
-                  “{r.body}”
-                </blockquote>
+                <div>
+                  <div className="flex gap-1" aria-label={`Valutazione ${r.rating} su 5`}>
+                    {Array.from({ length: r.rating }).map((_, i) => (
+                      <Star key={i} aria-hidden className="size-3.5 fill-accent text-accent" />
+                    ))}
+                  </div>
+                  <blockquote className="mt-5 font-display text-lg leading-snug tracking-tight">
+                    “{r.body}”
+                  </blockquote>
+                </div>
                 <figcaption className="mt-8 text-sm">
                   <span className="block font-medium">{r.author_name}</span>
                   <span className="text-muted-foreground">{r.source}</span>
@@ -334,7 +353,7 @@ function Home() {
 
       {/* FAQ */}
       <section className="shell grid gap-12 pb-24 md:pb-36 lg:grid-cols-[1fr_1.6fr] lg:gap-24">
-        <h2 className={`rv max-w-[14ch] ${h2}`}>Tutto sui nostri trattamenti e sull'esperienza</h2>
+        <h2 className={`rv max-w-[14ch] ${h2}`}>Prima di venire</h2>
         <div className="rv border-t border-border">
           {FAQ.map(([q, a]) => (
             <details key={q} className="group border-b border-border">
@@ -361,14 +380,10 @@ function Home() {
         <div className="absolute inset-0 -z-10 bg-black/50" />
         <div className="rv">
           <h2 className="mx-auto max-w-[12ch] text-5xl text-balance md:text-6xl">
-            Scopri la tua luce naturale
+            Prenditi il tuo tempo
           </h2>
-          <p className="mx-auto mt-5 max-w-md text-white/85">
-            Trattamenti personalizzati per una pelle fresca, equilibrata e naturalmente bella, a
-            ogni visita.
-          </p>
           <Link to="/prenota" className="btn mt-8 !bg-[#c7a08b] text-white">
-            Prenota
+            Prenota un trattamento
           </Link>
         </div>
       </section>

@@ -19,7 +19,7 @@ export function SiteFooter({ name, locations }: { name: string; locations: Locat
             {name}
           </p>
           <p className="mt-4 max-w-[22ch] font-display text-lg leading-snug tracking-tight">
-            Cura personale per la bellezza duratura della tua pelle.
+            Bellezza essenziale, protocolli su misura, tempo che rallenta.
           </p>
         </div>
 
