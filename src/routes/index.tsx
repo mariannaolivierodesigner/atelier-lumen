@@ -4,11 +4,7 @@ import { Plus, Star } from "lucide-react";
 
 import { siteQuery, formatPrice } from "@/lib/site-query";
 import { BlurText } from "@/components/site/motion";
-import hero from "@/assets/hero.jpg";
-import atelier from "@/assets/atelier.jpg";
-import serviceViso from "@/assets/service-viso.jpg";
-import serviceCorpo from "@/assets/service-corpo.jpg";
-import giftcard from "@/assets/giftcard.jpg";
+import { IMG } from "@/lib/ref-images";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -31,11 +27,11 @@ export const Route = createFileRoute("/")({
 });
 
 const COLLEZIONE = [
-  { t: "Viso", img: serviceViso, pos: "center 30%" },
-  { t: "Sopracciglia e ciglia", img: hero, pos: "30% center" },
-  { t: "Corpo", img: serviceCorpo, pos: "center 20%" },
-  { t: "Epilazione", img: giftcard, pos: "center" },
-  { t: "Rituali spa", img: atelier, pos: "70% center" },
+  { t: "Viso", img: IMG.c1 },
+  { t: "Rituali spa", img: IMG.c2 },
+  { t: "Corpo", img: IMG.c3 },
+  { t: "Sopracciglia e ciglia", img: IMG.c4 },
+  { t: "Epilazione", img: IMG.c5 },
 ];
 
 const PASSI = [
@@ -58,9 +54,9 @@ const PASSI = [
 ];
 
 const FOCUS = [
-  { tag: "Pelle", t: "Viso su misura", d: "Protocolli che cambiano con la stagione e con la tua pelle, non il contrario.", img: serviceViso },
-  { tag: "Corpo", t: "Tempo per il corpo", d: "Massaggi decontratturanti e drenanti, con pressioni decise insieme a te.", img: serviceCorpo },
-  { tag: "Spa", t: "Rituali lunghi", d: "Percorsi da novanta minuti in su per staccare davvero, anche in coppia o con la sposa.", img: atelier },
+  { tag: "Pelle", t: "Viso su misura", d: "Protocolli che cambiano con la stagione e con la tua pelle, non il contrario.", img: IMG.f1 },
+  { tag: "Corpo", t: "Tempo per il corpo", d: "Massaggi decontratturanti e drenanti, con pressioni decise insieme a te.", img: IMG.c5 },
+  { tag: "Spa", t: "Rituali lunghi", d: "Percorsi da novanta minuti in su per staccare davvero, anche in coppia o con la sposa.", img: IMG.f3 },
 ];
 
 const FAQ = [
@@ -85,7 +81,7 @@ function Home() {
       {/* Hero */}
       <section className="relative isolate flex min-h-[100svh] flex-col items-center justify-between overflow-hidden px-5 pt-36 pb-12 text-center text-white md:pb-16">
         <img
-          src={hero}
+          src={IMG.hero}
           alt="Trattamento viso in cabina all'Atelier Lumen"
           width={1600}
           height={1200}
@@ -115,9 +111,19 @@ function Home() {
             text="Ogni trattamento inizia con una consulenza e prosegue con un protocollo scritto, rivisto nel tempo."
             className="font-display text-3xl leading-[1.15] font-medium tracking-[-0.04em] text-balance md:text-[42px]"
           />
-          <p className="rv mt-10 ml-auto max-w-md text-sm leading-relaxed text-muted-foreground md:text-base">
-            {about["body"]}
-          </p>
+          <div className="mt-12 grid items-end gap-8 md:grid-cols-2 md:gap-20">
+            <img
+              src={IMG.intro}
+              alt=""
+              loading="lazy"
+              width={600}
+              height={720}
+              className="rv aspect-[5/6] w-full max-w-xs rounded-xl object-cover"
+            />
+            <p className="rv text-sm leading-relaxed text-muted-foreground md:text-base">
+              {about["body"]}
+            </p>
+          </div>
         </div>
       </section>
 
@@ -137,7 +143,6 @@ function Home() {
                 loading="lazy"
                 width={800}
                 height={1000}
-                style={{ objectPosition: c.pos }}
                 className="absolute inset-0 -z-20 size-full object-cover transition-transform duration-700 group-hover:scale-105"
               />
               <div className="absolute inset-0 -z-10 bg-gradient-to-b from-black/0 via-black/5 to-black/60" />
@@ -189,6 +194,24 @@ function Home() {
         </div>
       </section>
 
+      {/* Banner */}
+      <section className="shell">
+        <div className="rv relative isolate flex min-h-80 items-end overflow-hidden rounded-2xl p-8 text-white md:min-h-[30rem] md:p-14">
+          <img
+            src={IMG.banner}
+            alt=""
+            loading="lazy"
+            width={1600}
+            height={900}
+            className="absolute inset-0 -z-20 size-full object-cover"
+          />
+          <div className="absolute inset-0 -z-10 bg-gradient-to-b from-black/5 to-black/55" />
+          <h2 className="max-w-[16ch] text-4xl text-balance md:text-6xl">
+            Bellezza essenziale, tempo che rallenta.
+          </h2>
+        </div>
+      </section>
+
       {/* Atelier, team, gift card */}
       <section className="shell py-24 md:py-36">
         <div className="grid items-center gap-10 md:grid-cols-2 md:gap-20">
@@ -201,7 +224,7 @@ function Home() {
             </Link>
           </div>
           <img
-            src={atelier}
+            src={IMG.row1}
             alt="Interno dell'atelier"
             loading="lazy"
             width={1408}
@@ -212,7 +235,7 @@ function Home() {
 
         <div className="mt-24 grid items-center gap-10 md:grid-cols-2 md:gap-20">
           <img
-            src={serviceViso}
+            src={IMG.row2}
             alt="Trattamento viso"
             loading="lazy"
             width={1000}
@@ -245,8 +268,8 @@ function Home() {
             </Link>
           </div>
           <img
-            src={giftcard}
-            alt="Gift card Atelier Lumen"
+            src={IMG.f2}
+            alt="Cura della pelle"
             loading="lazy"
             width={1200}
             height={900}
@@ -306,11 +329,19 @@ function Home() {
         <section className="shell py-24 md:py-36">
           <h2 className={`rv max-w-[18ch] ${h2}`}>Cosa dicono i clienti</h2>
           <div className="mt-14 grid gap-4 md:grid-cols-3">
-            {data.reviews.map((r) => (
+            {data.reviews.map((r, i) => (
               <figure
                 key={r.id}
                 className="rv flex flex-col justify-between rounded-xl bg-secondary/60 p-8"
               >
+                <img
+                  src={[IMG.t1, IMG.t2, IMG.t3][i % 3]}
+                  alt=""
+                  loading="lazy"
+                  width={600}
+                  height={720}
+                  className="mb-8 aspect-[4/5] w-full rounded-lg object-cover"
+                />
                 <div>
                   <div className="flex gap-1" aria-label={`Valutazione ${r.rating} su 5`}>
                     {Array.from({ length: r.rating }).map((_, i) => (
@@ -350,7 +381,7 @@ function Home() {
       {/* Invito finale */}
       <section className="relative isolate mx-auto flex min-h-[28rem] w-full max-w-[1240px] items-center justify-center overflow-hidden rounded-2xl px-5 py-24 text-center text-white">
         <img
-          src={hero}
+          src={IMG.cta}
           alt=""
           loading="lazy"
           width={1600}

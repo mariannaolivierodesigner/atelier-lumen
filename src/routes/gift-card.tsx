@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 
 import { PageHeader } from "@/components/site/Section";
-import giftcard from "@/assets/giftcard.jpg";
+import { IMG } from "@/lib/ref-images";
 
 const TAGLI = [
   { v: "50 €", d: "Un gesto essenziale: manicure signature o consulenza della pelle." },
@@ -38,7 +38,7 @@ function GiftCard() {
 
       <div className="shell grid gap-12 pb-24 lg:grid-cols-2">
         <img
-          src={giftcard}
+          src={IMG.f3}
           alt="Gift card Atelier Lumen con sigillo dorato"
           loading="lazy"
           width={1200}

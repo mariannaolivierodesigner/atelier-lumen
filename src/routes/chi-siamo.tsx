@@ -3,7 +3,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 
 import { siteQuery } from "@/lib/site-query";
 import { PageHeader } from "@/components/site/Section";
-import atelier from "@/assets/atelier.jpg";
+import { IMG } from "@/lib/ref-images";
 
 export const Route = createFileRoute("/chi-siamo")({
   head: () => ({
@@ -35,7 +35,7 @@ function ChiSiamo() {
 
       <div className="shell pb-10">
         <img
-          src={atelier}
+          src={IMG.row1}
           alt="Cabina trattamenti dell'Atelier Lumen"
           loading="lazy"
           width={1408}
