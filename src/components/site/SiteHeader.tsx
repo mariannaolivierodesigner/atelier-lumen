@@ -11,7 +11,7 @@ const NAV = [
   { to: "/contatti", label: "Contatti" },
 ] as const;
 
-const LOGO_FONT = '"Cormorant Garamond", Georgia, serif';
+const LOGO_FONT = '"Noto Serif", Georgia, serif';
 
 export function SiteHeader({ name }: { name: string }) {
   const [open, setOpen] = useState(false);
@@ -40,7 +40,7 @@ export function SiteHeader({ name }: { name: string }) {
       <div className="mx-auto flex h-[72px] w-full max-w-[1080px] items-center justify-between gap-6 px-5 md:px-8">
         <Link
           to="/"
-          className="text-2xl font-normal"
+          className="text-xl font-normal tracking-[-0.03em]"
           style={{ fontFamily: LOGO_FONT }}
         >
           {name}

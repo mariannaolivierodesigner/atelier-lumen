@@ -10,7 +10,7 @@ type Location = {
 
 const head = "text-xs text-muted-foreground";
 const ul = "mt-4 space-y-3 text-xs";
-const LOGO = '"Cormorant Garamond", Georgia, serif';
+const LOGO = '"Noto Serif", Georgia, serif';
 
 export function SiteFooter({ name, locations }: { name: string; locations: Location[] }) {
   return (
