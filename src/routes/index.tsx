@@ -120,17 +120,14 @@ function Home() {
           text="Ogni trattamento inizia con una consulenza e prosegue con un protocollo scritto, rivisto nel tempo."
           className="mx-auto max-w-[24ch] text-center font-display text-3xl leading-[1.15] tracking-[-0.03em] text-balance md:text-[2.75rem]"
         />
-        <div className="mt-14 grid items-center gap-8 md:grid-cols-2 md:gap-16">
-          <img
-            src={IMG.intro}
-            alt=""
-            loading="lazy"
-            width={600}
-            height={720}
-            className="rv aspect-[5/6] w-full rounded-2xl object-cover"
-          />
-          <p className="rv max-w-md text-base leading-relaxed text-muted-foreground">{about["body"]}</p>
-        </div>
+        <img
+          src={IMG.intro}
+          alt=""
+          loading="lazy"
+          width={600}
+          height={720}
+          className="rv mx-auto mt-14 aspect-[5/6] w-full max-w-sm rounded-2xl object-cover"
+        />
       </section>
 
       {/* Trattamenti */}
