@@ -60,7 +60,7 @@ export function SiteHeader({ name }: { name: string }) {
             <Link
               key={item.to}
               to={item.to}
-              className={`text-sm transition-opacity hover:opacity-100 ${overlay ? "opacity-85" : "opacity-70"}`}
+              className={`text-sm font-normal transition-opacity duration-300 hover:opacity-100 ${overlay ? "opacity-90" : "opacity-70"}`}
               activeProps={{ className: "!opacity-100" }}
             >
               {item.label}

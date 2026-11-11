@@ -210,12 +210,16 @@
   border-radius: 8px;
   padding: 1rem 1.5rem;
   font-size: 0.75rem;
-  line-height: 1;
-  letter-spacing: 0.06em;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   background-color: #c7a08b;
   color: #fff;
-  transition: opacity 0.2s, background-color 0.2s;
+  transition: background-color 0.3s ease;
+  &:hover {
+    background-color: #ba9682;
+  }
 }
 @utility btn-glass {
   display: inline-flex;
@@ -224,13 +228,17 @@
   border-radius: 8px;
   padding: 1rem 1.5rem;
   font-size: 0.75rem;
-  line-height: 1;
-  letter-spacing: 0.06em;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  background-color: rgb(255 255 255 / 0.16);
+  background-color: rgb(255 255 255 / 0.15);
   color: #fff;
   backdrop-filter: blur(10px);
-  transition: background-color 0.2s;
+  transition: background-color 0.3s ease;
+  &:hover {
+    background-color: rgb(255 255 255 / 0.28);
+  }
 }
 
 /* Grana sottile sopra le foto grandi, come nella reference. */
