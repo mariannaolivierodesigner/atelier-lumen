@@ -209,8 +209,8 @@ function Home() {
       </section>
 
       {/* Banner */}
-      <section className={`${wrap} pb-20 md:pb-32`}>
-        <div className="rv relative isolate flex min-h-[22rem] items-center justify-center overflow-hidden rounded-2xl p-8 text-center text-white md:min-h-[32rem]">
+      <section className="mx-auto w-full max-w-[1208px] px-5 pb-16 md:px-6 md:pb-24">
+        <div className="rv relative isolate flex min-h-[26rem] flex-col items-center justify-center overflow-hidden rounded-3xl px-6 py-16 text-center text-white md:min-h-[38rem]">
           <img
             src={IMG.banner}
             alt=""
@@ -219,10 +219,17 @@ function Home() {
             height={900}
             className="absolute inset-0 -z-20 size-full object-cover"
           />
-          <h2 className="max-w-[14ch] text-4xl leading-[1.08] text-balance md:text-6xl">
+          <h2 className="max-w-[16ch] font-sans text-[2.5rem] leading-[1.05] font-normal tracking-[-0.04em] text-balance md:text-[4.25rem]">
             Bellezza essenziale, tempo che rallenta.
           </h2>
+          <Link to="/prenota" className="btn mt-10 !bg-white !text-foreground hover:!bg-white/90">
+            Prenota il trattamento
+          </Link>
         </div>
+        <p className="rv mx-auto mt-24 max-w-[34rem] text-center text-lg leading-[1.45] text-muted-foreground md:mt-32 md:text-xl">
+          Con il tempo la pelle perde collagene ed elasticità: per questo una cura costante e una
+          buona idratazione fanno davvero la differenza.
+        </p>
       </section>
 
       {/* Atelier, team, gift card */}
