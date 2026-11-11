@@ -37,10 +37,10 @@ export function SiteHeader({ name }: { name: string }) {
           : "border-b border-border/70 bg-background/90 text-foreground backdrop-blur"
       }`}
     >
-      <div className="mx-auto flex h-20 w-full max-w-[1240px] items-center justify-between gap-6 px-5 md:px-8">
+      <div className="mx-auto flex h-[72px] w-full max-w-[1080px] items-center justify-between gap-6 px-5 md:px-8">
         <Link
           to="/"
-          className="text-[1.75rem] font-normal"
+          className="text-2xl font-normal"
           style={{ fontFamily: LOGO_FONT }}
         >
           {name}

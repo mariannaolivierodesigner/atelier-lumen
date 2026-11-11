@@ -131,7 +131,7 @@ function SiteChrome() {
   return (
     <>
       <SiteHeader name={data.tenant.name} />
-      <main id="contenuto" className={pathname === "/" ? "" : "pt-20"}>
+      <main id="contenuto" className={pathname === "/" ? "" : "pt-[72px]"}>
         <Outlet />
       </main>
       <SiteFooter name={data.tenant.name} locations={data.locations} />

@@ -139,8 +139,8 @@
   h3,
   h4 {
     font-family: var(--font-display-family);
-    font-weight: 500;
-    letter-spacing: -0.04em;
+    font-weight: 400;
+    letter-spacing: -0.03em;
     line-height: 1.1;
   }
 
@@ -213,8 +213,8 @@
   line-height: 1;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  background-color: var(--color-primary);
-  color: var(--color-primary-foreground);
+  background-color: #c7a08b;
+  color: #fff;
   transition: opacity 0.2s, background-color 0.2s;
 }
 @utility btn-glass {
