@@ -91,7 +91,7 @@ function Home() {
   return (
     <>
       {/* Hero */}
-      <section className="relative isolate flex min-h-[100svh] flex-col items-center justify-end overflow-hidden px-5 pt-36 pb-16 text-center text-white md:pb-20">
+      <section className="relative isolate flex min-h-[100svh] flex-col items-center justify-between overflow-hidden px-5 pt-36 pb-16 text-center text-white md:pb-20">
         <img
           src={IMG.hero}
           alt="Trattamento viso in cabina all'Atelier Lumen"
@@ -99,11 +99,13 @@ function Home() {
           height={1200}
           className="absolute inset-0 -z-20 size-full object-cover"
         />
-        <div className="absolute inset-0 -z-10 bg-black/25" />
-        <h1 className="max-w-[16ch] text-[2.75rem] leading-[1.02] font-normal text-balance sm:text-6xl md:text-[5.25rem]">
+        <div className="absolute inset-0 -z-10 bg-black/40" />
+        <div aria-hidden className="grain absolute inset-0 -z-10" />
+        <h1 className="mt-[10vh] max-w-[16ch] text-[2.75rem] leading-[1.02] font-normal text-balance sm:text-6xl md:text-[5.25rem]">
           {heroContent["title"]}
         </h1>
-        <p className="mt-6 max-w-md text-base leading-relaxed text-white/90">{heroContent["body"]}</p>
+        <div className="flex flex-col items-center">
+        <p className="max-w-md text-base leading-relaxed text-white/90">{heroContent["body"]}</p>
         <div className="mt-8 flex flex-wrap justify-center gap-3">
           <Link to="/prenota" className="btn">
             {heroContent["cta"] ?? "Prenota"}
@@ -111,6 +113,7 @@ function Home() {
           <Link to="/contatti" className="btn-glass">
             Contatti
           </Link>
+        </div>
         </div>
       </section>
 
