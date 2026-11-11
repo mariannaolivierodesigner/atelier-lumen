@@ -26,6 +26,13 @@ export function SiteHeader({ name }: { name: string }) {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  useEffect(() => {
+    document.body.style.overflow = open ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [open]);
+
   // Sulla home l'intestazione è trasparente sopra la foto, poi diventa chiara.
   const overlay = isHome && !scrolled && !open;
 
@@ -34,7 +41,9 @@ export function SiteHeader({ name }: { name: string }) {
       className={`fixed inset-x-0 top-0 z-50 transition-colors duration-300 ${
         overlay
           ? "bg-transparent text-white"
-          : "border-b border-border/70 bg-background/90 text-foreground backdrop-blur"
+          : open
+            ? "bg-background text-foreground"
+            : "border-b border-border/70 bg-background/90 text-foreground backdrop-blur"
       }`}
     >
       <div className="mx-auto flex h-[72px] w-full max-w-[1080px] items-center justify-between gap-6 px-5 md:px-8">
@@ -71,7 +80,7 @@ export function SiteHeader({ name }: { name: string }) {
             aria-label={open ? "Chiudi il menu" : "Apri il menu"}
             aria-expanded={open}
             onClick={() => setOpen((v) => !v)}
-            className="inline-flex size-11 items-center justify-center lg:hidden"
+            className="inline-flex size-10 items-center justify-center lg:hidden"
           >
             {open ? <X className="size-6" /> : <Menu className="size-6" />}
           </button>
@@ -81,19 +90,19 @@ export function SiteHeader({ name }: { name: string }) {
       {open && (
         <nav
           aria-label="Navigazione mobile"
-          className="fixed inset-0 top-20 flex flex-col bg-background px-5 pt-6 text-foreground lg:hidden"
+          className="fixed inset-0 top-[72px] z-50 flex flex-col overflow-y-auto bg-background px-5 pt-8 text-foreground lg:hidden"
         >
           {NAV.map((item) => (
             <Link
               key={item.to}
               to={item.to}
               onClick={() => setOpen(false)}
-              className="border-b border-border py-4 font-display text-3xl font-medium tracking-tight"
+              className="py-[14px] font-sans text-2xl font-normal tracking-[-0.02em]"
             >
               {item.label}
             </Link>
           ))}
-          <Link to="/prenota" onClick={() => setOpen(false)} className="btn mt-8">
+          <Link to="/prenota" onClick={() => setOpen(false)} className="btn mt-8 !w-full">
             Prenota
           </Link>
         </nav>
