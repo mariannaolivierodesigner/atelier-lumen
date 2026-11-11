@@ -43,9 +43,9 @@ const PASSI = [
 ];
 
 const FOCUS = [
-  { tag: "Pelle", t: "Viso su misura", d: "Protocolli che cambiano con la stagione e con la tua pelle, non il contrario.", img: IMG.f1 },
-  { tag: "Corpo", t: "Tempo per il corpo", d: "Massaggi decontratturanti e drenanti, con pressioni decise insieme a te.", img: IMG.c5 },
-  { tag: "Spa", t: "Rituali lunghi", d: "Percorsi da novanta minuti in su per staccare davvero, anche in coppia o con la sposa.", img: IMG.f3 },
+  { tag: "Viso", t: "Protocolli viso che seguono la tua pelle, stagione dopo stagione", img: IMG.f1 },
+  { tag: "Corpo", t: "Massaggi e trattamenti corpo, con pressioni decise insieme a te", img: IMG.c5 },
+  { tag: "Spa", t: "Rituali lunghi per staccare davvero, anche in coppia", img: IMG.f3 },
 ];
 
 const FAQ = [
@@ -195,15 +195,14 @@ function Home() {
                 loading="lazy"
                 width={1000}
                 height={1200}
-                className="aspect-[3/4] w-full object-cover"
+                className="aspect-[0.73] w-full object-cover"
               />
-              <span className="absolute top-4 left-4 rounded-full bg-[#c7a08b] px-3 py-1.5 text-[11px] tracking-[0.06em] text-white uppercase">
+              <span className="absolute top-[18px] left-[18px] rounded-full bg-[#c7a08b] px-5 py-3.5 text-base text-white uppercase md:px-6 md:py-[18px] md:text-lg">
                 {f.tag}
               </span>
-              <div className="absolute inset-x-3 bottom-3 rounded-xl bg-white p-5 text-foreground">
-                <h3 className="text-xl font-normal tracking-[-0.03em]">{f.t}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{f.d}</p>
-              </div>
+              <p className="absolute inset-x-[18px] bottom-[18px] rounded-2xl bg-white px-6 py-7 text-xl leading-[1.3] tracking-[-0.01em] text-foreground md:px-9 md:py-8 md:text-2xl">
+                {f.t}
+              </p>
             </article>
           ))}
         </div>
