@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useState, type CSSProperties } from "react";
-import { ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import { siteQuery } from "@/lib/site-query";
 import { BlurText } from "@/components/site/motion";
@@ -30,24 +30,28 @@ export const Route = createFileRoute("/")({
 const COLLEZIONE = [
   {
     t: "Viso",
+    h: "viso",
     d: "Ritrova luminosità, freschezza e armonia attraverso percorsi dedicati alle esigenze della tua pelle.",
     l: "Pulizia viso · Trattamenti anti-age · Idratazione · Luminosità",
     img: IMG.c1,
   },
   {
     t: "Corpo",
+    h: "corpo",
     d: "Ritrova equilibrio e leggerezza con trattamenti pensati per prenderti cura del tuo corpo.",
     l: "Massaggi · Trattamenti rimodellanti · Drenanti · Benessere",
     img: IMG.c3,
   },
   {
     t: "Mani e piedi",
+    h: "mani-e-piedi",
     d: "Piccoli dettagli che fanno la differenza. Cura, precisione ed eleganza per mani e piedi sempre impeccabili.",
     l: "Manicure · Pedicure · Semipermanente · Trattamenti specifici",
     img: IMG.c2,
   },
   {
     t: "Epilazione",
+    h: "epilazione-a-cera",
     d: "Soluzioni dedicate alla cura della pelle, per una sensazione di morbidezza e comfort.",
     l: "Epilazione tradizionale · Epilazione laser, se disponibile",
     img: IMG.c5,
@@ -61,34 +65,9 @@ const PASSI = [
   { t: "Revisione nel tempo", d: "Dopo ogni seduta aggiorniamo il protocollo, così il risultato si costruisce e si mantiene.", img: IMG.c2 },
 ];
 
-const FAQ = [
-  ["Come prenoto un trattamento?", "Dal sito, scegliendo trattamento, giorno e orario. Ricevi una conferma e un promemoria prima dell'appuntamento."],
-  ["Quali sono gli orari di apertura?", "Dal lunedì al venerdì dalle 09:00 alle 20:00, il sabato dalle 09:00 alle 18:00. La domenica siamo chiusi."],
-  ["Posso disdire o spostare?", "Sì, avvisandoci per tempo. Scrivici o telefona il prima possibile, così l'orario resta disponibile per altri."],
-  ["La consulenza è a pagamento?", "No. È il punto di partenza di ogni protocollo e dura il tempo che serve per conoscerci."],
-  ["Come funzionano le gift card?", "Sono nominative, valide dodici mesi e utilizzabili anche parzialmente, su tutti i trattamenti."],
-  ["Cosa porto alla prima visita?", "Nulla di particolare. Se hai prodotti che usi abitualmente, portali: ci aiutano a costruire il protocollo."],
-];
-
 const h2 = "text-center text-[2.5rem] leading-[1.08] text-balance md:text-5xl";
 const wrap = "mx-auto w-full max-w-[1080px] px-5 md:px-6";
 const sec = "py-20 md:py-32";
-
-function Faq({ items }: { items: string[][] }) {
-  return (
-    <div className="border-t border-border">
-      {items.map(([q, a]) => (
-        <details key={q} className="group border-b border-border">
-          <summary className="flex list-none items-center justify-between gap-4 py-5 text-sm marker:content-none [&::-webkit-details-marker]:hidden">
-            {q}
-            <ChevronDown className="size-4 shrink-0 transition-transform group-open:rotate-180" />
-          </summary>
-          <p className="pb-5 text-sm leading-relaxed text-muted-foreground">{a}</p>
-        </details>
-      ))}
-    </div>
-  );
-}
 
 function Home() {
   const { data } = useSuspenseQuery(siteQuery);
@@ -171,6 +150,7 @@ function Home() {
             {COLLEZIONE.map((c, i) => (
               <Link
                 to="/servizi"
+                hash={c.h}
                 key={c.t}
                 style={{ "--i": i } as CSSProperties}
                 className="stack-card group"
@@ -324,35 +304,6 @@ function Home() {
           </div>
         </section>
       )}
-
-      {/* FAQ */}
-      <section className={`${wrap} pb-20 md:pb-32`}>
-        <h2 className={`rv mx-auto max-w-[20ch] ${h2}`}>Le risposte prima di venire</h2>
-        <div className="rv mt-14 grid gap-x-12 md:grid-cols-2">
-          <Faq items={FAQ.slice(0, 3)} />
-          <Faq items={FAQ.slice(3)} />
-        </div>
-      </section>
-
-      {/* Invito finale */}
-      <section className="mx-auto w-full max-w-[1208px] px-5 pb-16 md:px-6 md:pb-24">
-        <div className="rv relative isolate flex min-h-[26rem] flex-col items-center justify-center overflow-hidden rounded-3xl px-6 py-16 text-center text-white md:min-h-[38rem]">
-          <img
-            src={IMG.banner}
-            alt=""
-            loading="lazy"
-            width={1600}
-            height={900}
-            className="parallax absolute inset-0 -z-20 size-full object-cover"
-          />
-          <h2 className="max-w-[16ch] font-sans text-[2.5rem] leading-[1.05] font-normal tracking-[-0.04em] text-balance md:text-[4.25rem]">
-            Bellezza essenziale, tempo che rallenta.
-          </h2>
-          <Link to="/prenota" className="btn mt-10 !bg-white !text-foreground hover:!bg-white/90">
-            Prenota il trattamento
-          </Link>
-        </div>
-      </section>
     </>
   );
 }

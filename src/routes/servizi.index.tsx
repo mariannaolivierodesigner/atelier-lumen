@@ -24,6 +24,14 @@ export const Route = createFileRoute("/servizi/")({
   component: Servizi,
 });
 
+const slugify = (t: string) =>
+  t
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+
 function Servizi() {
   const { data } = useSuspenseQuery(siteQuery);
 
@@ -40,7 +48,7 @@ function Servizi() {
           const items = data.services.filter((s) => s.category_id === cat.id);
           if (items.length === 0) return null;
           return (
-            <section key={cat.id} className="border-t border-border py-14">
+            <section key={cat.id} id={slugify(cat.name)} className="scroll-mt-20 border-t border-border py-14">
               <div className="grid gap-10 md:grid-cols-[18rem_1fr]">
                 <div>
                   <h2 className="text-3xl">{cat.name}</h2>
