@@ -355,3 +355,49 @@
     }
   }
 }
+
+/* Trattamenti: card che si impilano mentre si scorre (sul telefono restano in colonna). */
+.stack {
+  display: grid;
+  gap: 1.1rem;
+}
+.stack-card {
+  position: sticky;
+  top: calc(5.5rem + var(--i, 0) * 0.9rem);
+  display: grid;
+  grid-template-columns: 17rem 1fr;
+  gap: 2rem;
+  align-items: center;
+  padding: 1.1rem;
+  background: #fffdfa;
+  border: 1px solid var(--color-border);
+  border-radius: 1rem;
+  box-shadow: 0 -18px 40px -30px rgb(74 55 40 / 0.35);
+  transition: border-color 0.4s;
+}
+.stack-card:hover {
+  border-color: #c7a08b;
+}
+.stack-photo {
+  aspect-ratio: 4 / 5;
+}
+@media (max-width: 900px) {
+  .stack-card {
+    grid-template-columns: 11rem 1fr;
+    gap: 1.4rem;
+  }
+}
+@media (max-width: 640px) {
+  .stack-card {
+    position: static;
+    grid-template-columns: 1fr;
+    gap: 1.1rem;
+    padding: 0.8rem 0.8rem 1.5rem;
+  }
+  .stack-photo {
+    aspect-ratio: 4 / 3;
+  }
+  .stack-card > div:last-child {
+    padding-inline: 0.5rem;
+  }
+}

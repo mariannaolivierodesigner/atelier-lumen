@@ -152,41 +152,57 @@ function Home() {
         />
       </section>
 
-      {/* Trattamenti */}
-      <section id="trattamenti" className={`${wrap} pb-20 md:pb-32`}>
-        <p className="rv eyebrow text-center">I nostri trattamenti</p>
-        <h2 className={`rv mt-4 ${h2}`}>Il tuo benessere, il nostro mondo.</h2>
-        <p className="rv mx-auto mt-5 max-w-[34rem] text-center text-base leading-relaxed text-muted-foreground md:text-lg">
-          Ogni trattamento è un incontro tra competenza, ricerca e attenzione alla persona.
-        </p>
-        <div className="mt-14 grid grid-cols-2 gap-x-3 gap-y-10 md:grid-cols-4 md:gap-x-5">
-          {COLLEZIONE.map((c, i) => (
-            <Link
-              to="/servizi"
-              key={c.t}
-              style={{ "--i": i } as CSSProperties}
-              className="rv stag group block"
-            >
-              <div className="lift aspect-[3/4] overflow-hidden rounded-2xl">
-                <img
-                  src={c.img}
-                  alt={c.t}
-                  loading="lazy"
-                  width={800}
-                  height={1000}
-                  className="size-full object-cover transition-transform duration-700 group-hover:scale-105"
-                />
-              </div>
-              <h3 className="mt-5 text-2xl font-normal tracking-[-0.03em]">{c.t}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{c.d}</p>
-              <p className="mt-3 text-xs leading-relaxed tracking-wide text-foreground/70">{c.l}</p>
-            </Link>
-          ))}
-        </div>
-        <div className="rv mt-14 flex justify-center">
-          <Link to="/servizi" className="btn">
-            Esplora tutti i trattamenti
-          </Link>
+      {/* Trattamenti: card che si impilano allo scroll */}
+      <section id="trattamenti" className="bg-sand/60 py-20 md:py-32">
+        <div className={wrap}>
+          <div className="grid items-end gap-6 md:grid-cols-[1fr_auto] md:gap-12">
+            <div>
+              <p className="rv eyebrow">I nostri trattamenti</p>
+              <h2 className="rv mt-4 text-[2.5rem] leading-[1.08] text-balance md:text-5xl">
+                Il tuo benessere,
+                <br />
+                il nostro mondo.
+              </h2>
+            </div>
+            <div className="rv max-w-[36ch]">
+              <p className="text-base leading-relaxed text-muted-foreground">
+                Ogni trattamento è un incontro tra competenza, ricerca e attenzione alla persona.
+              </p>
+              <Link to="/servizi" className="btn mt-6">
+                Esplora tutti i trattamenti
+              </Link>
+            </div>
+          </div>
+
+          <div className="stack mt-12 md:mt-16">
+            {COLLEZIONE.map((c, i) => (
+              <Link
+                to="/servizi"
+                key={c.t}
+                style={{ "--i": i } as CSSProperties}
+                className="stack-card group"
+              >
+                <div className="stack-photo overflow-hidden rounded-xl">
+                  <img
+                    src={c.img}
+                    alt={c.t}
+                    loading="lazy"
+                    width={800}
+                    height={1000}
+                    className="size-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  />
+                </div>
+                <div>
+                  <h3 className="text-3xl font-normal tracking-[-0.03em] md:text-4xl">{c.t}</h3>
+                  <p className="mt-3 max-w-[48ch] text-sm leading-relaxed text-muted-foreground md:text-base">{c.d}</p>
+                  <p className="mt-4 max-w-[48ch] text-xs leading-relaxed tracking-wide text-foreground/70 md:text-sm">{c.l}</p>
+                  <span className="mt-5 inline-flex items-center gap-2 border-b border-foreground/60 pb-0.5 text-sm">
+                    Scopri i trattamenti <span aria-hidden>→</span>
+                  </span>
+                </div>
+              </Link>
+            ))}
+          </div>
         </div>
       </section>
 
