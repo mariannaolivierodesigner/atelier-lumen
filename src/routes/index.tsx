@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useState, type CSSProperties } from "react";
 import { ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 
 import { siteQuery, formatPrice } from "@/lib/site-query";
@@ -77,6 +77,30 @@ function Faq({ items }: { items: string[][] }) {
   );
 }
 
+function Marquee() {
+  const words = ["Viso", "Rituali spa", "Corpo", "Ciglia e sopracciglia", "Epilazione", "Gift card"];
+  const row = (
+    <div className="flex shrink-0 items-center" aria-hidden>
+      {words.map((w) => (
+        <span key={w} className="flex items-center font-display text-3xl tracking-[-0.03em] md:text-5xl">
+          <span className="px-6 md:px-10">{w}</span>
+          <span className="text-[#c7a08b]">✦</span>
+        </span>
+      ))}
+    </div>
+  );
+  return (
+    <div className="marquee overflow-hidden border-b border-border py-6 md:py-8" role="presentation">
+      <div className="marquee-track">
+        {row}
+        {row}
+        {row}
+        {row}
+      </div>
+    </div>
+  );
+}
+
 function Home() {
   const { data } = useSuspenseQuery(siteQuery);
   const heroContent = data.sections["hero"] ?? {};
@@ -97,16 +121,16 @@ function Home() {
           alt="Trattamento viso in cabina all'Atelier Lumen"
           width={1600}
           height={1200}
-          className="absolute inset-0 -z-20 size-full object-cover"
+          className="hero-photo absolute inset-0 -z-20 size-full object-cover"
         />
         <div className="absolute inset-0 -z-10 bg-black/40" />
         <div aria-hidden className="grain absolute inset-0 -z-10" />
-        <h1 className="mt-[10vh] max-w-[16ch] text-[2.75rem] leading-[1.02] font-normal text-balance sm:text-6xl md:text-[5.25rem]">
+        <h1 style={{ "--d": 0 } as CSSProperties} className="hero-in mt-[10vh] max-w-[16ch] text-[2.75rem] leading-[1.02] font-normal text-balance sm:text-6xl md:text-[5.25rem]">
           {heroContent["title"]}
         </h1>
         <div className="flex flex-col items-center">
-        <p className="max-w-md text-base leading-relaxed text-white/90">{heroContent["body"]}</p>
-        <div className="mt-8 flex flex-wrap justify-center gap-3">
+        <p style={{ "--d": 2 } as CSSProperties} className="hero-in max-w-md text-base leading-relaxed text-white/90">{heroContent["body"]}</p>
+        <div style={{ "--d": 4 } as CSSProperties} className="hero-in mt-8 flex flex-wrap justify-center gap-3">
           <Link to="/prenota" className="btn">
             {heroContent["cta"] ?? "Prenota"}
           </Link>
@@ -116,6 +140,8 @@ function Home() {
         </div>
         </div>
       </section>
+
+      <Marquee />
 
       {/* Frase di apertura */}
       <section className={`${wrap} ${sec}`}>
@@ -129,7 +155,7 @@ function Home() {
           loading="lazy"
           width={600}
           height={720}
-          className="rv mx-auto mt-14 aspect-[5/6] w-full max-w-sm rounded-2xl object-cover"
+          className="curtain mx-auto mt-14 aspect-[5/6] w-full max-w-sm rounded-2xl object-cover"
         />
       </section>
 
@@ -141,9 +167,10 @@ function Home() {
             <Link
               to="/servizi"
               key={c.t}
-              className={`rv group block ${i === 4 ? "col-span-2 md:col-span-1" : ""}`}
+              style={{ "--i": i } as CSSProperties}
+              className={`rv stag group block ${i === 4 ? "col-span-2 md:col-span-1" : ""}`}
             >
-              <div className={`overflow-hidden rounded-2xl ${i === 4 ? "aspect-[16/9] md:aspect-[3/4]" : "aspect-[3/4]"}`}>
+              <div className={`overflow-hidden rounded-2xl lift ${i === 4 ? "aspect-[16/9] md:aspect-[3/4]" : "aspect-[3/4]"}`}>
                 <img
                   src={c.img}
                   alt=""
@@ -166,7 +193,7 @@ function Home() {
           {PASSI.map((p) => (
             <div
               key={p.t}
-              className="rv grid items-center gap-5 border-b border-border py-8 md:grid-cols-3 md:gap-10"
+              className="rv zoom-img grid items-center gap-5 border-b border-border py-8 md:grid-cols-3 md:gap-10"
             >
               <h3 className="text-2xl font-normal tracking-[-0.03em] md:text-[1.75rem]">{p.t}</h3>
               <p className="text-sm leading-relaxed text-muted-foreground md:text-base">{p.d}</p>
@@ -188,7 +215,7 @@ function Home() {
         <h2 className={`rv ${h2}`}>Pensato per te</h2>
         <div className="mt-14 grid gap-4 md:grid-cols-3">
           {FOCUS.map((f) => (
-            <article key={f.tag} className="rv relative isolate overflow-hidden rounded-2xl">
+            <article key={f.tag} style={{ "--i": FOCUS.indexOf(f) } as CSSProperties} className="rv stag lift zoom-img relative isolate overflow-hidden rounded-2xl">
               <img
                 src={f.img}
                 alt=""
@@ -208,30 +235,6 @@ function Home() {
         </div>
       </section>
 
-      {/* Banner */}
-      <section className="mx-auto w-full max-w-[1208px] px-5 pb-16 md:px-6 md:pb-24">
-        <div className="rv relative isolate flex min-h-[26rem] flex-col items-center justify-center overflow-hidden rounded-3xl px-6 py-16 text-center text-white md:min-h-[38rem]">
-          <img
-            src={IMG.banner}
-            alt=""
-            loading="lazy"
-            width={1600}
-            height={900}
-            className="absolute inset-0 -z-20 size-full object-cover"
-          />
-          <h2 className="max-w-[16ch] font-sans text-[2.5rem] leading-[1.05] font-normal tracking-[-0.04em] text-balance md:text-[4.25rem]">
-            Bellezza essenziale, tempo che rallenta.
-          </h2>
-          <Link to="/prenota" className="btn mt-10 !bg-white !text-foreground hover:!bg-white/90">
-            Prenota il trattamento
-          </Link>
-        </div>
-        <p className="rv mx-auto mt-24 max-w-[34rem] text-center text-lg leading-[1.45] text-muted-foreground md:mt-32 md:text-xl">
-          Con il tempo la pelle perde collagene ed elasticità: per questo una cura costante e una
-          buona idratazione fanno davvero la differenza.
-        </p>
-      </section>
-
       {/* Atelier, team, gift card */}
       <section className={`${wrap} space-y-20 pb-20 md:space-y-28 md:pb-32`}>
         <div className="grid items-center gap-8 md:grid-cols-2 md:gap-16">
@@ -245,12 +248,12 @@ function Home() {
             </Link>
           </div>
           <img src={IMG.row1} alt="Interno dell'atelier" loading="lazy" width={1408} height={1008}
-            className="rv aspect-[5/4] w-full rounded-2xl object-cover" />
+            className="curtain aspect-[5/4] w-full rounded-2xl object-cover" />
         </div>
 
         <div className="grid items-center gap-8 md:grid-cols-2 md:gap-16">
           <img src={IMG.row2} alt="Trattamento viso" loading="lazy" width={1000} height={1200}
-            className="rv aspect-[5/4] w-full rounded-2xl object-cover md:order-1" />
+            className="curtain aspect-[5/4] w-full rounded-2xl object-cover md:order-1" />
           <div className="rv md:order-2">
             <h2 className="text-4xl leading-[1.08] text-balance md:text-[2.75rem]">
               Mani esperte, un nome per ogni gesto
@@ -276,7 +279,7 @@ function Home() {
             </Link>
           </div>
           <img src={IMG.f2} alt="Cura della pelle" loading="lazy" width={1200} height={900}
-            className="rv aspect-[5/4] w-full rounded-2xl object-cover" />
+            className="curtain aspect-[5/4] w-full rounded-2xl object-cover" />
         </div>
       </section>
 
@@ -304,7 +307,7 @@ function Home() {
                 <Link
                   to="/servizi"
                   key={s.id}
-                  className="rv flex items-center justify-between gap-6 border-b border-border py-6"
+                  className="rv slide-row flex items-center justify-between gap-6 border-b border-border py-6"
                 >
                   <span className="text-lg md:text-xl">{s.name}</span>
                   <span className="text-base whitespace-nowrap tabular-nums">{formatPrice(s.price_cents)}</span>
@@ -365,20 +368,27 @@ function Home() {
       </section>
 
       {/* Invito finale */}
-      <section className={`${wrap} pb-20 md:pb-28`}>
-        <div className="rv relative isolate flex min-h-[26rem] flex-col items-center justify-center overflow-hidden rounded-2xl px-6 py-16 text-center text-white">
-          <img src={IMG.cta} alt="" loading="lazy" width={1600} height={1200}
-            className="absolute inset-0 -z-20 size-full object-cover" />
-          <h2 className="max-w-[14ch] text-4xl leading-[1.08] text-balance md:text-5xl">
-            Prenditi il tuo tempo
+      <section className="mx-auto w-full max-w-[1208px] px-5 pb-16 md:px-6 md:pb-24">
+        <div className="rv relative isolate flex min-h-[26rem] flex-col items-center justify-center overflow-hidden rounded-3xl px-6 py-16 text-center text-white md:min-h-[38rem]">
+          <img
+            src={IMG.banner}
+            alt=""
+            loading="lazy"
+            width={1600}
+            height={900}
+            className="parallax absolute inset-0 -z-20 size-full object-cover"
+          />
+          <h2 className="max-w-[16ch] font-sans text-[2.5rem] leading-[1.05] font-normal tracking-[-0.04em] text-balance md:text-[4.25rem]">
+            Bellezza essenziale, tempo che rallenta.
           </h2>
-          <p className="mt-4 max-w-md text-sm leading-relaxed text-white/85">
-            Trattamenti su misura, pensati per far stare bene la tua pelle e te con lei.
-          </p>
-          <Link to="/prenota" className="btn mt-8 !bg-white !text-foreground">
-            Prenota
+          <Link to="/prenota" className="btn mt-10 !bg-white !text-foreground hover:!bg-white/90">
+            Prenota il trattamento
           </Link>
         </div>
+        <p className="rv mx-auto mt-24 max-w-[34rem] text-center text-lg leading-[1.45] text-muted-foreground md:mt-32 md:text-xl">
+          Con il tempo la pelle perde collagene ed elasticità: per questo una cura costante e una
+          buona idratazione fanno davvero la differenza.
+        </p>
       </section>
     </>
   );

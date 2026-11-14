@@ -130,6 +130,7 @@ function SiteChrome() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   return (
     <>
+      <div aria-hidden className="scroll-bar" />
       <SiteHeader name={data.tenant.name} />
       <main id="contenuto" className={pathname === "/" ? "" : "pt-[72px]"}>
         <Outlet />
