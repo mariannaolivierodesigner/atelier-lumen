@@ -77,30 +77,6 @@ function Faq({ items }: { items: string[][] }) {
   );
 }
 
-function Marquee() {
-  const words = ["Viso", "Rituali spa", "Corpo", "Ciglia e sopracciglia", "Epilazione", "Gift card"];
-  const row = (
-    <div className="flex shrink-0 items-center" aria-hidden>
-      {words.map((w) => (
-        <span key={w} className="flex items-center font-display text-3xl tracking-[-0.03em] md:text-5xl">
-          <span className="px-6 md:px-10">{w}</span>
-          <span className="text-[#c7a08b]">✦</span>
-        </span>
-      ))}
-    </div>
-  );
-  return (
-    <div className="marquee overflow-hidden border-b border-border py-6 md:py-8" role="presentation">
-      <div className="marquee-track">
-        {row}
-        {row}
-        {row}
-        {row}
-      </div>
-    </div>
-  );
-}
-
 function Home() {
   const { data } = useSuspenseQuery(siteQuery);
   const heroContent = data.sections["hero"] ?? {};
@@ -140,8 +116,6 @@ function Home() {
         </div>
         </div>
       </section>
-
-      <Marquee />
 
       {/* Frase di apertura */}
       <section className={`${wrap} ${sec}`}>
@@ -364,6 +338,26 @@ function Home() {
         <div className="rv mt-14 grid gap-x-12 md:grid-cols-2">
           <Faq items={FAQ.slice(0, 3)} />
           <Faq items={FAQ.slice(3)} />
+        </div>
+      </section>
+
+      {/* Invito finale */}
+      <section className="mx-auto w-full max-w-[1208px] px-5 pb-16 md:px-6 md:pb-24">
+        <div className="rv relative isolate flex min-h-[26rem] flex-col items-center justify-center overflow-hidden rounded-3xl px-6 py-16 text-center text-white md:min-h-[38rem]">
+          <img
+            src={IMG.banner}
+            alt=""
+            loading="lazy"
+            width={1600}
+            height={900}
+            className="parallax absolute inset-0 -z-20 size-full object-cover"
+          />
+          <h2 className="max-w-[16ch] font-sans text-[2.5rem] leading-[1.05] font-normal tracking-[-0.04em] text-balance md:text-[4.25rem]">
+            Bellezza essenziale, tempo che rallenta.
+          </h2>
+          <Link to="/prenota" className="btn mt-10 !bg-white !text-foreground hover:!bg-white/90">
+            Prenota il trattamento
+          </Link>
         </div>
       </section>
     </>
