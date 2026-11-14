@@ -153,7 +153,7 @@ function Home() {
       </section>
 
       {/* Trattamenti: card che si impilano allo scroll */}
-      <section id="trattamenti" className="bg-sand/60 py-20 md:py-32">
+      <section id="trattamenti" className="pb-20 md:pb-32">
         <div className={wrap}>
           <div className="grid items-end gap-6 md:grid-cols-[1fr_auto] md:gap-12">
             <div>
