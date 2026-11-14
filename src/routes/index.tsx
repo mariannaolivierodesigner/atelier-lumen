@@ -28,11 +28,30 @@ export const Route = createFileRoute("/")({
 });
 
 const COLLEZIONE = [
-  { t: "Viso", img: IMG.c1 },
-  { t: "Rituali spa", img: IMG.c2 },
-  { t: "Corpo", img: IMG.c3 },
-  { t: "Ciglia e sopracciglia", img: IMG.c4 },
-  { t: "Epilazione", img: IMG.c5 },
+  {
+    t: "Viso",
+    d: "Ritrova luminosità, freschezza e armonia attraverso percorsi dedicati alle esigenze della tua pelle.",
+    l: "Pulizia viso · Trattamenti anti-age · Idratazione · Luminosità",
+    img: IMG.c1,
+  },
+  {
+    t: "Corpo",
+    d: "Ritrova equilibrio e leggerezza con trattamenti pensati per prenderti cura del tuo corpo.",
+    l: "Massaggi · Trattamenti rimodellanti · Drenanti · Benessere",
+    img: IMG.c3,
+  },
+  {
+    t: "Mani e piedi",
+    d: "Piccoli dettagli che fanno la differenza. Cura, precisione ed eleganza per mani e piedi sempre impeccabili.",
+    l: "Manicure · Pedicure · Semipermanente · Trattamenti specifici",
+    img: IMG.c2,
+  },
+  {
+    t: "Epilazione",
+    d: "Soluzioni dedicate alla cura della pelle, per una sensazione di morbidezza e comfort.",
+    l: "Epilazione tradizionale · Epilazione laser, se disponibile",
+    img: IMG.c5,
+  },
 ];
 
 const PASSI = [
@@ -135,28 +154,39 @@ function Home() {
 
       {/* Trattamenti */}
       <section id="trattamenti" className={`${wrap} pb-20 md:pb-32`}>
-        <h2 className={`rv ${h2}`}>I nostri trattamenti</h2>
-        <div className="mt-14 grid grid-cols-2 gap-x-3 gap-y-8 md:grid-cols-5 md:gap-x-4">
+        <p className="rv eyebrow text-center">I nostri trattamenti</p>
+        <h2 className={`rv mt-4 ${h2}`}>Il tuo benessere, il nostro mondo.</h2>
+        <p className="rv mx-auto mt-5 max-w-[34rem] text-center text-base leading-relaxed text-muted-foreground md:text-lg">
+          Ogni trattamento è un incontro tra competenza, ricerca e attenzione alla persona.
+        </p>
+        <div className="mt-14 grid grid-cols-2 gap-x-3 gap-y-10 md:grid-cols-4 md:gap-x-5">
           {COLLEZIONE.map((c, i) => (
             <Link
               to="/servizi"
               key={c.t}
               style={{ "--i": i } as CSSProperties}
-              className={`rv stag group block ${i === 4 ? "col-span-2 md:col-span-1" : ""}`}
+              className="rv stag group block"
             >
-              <div className={`overflow-hidden rounded-2xl lift ${i === 4 ? "aspect-[16/9] md:aspect-[3/4]" : "aspect-[3/4]"}`}>
+              <div className="lift aspect-[3/4] overflow-hidden rounded-2xl">
                 <img
                   src={c.img}
-                  alt=""
+                  alt={c.t}
                   loading="lazy"
                   width={800}
                   height={1000}
                   className="size-full object-cover transition-transform duration-700 group-hover:scale-105"
                 />
               </div>
-              <p className="mt-3 text-center text-sm">{c.t}</p>
+              <h3 className="mt-5 text-2xl font-normal tracking-[-0.03em]">{c.t}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{c.d}</p>
+              <p className="mt-3 text-xs leading-relaxed tracking-wide text-foreground/70">{c.l}</p>
             </Link>
           ))}
+        </div>
+        <div className="rv mt-14 flex justify-center">
+          <Link to="/servizi" className="btn">
+            Esplora tutti i trattamenti
+          </Link>
         </div>
       </section>
 
