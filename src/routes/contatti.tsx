@@ -35,9 +35,7 @@ function Contatti() {
               <section key={l.id} className="border-t border-border pt-10">
                 <h2 className="text-3xl">{l.name}</h2>
                 <address className="mt-4 text-sm leading-relaxed text-muted-foreground not-italic">
-                  {l.address}
-                  <br />
-                  {l.postal_code} {l.city}
+                  {l.address}, {l.city}
                   <br />
                   <a href={`tel:${l.phone?.replace(/\s/g, "")}`} className="hover:text-foreground">
                     {l.phone}
