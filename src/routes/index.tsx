@@ -186,7 +186,7 @@ function Home() {
           {PASSI.map((p) => (
             <div
               key={p.t}
-              className="rv zoom-img grid items-center gap-5 border-b border-border py-8 md:grid-cols-3 md:gap-10"
+              className="rv zoom-img grid items-center gap-5 py-8 md:grid-cols-3 md:gap-10"
             >
               <h3 className="text-2xl font-normal tracking-[-0.03em] md:text-[1.75rem]">{p.t}</h3>
               <p className="text-sm leading-relaxed text-muted-foreground md:text-base">{p.d}</p>
