@@ -2,7 +2,6 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 
 import { siteQuery } from "@/lib/site-query";
-import { PageHeader } from "@/components/site/Section";
 
 export const Route = createFileRoute("/contatti")({
   head: () => ({
@@ -25,14 +24,12 @@ function Contatti() {
 
   return (
     <>
-      <PageHeader eyebrow="Contatti" title="Dove trovarci" />
-
-      <div className="shell pb-24">
+      <div className="shell pt-16 pb-24 md:pt-24">
         <div className="max-w-xl space-y-16">
-          {data.locations.map((l) => {
+          {data.locations.map((l, i) => {
             const hours = (l.opening_hours ?? {}) as Record<string, string>;
             return (
-              <section key={l.id} className="border-t border-border pt-10">
+              <section key={l.id} className={i > 0 ? "border-t border-border pt-10" : ""}>
                 <h2 className="text-3xl">{l.name}</h2>
                 <address className="mt-4 text-sm leading-relaxed text-muted-foreground not-italic">
                   {l.address}, {l.city}
