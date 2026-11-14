@@ -8,7 +8,7 @@ export const IMG = {
   c1: cdn("cPEq4OAiX9jyexmshhwVlGOq4.png", 800),
   c2: cdn("D9vlIrdXGHzu5BVtZw2nFWIklrQ.jpg", 800),
   c3: cdn("fm57i4Y6dqmmtO7uIq32ovqGrw.jpg", 800),
-  c4: cdn("fF0agB0OoURvmmKEXCmmtFw160.jpg", 800),
+  c4: "/images/ciglia-sopracciglia.jpg",
   c5: cdn("u1MHLkm9tD8D72dXyPFDFhmlY.jpg", 800),
   f1: cdn("GoUtReYa2P8zSQYsGMnXNK22SE.png", 1000),
   f2: cdn("tVcRNZy0t9NYsJsllK8vCPzjG2Q.jpg", 1000),
