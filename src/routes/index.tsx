@@ -3,7 +3,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { useState, type CSSProperties } from "react";
 import { ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 
-import { siteQuery, formatPrice } from "@/lib/site-query";
+import { siteQuery } from "@/lib/site-query";
 import { BlurText } from "@/components/site/motion";
 import { IMG } from "@/lib/ref-images";
 
@@ -95,7 +95,6 @@ function Home() {
   const heroContent = data.sections["hero"] ?? {};
   const about = data.sections["about"] ?? {};
   const promo = data.sections["promo"] ?? {};
-  const prezzi = data.services.slice(0, 10);
   const [ri, setRi] = useState(0);
   const reviews = data.reviews;
   const rev = reviews.length ? reviews[ri % reviews.length] : null;
@@ -285,27 +284,6 @@ function Home() {
           </div>
         </section>
       )}
-
-      {/* Listino */}
-      <section className={`${wrap} pb-20 md:pb-32`}>
-        <h2 className={`rv ${h2}`}>Trattamenti dai prezzi chiari</h2>
-        <div className="mt-14 grid gap-x-12 md:grid-cols-2">
-          {[prezzi.slice(0, 5), prezzi.slice(5, 10)].map((col, ci) => (
-            <div key={ci} className="border-t border-border">
-              {col.map((s) => (
-                <Link
-                  to="/servizi"
-                  key={s.id}
-                  className="rv slide-row flex items-center justify-between gap-6 border-b border-border py-6"
-                >
-                  <span className="text-lg md:text-xl">{s.name}</span>
-                  <span className="text-base whitespace-nowrap tabular-nums">{formatPrice(s.price_cents)}</span>
-                </Link>
-              ))}
-            </div>
-          ))}
-        </div>
-      </section>
 
       {/* Recensioni (dal gestionale) */}
       {rev && (
