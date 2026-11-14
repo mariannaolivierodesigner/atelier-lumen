@@ -61,12 +61,6 @@ const PASSI = [
   { t: "Revisione nel tempo", d: "Dopo ogni seduta aggiorniamo il protocollo, così il risultato si costruisce e si mantiene.", img: IMG.c2 },
 ];
 
-const FOCUS = [
-  { tag: "Viso", t: "Protocolli viso che seguono la tua pelle, stagione dopo stagione", img: IMG.f1 },
-  { tag: "Corpo", t: "Massaggi e trattamenti corpo, con pressioni decise insieme a te", img: IMG.c5 },
-  { tag: "Spa", t: "Rituali lunghi per staccare davvero, anche in coppia", img: IMG.f3 },
-];
-
 const FAQ = [
   ["Come prenoto un trattamento?", "Dal sito, scegliendo trattamento, giorno e orario. Ricevi una conferma e un promemoria prima dell'appuntamento."],
   ["Quali sono gli orari di apertura?", "Dal lunedì al venerdì dalle 09:00 alle 20:00, il sabato dalle 09:00 alle 18:00. La domenica siamo chiusi."],
@@ -226,31 +220,6 @@ function Home() {
                 className="aspect-[3/2] w-full rounded-xl object-cover md:justify-self-end md:max-w-[15rem]"
               />
             </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Pensato per te */}
-      <section id="atelier" className={`${wrap} pb-20 md:pb-32`}>
-        <h2 className={`rv ${h2}`}>Pensato per te</h2>
-        <div className="mt-14 grid gap-4 md:grid-cols-3">
-          {FOCUS.map((f) => (
-            <article key={f.tag} style={{ "--i": FOCUS.indexOf(f) } as CSSProperties} className="rv stag lift zoom-img relative isolate overflow-hidden rounded-2xl">
-              <img
-                src={f.img}
-                alt=""
-                loading="lazy"
-                width={1000}
-                height={1200}
-                className="aspect-[0.73] w-full object-cover"
-              />
-              <span className="absolute top-[18px] left-[18px] rounded-full bg-[#c7a08b] px-5 py-3.5 text-base text-white uppercase md:px-6 md:py-[18px] md:text-lg">
-                {f.tag}
-              </span>
-              <p className="absolute inset-x-[18px] bottom-[18px] rounded-2xl bg-white px-6 py-7 text-xl leading-[1.3] tracking-[-0.01em] text-foreground md:px-9 md:py-8 md:text-2xl">
-                {f.t}
-              </p>
-            </article>
           ))}
         </div>
       </section>
