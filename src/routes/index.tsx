@@ -155,7 +155,7 @@ function Home() {
       {/* Trattamenti: card che si impilano allo scroll */}
       <section id="trattamenti" className="pb-20 md:pb-32">
         <div className={wrap}>
-          <div className="grid items-end gap-6 md:grid-cols-[1fr_auto] md:gap-12">
+          <div className="grid items-end gap-6 md:grid-cols-2 md:gap-12">
             <div>
               <p className="rv eyebrow">I nostri trattamenti</p>
               <h2 className="rv mt-4 text-[2.5rem] leading-[1.08] text-balance md:text-5xl">
@@ -164,8 +164,8 @@ function Home() {
                 il nostro mondo.
               </h2>
             </div>
-            <div className="rv max-w-[36ch]">
-              <p className="text-base leading-relaxed text-muted-foreground">
+            <div className="rv md:pb-1">
+              <p className="max-w-[30rem] text-base leading-relaxed text-muted-foreground">
                 Ogni trattamento è un incontro tra competenza, ricerca e attenzione alla persona.
               </p>
               <Link to="/servizi" className="btn mt-6">
