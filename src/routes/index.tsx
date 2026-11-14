@@ -182,7 +182,7 @@ function Home() {
       {/* Metodo */}
       <section id="metodo" className={`${wrap} pb-20 md:pb-32`}>
         <h2 className={`rv ${h2}`}>Un protocollo scritto per te</h2>
-        <div className="mt-14 border-t border-border">
+        <div className="mt-14">
           {PASSI.map((p) => (
             <div
               key={p.t}
