@@ -332,7 +332,8 @@
       animation-range: normal, 0 100vh;
     }
     @keyframes hero-scroll {
-      to { transform: translateY(12vh) scale(1.08); }
+      from { transform: translateY(0) scale(1); }
+      to { transform: translateY(8vh) scale(1.2); }
     }
     /* Barra sottile di avanzamento in cima alla pagina. */
     .scroll-bar {
